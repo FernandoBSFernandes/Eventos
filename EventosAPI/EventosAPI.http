@@ -1,6 +1,0 @@
-@EventosAPI_HostAddress = http://localhost:5123
-
-GET {{EventosAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
