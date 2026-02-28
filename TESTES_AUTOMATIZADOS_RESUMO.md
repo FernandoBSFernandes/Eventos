@@ -1,4 +1,4 @@
-# ?? RESUMO: Testes Automatizados Configurados
+ï»¿# ?? RESUMO: Testes Automatizados Configurados
 
 ## ? Status Atual
 
@@ -8,7 +8,7 @@
   ? Aprovados: 15
   ? Falhados: 0
   ??  Ignorados: 0
-  ??  Duração: 3.6s
+  ??  Duraï¿½ï¿½o: 3.6s
 ????????????????????????????????????????????????????????
 ```
 
@@ -20,22 +20,22 @@
 ```bash
 dotnet test
 ```
-? Rápido e direto!
+? Rï¿½pido e direto!
 
-### 2?? **Scripts Locais (Com Opções)**
+### 2?? **Scripts Locais (Com Opï¿½ï¿½es)**
 
 **Windows (PowerShell):**
 ```powershell
-.\testes.ps1                    # Básico
+.\testes.ps1                    # Bï¿½sico
 .\testes.ps1 -Coverage          # Com cobertura
-.\testes.ps1 -Watch             # Modo contínuo
+.\testes.ps1 -Watch             # Modo contï¿½nuo
 ```
 
 **Linux/Mac (Bash):**
 ```bash
-bash testes.sh                  # Básico
+bash testes.sh                  # Bï¿½sico
 bash testes.sh --coverage       # Com cobertura
-bash testes.sh --watch          # Modo contínuo
+bash testes.sh --watch          # Modo contï¿½nuo
 ```
 
 ### 3?? **Visual Studio (IDE)**
@@ -45,14 +45,14 @@ bash testes.sh --watch          # Modo contínuo
 
 ---
 
-## ?? Automação Contínua (GitHub Actions)
+## ?? Automaï¿½ï¿½o Contï¿½nua (GitHub Actions)
 
 ### ? O que acontece automaticamente:
 
-Sempre que você fazer **push** ou **pull request**:
-1. ? Projeto é buildado
-2. ? Testes são executados
-3. ? Cobertura de código é medida
+Sempre que vocï¿½ fazer **push** ou **pull request**:
+1. ? Projeto ï¿½ buildado
+2. ? Testes sï¿½o executados
+3. ? Cobertura de cï¿½digo ï¿½ medida
 4. ? Resultados aparecem no GitHub
 
 **Arquivo:** `.github/workflows/testes.yml`
@@ -65,13 +65,13 @@ Sempre que você fazer **push** ou **pull request**:
 dotnet watch test
 ```
 
-?? Testes rodam **automaticamente** sempre que você salva um arquivo!
+?? Testes rodam **automaticamente** sempre que vocï¿½ salva um arquivo!
 
-Ideal para desenvolvimento contínuo.
+Ideal para desenvolvimento contï¿½nuo.
 
 ---
 
-## ?? Com Cobertura de Código
+## ?? Com Cobertura de Cï¿½digo
 
 ```bash
 # Gerar cobertura
@@ -92,25 +92,25 @@ Abre `./coverage/report/index.html` no navegador!
 ??? testes.ps1                         ? Script PowerShell (Windows)
 ??? testes.sh                          ? Script Bash (Linux/Mac)
 ??? GUIA_TESTES_AUTOMATIZADOS.md       ? Guia detalhado
-??? README_TESTES.md                   ? Documentação completa
+??? README_TESTES.md                   ? Documentaï¿½ï¿½o completa
 ```
 
 ---
 
-## ?? Próximos Passos
+## ?? Prï¿½ximos Passos
 
 ### 1. **Teste Local** (Agora)
 ```bash
 dotnet test
 ```
 
-### 2. **Push para GitHub** (Próximo)
+### 2. **Push para GitHub** (Prï¿½ximo)
 ```bash
 git push origin main
 ```
 
-### 3. **Verifique Actions** (Automático)
-- Vá em: `https://github.com/seu-usuario/Eventos/actions`
+### 3. **Verifique Actions** (Automï¿½tico)
+- Vï¿½ em: `https://github.com/seu-usuario/Eventos/actions`
 - Veja os testes rodarem automaticamente! ??
 
 ### 4. **Use Watch Mode** (Durante dev)
@@ -120,7 +120,7 @@ dotnet watch test
 
 ---
 
-## ?? Comandos Rápidos
+## ?? Comandos Rï¿½pidos
 
 ```bash
 # Testes simples
@@ -129,10 +129,10 @@ dotnet test
 # Testes verbose
 dotnet test --verbosity detailed
 
-# Testes de um arquivo específico
+# Testes de um arquivo especï¿½fico
 dotnet test --filter "EventoServiceTests"
 
-# Testes contínuos (watch)
+# Testes contï¿½nuos (watch)
 dotnet watch test
 
 # Com cobertura
@@ -141,16 +141,16 @@ dotnet test /p:CollectCoverage=true
 
 ---
 
-## ? Benefícios
+## ? Benefï¿½cios
 
-? **Sem Interação**: Testes rodam automaticamente no push
-? **Feedback Rápido**: Saiba de falhas em minutos
-? **Qualidade**: Cobertura de código monitorada
-? **Confiança**: Deploy com testes validados
-? **Documentado**: Fácil de entender e usar
+? **Sem Interaï¿½ï¿½o**: Testes rodam automaticamente no push
+? **Feedback Rï¿½pido**: Saiba de falhas em minutos
+? **Qualidade**: Cobertura de cï¿½digo monitorada
+? **Confianï¿½a**: Deploy com testes validados
+? **Documentado**: Fï¿½cil de entender e usar
 
 ---
 
-**?? Tudo pronto! Seus testes estão 100% automatizados!**
+**?? Tudo pronto! Seus testes estï¿½o 100% automatizados!**
 
-Para dúvidas, veja: `README_TESTES.md` ou `GUIA_TESTES_AUTOMATIZADOS.md`
+Para dï¿½vidas, veja: `README_TESTES.md` ou `GUIA_TESTES_AUTOMATIZADOS.md`

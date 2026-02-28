@@ -1,4 +1,4 @@
-using Eventos.Application.DTOs.Request;
+ï»¿using Eventos.Application.DTOs.Request;
 using Eventos.Application.DTOs.Response;
 using System.Net;
 using System.Text;
@@ -8,7 +8,7 @@ using Xunit;
 namespace Eventos.Tests.Integration;
 
 /// <summary>
-/// Testes de integração da API Convidado
+/// Testes de integraï¿½ï¿½o da API Convidado
 /// Testa os endpoints reais com toda a stack de DI
 /// </summary>
 public class ConvidadoControllerIntegrationTests
@@ -22,7 +22,7 @@ public class ConvidadoControllerIntegrationTests
         _client = new HttpClient { BaseAddress = new Uri(BaseUrl) };
     }
 
-    #region Testes de Endpoint Existência
+    #region Testes de Endpoint Existï¿½ncia
 
     [Fact(Skip = "Requer API rodando em http://localhost:5000")]
     public async Task Post_AdicionarConvidado_DeveEstarDisponivel()
@@ -32,7 +32,7 @@ public class ConvidadoControllerIntegrationTests
 
         // Assert
         Assert.NotNull(response);
-        // Pode retornar 400 Bad Request, mas não 404 Not Found
+        // Pode retornar 400 Bad Request, mas nï¿½o 404 Not Found
         Assert.NotEqual(HttpStatusCode.NotFound, response.StatusCode);
     }
 
@@ -65,7 +65,7 @@ public class ConvidadoControllerIntegrationTests
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "João Silva",
+            nome: "Joï¿½o Silva",
             presencaConfirmada: true,
             participacao: Participacao.Sozinho,
             quantidadeAcompanhantes: 0,

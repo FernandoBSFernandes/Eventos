@@ -1,10 +1,10 @@
-using System.Text.Json;
+ï»¿using System.Text.Json;
 using Xunit;
 
 namespace Eventos.Tests.Integration;
 
 /// <summary>
-/// Testes para validar a especificação OpenAPI/Swagger
+/// Testes para validar a especificaï¿½ï¿½o OpenAPI/Swagger
 /// </summary>
 public class OpenApiSpecificationTests
 {
@@ -16,7 +16,7 @@ public class OpenApiSpecificationTests
         _client = new HttpClient { BaseAddress = new Uri(BaseUrl) };
     }
 
-    #region Testes de Especificação OpenAPI
+    #region Testes de Especificaï¿½ï¿½o OpenAPI
 
     [Fact(Skip = "Requer API rodando em http://localhost:5000")]
     public async Task SwaggerJson_DeveEstarDisponivel()
@@ -92,7 +92,7 @@ public class OpenApiSpecificationTests
             }
         }
 
-        Assert.True(hasEndpoint, "Endpoint de convidado não encontrado no Swagger");
+        Assert.True(hasEndpoint, "Endpoint de convidado nï¿½o encontrado no Swagger");
     }
 
     [Fact(Skip = "Requer API rodando em http://localhost:5000")]
@@ -109,7 +109,7 @@ public class OpenApiSpecificationTests
             .FirstOrDefault(p => p.Name.Contains("convidado", StringComparison.OrdinalIgnoreCase));
 
         // Assert
-        Assert.True(endpoint.Value.TryGetProperty("post", out _), "POST não encontrado no endpoint");
+        Assert.True(endpoint.Value.TryGetProperty("post", out _), "POST nï¿½o encontrado no endpoint");
     }
 
     [Fact(Skip = "Requer API rodando em http://localhost:5000")]
@@ -131,7 +131,7 @@ public class OpenApiSpecificationTests
         bool hasDesc = post.TryGetProperty("summary", out var summary) || 
                        post.TryGetProperty("description", out var desc);
         
-        Assert.True(hasDesc, "Descrição não encontrada no endpoint");
+        Assert.True(hasDesc, "Descriï¿½ï¿½o nï¿½o encontrada no endpoint");
     }
 
     [Fact(Skip = "Requer API rodando em http://localhost:5000")]
@@ -151,7 +151,7 @@ public class OpenApiSpecificationTests
         post.TryGetProperty("responses", out var responses);
 
         // Assert
-        Assert.True(responses.TryGetProperty("201", out _), "Resposta 201 não documentada");
+        Assert.True(responses.TryGetProperty("201", out _), "Resposta 201 nï¿½o documentada");
     }
 
     #endregion
@@ -185,7 +185,7 @@ public class OpenApiSpecificationTests
         Assert.True(
             response.StatusCode == System.Net.HttpStatusCode.OK || 
             response.StatusCode == System.Net.HttpStatusCode.Redirect,
-            "Swagger UI não está disponível"
+            "Swagger UI nï¿½o estï¿½ disponï¿½vel"
         );
     }
 

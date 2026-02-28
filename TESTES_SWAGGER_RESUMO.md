@@ -1,4 +1,4 @@
-# ?? TESTES DE SWAGGER/OpenAPI - IMPLEMENTADOS!
+ï»¿# ?? TESTES DE SWAGGER/OpenAPI - IMPLEMENTADOS!
 
 ## ? Status
 
@@ -7,7 +7,7 @@
 ? 25 aprovados
 ? 16 ignorados (requerem API rodando)
 ? 0 falhados
-?? 2.0s de execução
+?? 2.0s de execuï¿½ï¿½o
 ```
 
 ---
@@ -18,38 +18,38 @@
 Valida a estrutura e metadados do controlador usando Reflection.
 
 **O que testa:**
-- ? Controlador existe e é público
-- ? Método `AdicionarConvidado` existe e é async
+- ? Controlador existe e ï¿½ pï¿½blico
+- ? Mï¿½todo `AdicionarConvidado` existe e ï¿½ async
 - ? Atributo `[HttpPost("adicionar")]` presente
 - ? Atributos `[ProducesResponseType]` documentados
-- ? Parâmetro `[FromBody]` configurado
+- ? Parï¿½metro `[FromBody]` configurado
 
 **Status:** ? 8/8 passando
 
 ---
 
 ### 2. **ConvidadoControllerIntegrationTests** (9 testes)
-Testa endpoints da API em tempo de execução.
+Testa endpoints da API em tempo de execuï¿½ï¿½o.
 
 **O que testa:**
-- ? Endpoint POST está disponível
-- ? Retorna 201 Created com dados válidos
-- ? Retorna 400 Bad Request com dados inválidos
-- ? Response Content-Type é JSON
-- ? Swagger está disponível
+- ? Endpoint POST estï¿½ disponï¿½vel
+- ? Retorna 201 Created com dados vï¿½lidos
+- ? Retorna 400 Bad Request com dados invï¿½lidos
+- ? Response Content-Type ï¿½ JSON
+- ? Swagger estï¿½ disponï¿½vel
 
 **Status:** ?? 9/9 pulados (requerem API em http://localhost:5000)
 
 ---
 
 ### 3. **OpenApiSpecificationTests** (9 testes)
-Valida a especificação OpenAPI/Swagger JSON.
+Valida a especificaï¿½ï¿½o OpenAPI/Swagger JSON.
 
 **O que testa:**
-- ? JSON do Swagger é válido
+- ? JSON do Swagger ï¿½ vï¿½lido
 - ? Estrutura OpenAPI correta (info, paths, schemas)
 - ? Endpoint `convidado` documentado
-- ? Método POST presente
+- ? Mï¿½todo POST presente
 - ? Respostas documentadas
 
 **Status:** ?? 9/9 pulados (requerem API em http://localhost:5000)

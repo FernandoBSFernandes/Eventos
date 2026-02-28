@@ -1,10 +1,10 @@
-using System.Reflection;
+ï»¿using System.Reflection;
 using Xunit;
 
 namespace Eventos.Tests.Integration;
 
 /// <summary>
-/// Testes para validar a documentação Swagger via Reflection
+/// Testes para validar a documentaï¿½ï¿½o Swagger via Reflection
 /// </summary>
 public class SwaggerDocumentationTests
 {
@@ -16,7 +16,7 @@ public class SwaggerDocumentationTests
         _convidadoControllerType = Type.GetType("EventosAPI.Controllers.ConvidadoController, EventosAPI");
     }
 
-    #region Validação de Controller
+    #region Validaï¿½ï¿½o de Controller
 
     [Fact]
     public void ConvidadoController_DeveExistir()
@@ -34,7 +34,7 @@ public class SwaggerDocumentationTests
 
     #endregion
 
-    #region Validação de Método AdicionarConvidado
+    #region Validaï¿½ï¿½o de Mï¿½todo AdicionarConvidado
 
     [Fact]
     public void AdicionarConvidado_DeveExistir()
@@ -93,15 +93,15 @@ public class SwaggerDocumentationTests
         var method = _convidadoControllerType.GetMethod("AdicionarConvidado");
         if (method == null) return;
         Assert.NotNull(method);
-        // Verificar se existe documentação XML - não obrigatório
+        // Verificar se existe documentaï¿½ï¿½o XML - nï¿½o obrigatï¿½rio
         var xmlDoc = GetXmlDocumentation(method);
-        // Apenas verifica que o método existe com documentação se disponível
+        // Apenas verifica que o mï¿½todo existe com documentaï¿½ï¿½o se disponï¿½vel
         Assert.True(xmlDoc != null || method != null);
     }
 
     #endregion
 
-    #region Validação de Parâmetros
+    #region Validaï¿½ï¿½o de Parï¿½metros
 
     [Fact]
     public void AdicionarConvidado_DeveTerParametroRequest()

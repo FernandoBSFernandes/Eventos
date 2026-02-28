@@ -1,24 +1,24 @@
-# ?? Exemplos Práticos: Testes Automatizados
+ï»¿# ?? Exemplos Prï¿½ticos: Testes Automatizados
 
-## Cenário 1: Desenvolvedor Trabalhando Localmente
+## Cenï¿½rio 1: Desenvolvedor Trabalhando Localmente
 
 ```bash
 # Inicia o projeto com watch mode
 dotnet watch test
 
-# Resultado: Sempre que você salva um arquivo C#, os testes rodam automaticamente
-# Feedback imediato sobre quebras de código!
+# Resultado: Sempre que vocï¿½ salva um arquivo C#, os testes rodam automaticamente
+# Feedback imediato sobre quebras de cï¿½digo!
 ```
 
 **Fluxo:**
-1. Você edita `EventoService.cs`
+1. Vocï¿½ edita `EventoService.cs`
 2. Salva o arquivo (`Ctrl + S`)
 3. Testes rodam automaticamente ?
-4. Você vê resultado no terminal em segundos
+4. Vocï¿½ vï¿½ resultado no terminal em segundos
 
 ---
 
-## Cenário 2: Antes de Fazer Commit
+## Cenï¿½rio 2: Antes de Fazer Commit
 
 ```bash
 # Executar testes com cobertura
@@ -26,15 +26,15 @@ dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutp
 
 # Se tudo passar ?
 git add .
-git commit -m "feat: adicionar validação de convidado"
+git commit -m "feat: adicionar validaï¿½ï¿½o de convidado"
 git push origin main
 ```
 
 ---
 
-## Cenário 3: CI/CD no GitHub (Automático)
+## Cenï¿½rio 3: CI/CD no GitHub (Automï¿½tico)
 
-**Você faz:**
+**Vocï¿½ faz:**
 ```bash
 git push origin main
 ```
@@ -44,24 +44,24 @@ git push origin main
 2. Cria VM Ubuntu
 3. Instala .NET 8
 4. Executa testes
-5. Gera relatório de cobertura
+5. Gera relatï¿½rio de cobertura
 6. Publica resultados
 
-**Você vê:**
+**Vocï¿½ vï¿½:**
 - ? ou ? no commit
 - Badge no README
-- Relatório de cobertura
+- Relatï¿½rio de cobertura
 
 ---
 
-## Cenário 4: Validar Antes de Merge no PR
+## Cenï¿½rio 4: Validar Antes de Merge no PR
 
-**Alguém abre um Pull Request**
+**Alguï¿½m abre um Pull Request**
 
 GitHub Actions **automaticamente**:
 1. Executa todos os testes
 2. Verifica cobertura
-3. Publica comentário com resultados
+3. Publica comentï¿½rio com resultados
 4. Bloqueia merge se testes falharem
 
 ```
@@ -72,10 +72,10 @@ GitHub Actions **automaticamente**:
 
 ---
 
-## Cenário 5: Windows PowerShell Script
+## Cenï¿½rio 5: Windows PowerShell Script
 
 ```powershell
-# Script completo com opções
+# Script completo com opï¿½ï¿½es
 PS> .\testes.ps1 -Coverage -Verbose
 
 # Output:
@@ -84,7 +84,7 @@ PS> .\testes.ps1 -Coverage -Verbose
 ??????????????????????????????????????????????????????????????????
 
 ? .NET: 8.0.24
-?? Gerando cobertura de código...
+?? Gerando cobertura de cï¿½digo...
 ?? Modo verboso ativado
 
 ??  Executando: dotnet test /p:CollectCoverage=true ... --verbosity detailed
@@ -99,12 +99,12 @@ PS> .\testes.ps1 -Coverage -Verbose
 ? ? TESTES EXECUTADOS COM SUCESSO!                              ?
 ??????????????????????????????????????????????????????????????????
 
-?? Relatório de cobertura gerado em: ./coverage/coverage.info
+?? Relatï¿½rio de cobertura gerado em: ./coverage/coverage.info
 ```
 
 ---
 
-## Cenário 6: Linux/Mac Bash Script
+## Cenï¿½rio 6: Linux/Mac Bash Script
 
 ```bash
 $ bash testes.sh --coverage --verbose
@@ -114,28 +114,28 @@ $ bash testes.sh --coverage --verbose
 ??????????????????????????????????????????????????????????????????
 
 ? .NET: 8.0.24
-?? Gerando cobertura de código...
+?? Gerando cobertura de cï¿½digo...
 ?? Modo verboso ativado
 
 ??  Executando: dotnet test /p:CollectCoverage=true ... --verbosity detailed
 
-Aprovado!  – Com falha:     0, Aprovado:    15, Ignorado:     0
+Aprovado!  ï¿½ Com falha:     0, Aprovado:    15, Ignorado:     0
 
 ??????????????????????????????????????????????????????????????????
 ? ? TESTES EXECUTADOS COM SUCESSO!                              ?
 ??????????????????????????????????????????????????????????????????
 
-?? Relatório de cobertura gerado em: ./coverage/coverage.info
+?? Relatï¿½rio de cobertura gerado em: ./coverage/coverage.info
 ```
 
 ---
 
-## Cenário 7: Visual Studio Test Explorer
+## Cenï¿½rio 7: Visual Studio Test Explorer
 
 **Abrir:**
 1. `Ctrl + E, T` ? Abre Test Explorer
-2. Vê lista de todos os testes
-3. Clica em um teste específico
+2. Vï¿½ lista de todos os testes
+3. Clica em um teste especï¿½fico
 4. Resultado aparece em tempo real
 
 ```
@@ -149,7 +149,7 @@ Aprovado!  – Com falha:     0, Aprovado:    15, Ignorado:     0
 
 ---
 
-## Cenário 8: Testes de um Arquivo Específico
+## Cenï¿½rio 8: Testes de um Arquivo Especï¿½fico
 
 ```bash
 # Executar apenas testes de EventoService
@@ -161,21 +161,21 @@ Resumo do teste: total: 15; falhou: 0; bem-sucedido: 15; ignorado: 0
 
 ---
 
-## Cenário 9: Monitoramento Contínuo em Produção
+## Cenï¿½rio 9: Monitoramento Contï¿½nuo em Produï¿½ï¿½o
 
-**Configuração:**
+**Configuraï¿½ï¿½o:**
 - GitHub Actions executa testes a cada push
 - ReportGenerator gera HTML visual
 - Codecov monitora cobertura ao longo do tempo
 
 **Resultado:**
 - Badge no README: `![Coverage](https://img.shields.io/codecov/c/github/seu-usuario/Eventos)`
-- Histórico de cobertura
+- Histï¿½rico de cobertura
 - Alertas se cobertura cair
 
 ---
 
-## Cenário 10: Integração com SonarQube (Avançado)
+## Cenï¿½rio 10: Integraï¿½ï¿½o com SonarQube (Avanï¿½ado)
 
 ```yaml
 # Adicionar ao .github/workflows/testes.yml
@@ -187,9 +187,9 @@ Resumo do teste: total: 15; falhou: 0; bem-sucedido: 15; ignorado: 0
 ```
 
 **Resultado:**
-- Análise de qualidade completa
-- Detecção de code smells
-- Sugestões de melhoria
+- Anï¿½lise de qualidade completa
+- Detecï¿½ï¿½o de code smells
+- Sugestï¿½es de melhoria
 - Dashboard visual
 
 ---
@@ -199,12 +199,12 @@ Resumo do teste: total: 15; falhou: 0; bem-sucedido: 15; ignorado: 0
 ```
 1. Desenvolvimento Local
    ?
-   dotnet watch test (feedback contínuo)
+   dotnet watch test (feedback contï¿½nuo)
    ?
    
 2. Antes do Commit
    ?
-   dotnet test /p:CollectCoverage=true (validação final)
+   dotnet test /p:CollectCoverage=true (validaï¿½ï¿½o final)
    ?
    
 3. Push para GitHub
@@ -214,34 +214,34 @@ Resumo do teste: total: 15; falhou: 0; bem-sucedido: 15; ignorado: 0
    
 4. Resultado
    ?
-   ? Sucesso ? Deploy automático
+   ? Sucesso ? Deploy automï¿½tico
    ? Falha ? Bloqueia merge
 ```
 
 ---
 
-## ?? Combinações de Comandos Úteis
+## ?? Combinaï¿½ï¿½es de Comandos ï¿½teis
 
 ```bash
-# Desenvolvimento rápido
+# Desenvolvimento rï¿½pido
 dotnet watch test
 
-# Validação pre-commit
+# Validaï¿½ï¿½o pre-commit
 dotnet test /p:CollectCoverage=true
 
 # CI/CD no servidor
 dotnet test --verbosity minimal --logger "trx;LogFileName=TestResults.trx"
 
-# Testes específicos
+# Testes especï¿½ficos
 dotnet test --filter "Category=Unit"
 
-# Sem compilação (após build recente)
+# Sem compilaï¿½ï¿½o (apï¿½s build recente)
 dotnet test --no-build
 
 # Timeout customizado
 dotnet test --blame-hang-timeout 30000
 
-# Formato de saída para CI
+# Formato de saï¿½da para CI
 dotnet test --logger "console;verbosity=minimal" --logger "trx"
 ```
 
@@ -250,19 +250,19 @@ dotnet test --logger "console;verbosity=minimal" --logger "trx"
 ## ?? Interpretando Resultados
 
 ```
-Resumo do teste: total: 15; falhou: 0; bem-sucedido: 15; ignorado: 0; duração: 3,6s
+Resumo do teste: total: 15; falhou: 0; bem-sucedido: 15; ignorado: 0; duraï¿½ï¿½o: 3,6s
 
-?? total: 15              ? Número total de testes
+?? total: 15              ? Nï¿½mero total de testes
 ?? falhou: 0              ? ? Nenhum falhou
 ?? bem-sucedido: 15       ? ? Todos passaram
 ?? ignorado: 0            ? Nenhum foi pulado
-?? duração: 3,6s          ? ? Velocidade ótima
+?? duraï¿½ï¿½o: 3,6s          ? ? Velocidade ï¿½tima
 ```
 
 **O que significa:**
 - ? Se `falhou: 0` e `bem-sucedido: 15` ? Tudo OK! Deploy liberado
-- ? Se `falhou > 0` ? Correção necessária antes do merge
+- ? Se `falhou > 0` ? Correï¿½ï¿½o necessï¿½ria antes do merge
 
 ---
 
-**?? Você agora domina testes automatizados!**
+**?? Vocï¿½ agora domina testes automatizados!**

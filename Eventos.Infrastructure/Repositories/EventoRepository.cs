@@ -1,4 +1,4 @@
-using Eventos.Domain.Entities;
+﻿using Eventos.Domain.Entities;
 using Eventos.Domain.Repositories;
 using Eventos.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;

@@ -1,30 +1,30 @@
-# ?? Guia de Testes Automatizados - Eventos API
+ï»¿# ?? Guia de Testes Automatizados - Eventos API
 
-## Opção 1: Executar Testes via CLI (Recomendado)
+## Opï¿½ï¿½o 1: Executar Testes via CLI (Recomendado)
 
 ### 1.1 Executar todos os testes
 ```bash
 dotnet test
 ```
 
-### 1.2 Executar testes com saída verbosa
+### 1.2 Executar testes com saï¿½da verbosa
 ```bash
 dotnet test --verbosity detailed
 ```
 
-### 1.3 Executar testes com cobertura de código
+### 1.3 Executar testes com cobertura de cï¿½digo
 ```bash
 dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 ```
 
-### 1.4 Executar testes específicos
+### 1.4 Executar testes especï¿½ficos
 ```bash
 dotnet test --filter "FullyQualifiedName~EventoServiceTests"
 ```
 
 ---
 
-## Opção 2: Integração com GitHub Actions (CI/CD Automatizado)
+## Opï¿½ï¿½o 2: Integraï¿½ï¿½o com GitHub Actions (CI/CD Automatizado)
 
 Crie o arquivo `.github/workflows/testes.yml`:
 
@@ -49,7 +49,7 @@ jobs:
       with:
         dotnet-version: '8.0.x'
     
-    - name: Restaurar dependências
+    - name: Restaurar dependï¿½ncias
       run: dotnet restore
     
     - name: Build
@@ -67,11 +67,11 @@ jobs:
 
 ---
 
-## Opção 3: Automação Local com Scripts
+## Opï¿½ï¿½o 3: Automaï¿½ï¿½o Local com Scripts
 
 ### 3.1 Script PowerShell (testes.ps1)
 ```powershell
-# Script para executar testes com relatório
+# Script para executar testes com relatï¿½rio
 Write-Host "?? Iniciando testes..." -ForegroundColor Cyan
 
 # Executar testes com cobertura
@@ -113,7 +113,7 @@ fi
 
 ---
 
-## Opção 4: Watch Mode (Testes Contínuos)
+## Opï¿½ï¿½o 4: Watch Mode (Testes Contï¿½nuos)
 
 Executa testes automaticamente ao salvar um arquivo:
 
@@ -123,7 +123,7 @@ dotnet watch test
 
 ---
 
-## Opção 5: Configurar no Visual Studio
+## Opï¿½ï¿½o 5: Configurar no Visual Studio
 
 1. Abra **Test Explorer** (`Ctrl + E, T`)
 2. Clique em **Run All Tests** para executar todos os testes
@@ -132,7 +132,7 @@ dotnet watch test
 
 ---
 
-## Opção 6: Integração com Azure Pipelines
+## Opï¿½ï¿½o 6: Integraï¿½ï¿½o com Azure Pipelines
 
 Crie o arquivo `azure-pipelines.yml`:
 
@@ -153,7 +153,7 @@ steps:
     version: '8.0.x'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Restaurar dependências'
+  displayName: 'Restaurar dependï¿½ncias'
   inputs:
     command: 'restore'
 
@@ -178,24 +178,24 @@ steps:
 
 ---
 
-## Resumo Rápido
+## Resumo Rï¿½pido
 
-| Método | Comando | Quando usar |
+| Mï¿½todo | Comando | Quando usar |
 |--------|---------|------------|
-| **CLI Básico** | `dotnet test` | Verificação rápida |
-| **Com Cobertura** | `dotnet test /p:CollectCoverage=true` | Análise de qualidade |
-| **Watch Mode** | `dotnet watch test` | Desenvolvimento contínuo |
-| **GitHub Actions** | Commit + Push | Automação em produção |
+| **CLI Bï¿½sico** | `dotnet test` | Verificaï¿½ï¿½o rï¿½pida |
+| **Com Cobertura** | `dotnet test /p:CollectCoverage=true` | Anï¿½lise de qualidade |
+| **Watch Mode** | `dotnet watch test` | Desenvolvimento contï¿½nuo |
+| **GitHub Actions** | Commit + Push | Automaï¿½ï¿½o em produï¿½ï¿½o |
 | **Visual Studio** | Test Explorer | Desenvolvimento no IDE |
 
 ---
 
-## ?? Recomendação para seu projeto
+## ?? Recomendaï¿½ï¿½o para seu projeto
 
-Para automação completa **sem interação**, implemente:
+Para automaï¿½ï¿½o completa **sem interaï¿½ï¿½o**, implemente:
 
 1. **GitHub Actions** para CI/CD (recomendado)
 2. **Watch Mode** durante desenvolvimento
-3. **Cobertura de código** regularmente
+3. **Cobertura de cï¿½digo** regularmente
 
 Isso garante que testes rodem automaticamente em cada push!

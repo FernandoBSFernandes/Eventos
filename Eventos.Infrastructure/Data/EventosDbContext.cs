@@ -1,4 +1,4 @@
-using Eventos.Domain.Entities;
+ï»¿using Eventos.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Eventos.Infrastructure.Data;
@@ -13,7 +13,7 @@ public class EventosDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
-        // Aplicar configurações de entidades
+        // Aplicar configuraï¿½ï¿½es de entidades
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(EventosDbContext).Assembly);
     }
 }

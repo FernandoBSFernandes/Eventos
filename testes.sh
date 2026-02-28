@@ -1,6 +1,6 @@
-#!/bin/bash
+ï»¿#!/bin/bash
 
-# Script para executar testes com cobertura de código
+# Script para executar testes com cobertura de cï¿½digo
 
 set -e
 
@@ -38,9 +38,9 @@ cat << "EOF"
 
 EOF
 
-# Verificar se dotnet está instalado
+# Verificar se dotnet estï¿½ instalado
 if ! command -v dotnet &> /dev/null; then
-    echo "? .NET não está instalado!"
+    echo "? .NET nï¿½o estï¿½ instalado!"
     exit 1
 fi
 
@@ -51,12 +51,12 @@ echo "? .NET: $DOTNET_VERSION"
 TEST_COMMAND="dotnet test"
 
 if [ "$WATCH" = true ]; then
-    echo "?? Modo Watch ativado - testes rodarão ao salvar arquivos"
+    echo "?? Modo Watch ativado - testes rodarï¿½o ao salvar arquivos"
     TEST_COMMAND="dotnet watch test"
 fi
 
 if [ "$COVERAGE" = true ]; then
-    echo "?? Gerando cobertura de código..."
+    echo "?? Gerando cobertura de cï¿½digo..."
     TEST_COMMAND="$TEST_COMMAND /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./coverage/"
 fi
 
@@ -75,7 +75,7 @@ echo
 eval $TEST_COMMAND
 TEST_RESULT=$?
 
-# Análise dos resultados
+# Anï¿½lise dos resultados
 echo
 echo "??????????????????????????????????????????????????????????????????"
 
@@ -87,10 +87,10 @@ fi
 
 echo "??????????????????????????????????????????????????????????????????"
 
-# Se cobertura foi gerada, exibir informações
+# Se cobertura foi gerada, exibir informaï¿½ï¿½es
 if [ "$COVERAGE" = true ] && [ -f "./coverage/coverage.info" ]; then
     echo
-    echo "?? Relatório de cobertura gerado em: ./coverage/coverage.info"
+    echo "?? Relatï¿½rio de cobertura gerado em: ./coverage/coverage.info"
     echo "   Use uma ferramenta como ReportGenerator para visualizar melhor"
 fi
 

@@ -1,9 +1,9 @@
-#!/usr/bin/env pwsh
+ï»¿#!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Script para executar testes com cobertura de código
+    Script para executar testes com cobertura de cï¿½digo
 .DESCRIPTION
-    Executa todos os testes do projeto, gera relatórios e cobertura
+    Executa todos os testes do projeto, gera relatï¿½rios e cobertura
 .EXAMPLE
     .\testes.ps1
 #>
@@ -22,24 +22,24 @@ Write-Host "
 ??????????????????????????????????????????????????????????????????
 " -ForegroundColor Cyan
 
-# Verificar se dotnet está instalado
+# Verificar se dotnet estï¿½ instalado
 try {
     $dotnetVersion = dotnet --version
     Write-Host "? .NET: $dotnetVersion" -ForegroundColor Green
 } catch {
-    Write-Host "? .NET não está instalado!" -ForegroundColor Red
+    Write-Host "? .NET nï¿½o estï¿½ instalado!" -ForegroundColor Red
     exit 1
 }
 
 $testCommand = "dotnet test"
 
 if ($Watch) {
-    Write-Host "`n?? Modo Watch ativado - testes rodarão ao salvar arquivos" -ForegroundColor Yellow
+    Write-Host "`n?? Modo Watch ativado - testes rodarï¿½o ao salvar arquivos" -ForegroundColor Yellow
     $testCommand = "dotnet watch test"
 }
 
 if ($Coverage) {
-    Write-Host "`n?? Gerando cobertura de código..." -ForegroundColor Yellow
+    Write-Host "`n?? Gerando cobertura de cï¿½digo..." -ForegroundColor Yellow
     $testCommand += ' /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./coverage/'
 }
 
@@ -56,7 +56,7 @@ Write-Host "`n??  Executando: $testCommand`n" -ForegroundColor Cyan
 Invoke-Expression $testCommand
 $testResult = $LASTEXITCODE
 
-# Análise dos resultados
+# Anï¿½lise dos resultados
 Write-Host "`n??????????????????????????????????????????????????????????????????" -ForegroundColor Cyan
 
 if ($testResult -eq 0) {
@@ -67,11 +67,11 @@ if ($testResult -eq 0) {
 
 Write-Host "??????????????????????????????????????????????????????????????????" -ForegroundColor Cyan
 
-# Se cobertura foi gerada, exibir informações
+# Se cobertura foi gerada, exibir informaï¿½ï¿½es
 if ($Coverage -and (Test-Path "./coverage/coverage.info")) {
-    Write-Host "`n?? Relatório de cobertura gerado em: ./coverage/coverage.info" -ForegroundColor Green
+    Write-Host "`n?? Relatï¿½rio de cobertura gerado em: ./coverage/coverage.info" -ForegroundColor Green
     Write-Host "   Use uma ferramenta como ReportGenerator para visualizar melhor" -ForegroundColor Gray
 }
 
-# Retornar código de saída
+# Retornar cï¿½digo de saï¿½da
 exit $testResult

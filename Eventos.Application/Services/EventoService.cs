@@ -1,4 +1,4 @@
-using Eventos.Application.DTOs.Request;
+ï»¿using Eventos.Application.DTOs.Request;
 using Eventos.Application.DTOs.Response;
 using Eventos.Application.Interfaces;
 using Eventos.Domain.Entities;
@@ -22,7 +22,7 @@ public class EventoService : IEventoService
             // Validar dados do convidado
             ValidarConvidado(request);
 
-            // Preparar o objeto para persistência
+            // Preparar o objeto para persistï¿½ncia
             var convidado = new Convidado
             {
                 Nome = request.Nome,
@@ -39,17 +39,17 @@ public class EventoService : IEventoService
             // Persistir na base de dados
             await _repo.AdicionarConvidadoAsync(convidado);
 
-            // Retornar sucesso com código 201
+            // Retornar sucesso com cï¿½digo 201
             return new BaseResponse(201, "Convidado foi registrado com sucesso");
         }
         catch (ArgumentException ex)
         {
-            // Erro de validação - retornar código 400
+            // Erro de validaï¿½ï¿½o - retornar cï¿½digo 400
             return new BaseResponse(400, ex.Message);
         }
         catch (Exception ex)
         {
-            // Outro tipo de erro - retornar código 500
+            // Outro tipo de erro - retornar cï¿½digo 500
             return new BaseResponse(500, $"Ocorreu um erro ao adicionar o convidado: {ex.Message}");
         }
     }
@@ -57,27 +57,27 @@ public class EventoService : IEventoService
     private void ValidarConvidado(AdicionarConvidadoRequest request)
     {
         if (request == null)
-            throw new ArgumentException("Dados do convidado são obrigatórios");
+            throw new ArgumentException("Dados do convidado sï¿½o obrigatï¿½rios");
 
         if (string.IsNullOrWhiteSpace(request.Nome))
-            throw new ArgumentException("O nome do convidado é obrigatório");
+            throw new ArgumentException("O nome do convidado ï¿½ obrigatï¿½rio");
 
         if (request.Nome.Length < 3 || request.Nome.Length > 50)
             throw new ArgumentException("O nome deve ter entre 3 e 50 caracteres");
 
         if (request.QuantidadeAcompanhantes < 0 || request.QuantidadeAcompanhantes > 5)
-            throw new ArgumentException("A quantidade de acompanhantes não pode ser negativa ou superior a 5");
+            throw new ArgumentException("A quantidade de acompanhantes nï¿½o pode ser negativa ou superior a 5");
 
         if (request.Participacao.ToString() == "Sozinho" && request.QuantidadeAcompanhantes > 0)
-            throw new ArgumentException("Convidado que vai sozinho não pode ter acompanhantes");
+            throw new ArgumentException("Convidado que vai sozinho nï¿½o pode ter acompanhantes");
 
         var quantidadeNomesAcompanhantes = request.NomesAcompanhantes?.Count ?? 0;
 
         if (request.QuantidadeAcompanhantes != quantidadeNomesAcompanhantes)
-            throw new ArgumentException("A quantidade de acompanhantes deve ser igual à quantidade de nomes informados");
+            throw new ArgumentException("A quantidade de acompanhantes deve ser igual ï¿½ quantidade de nomes informados");
 
         if (request.NomesAcompanhantes != null && request.NomesAcompanhantes.Any(nome => string.IsNullOrWhiteSpace(nome)))
-            throw new ArgumentException("Os nomes dos acompanhantes não podem estar vazios");
+            throw new ArgumentException("Os nomes dos acompanhantes nï¿½o podem estar vazios");
 
         if (request.NomesAcompanhantes != null && request.NomesAcompanhantes.Any(nome => nome.Length < 3 || nome.Length > 50))
             throw new ArgumentException("O nome de cada acompanhante deve ter entre 3 e 50 caracteres");

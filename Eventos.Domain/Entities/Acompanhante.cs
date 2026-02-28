@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+ï»¿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Eventos.Domain.Entities
@@ -9,7 +9,7 @@ namespace Eventos.Domain.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
-        [Required(ErrorMessage = "O nome do acompanhante é obrigatório")]
+        [Required(ErrorMessage = "O nome do acompanhante ï¿½ obrigatï¿½rio")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "O nome deve ter entre 3 e 50 caracteres")]
         public string Nome { get; set; }
 

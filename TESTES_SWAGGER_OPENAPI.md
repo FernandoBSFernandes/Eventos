@@ -1,6 +1,6 @@
-# ?? Testes de Swagger/OpenAPI
+ï»¿# ?? Testes de Swagger/OpenAPI
 
-Testes automatizados para validar a documentação e especificação da API.
+Testes automatizados para validar a documentaï¿½ï¿½o e especificaï¿½ï¿½o da API.
 
 ## ?? Tipos de Testes
 
@@ -10,12 +10,12 @@ Valida os atributos e metadados dos controllers e endpoints.
 **O que testa:**
 - ? Controlador existe e herda de `ControllerBase`
 - ? Atributos `[Route]` e `[ApiController]` presentes
-- ? Métodos públicos async
+- ? Mï¿½todos pï¿½blicos async
 - ? Retorno correto (`IActionResult`)
 - ? Atributos HTTP (`[HttpPost]`)
 - ? Resposta esperada (`[ProducesResponseType]`)
-- ? Documentação XML (`/// <summary>`)
-- ? Parâmetros com `[FromBody]`
+- ? Documentaï¿½ï¿½o XML (`/// <summary>`)
+- ? Parï¿½metros com `[FromBody]`
 
 **Exemplos:**
 ```csharp
@@ -30,12 +30,12 @@ public void AdicionarConvidado_DeveTermoProducesResponseType201() { ... }
 Testa a API real com `WebApplicationFactory`.
 
 **O que testa:**
-- ? Endpoint retorna 201 Created com dados válidos
-- ? Endpoint retorna 400 Bad Request com dados inválidos
+- ? Endpoint retorna 201 Created com dados vï¿½lidos
+- ? Endpoint retorna 400 Bad Request com dados invï¿½lidos
 - ? Content-Type correto (application/json)
 - ? Headers adequados
-- ? Métodos HTTP corretos
-- ? Swagger está disponível
+- ? Mï¿½todos HTTP corretos
+- ? Swagger estï¿½ disponï¿½vel
 
 **Exemplos:**
 ```csharp
@@ -47,18 +47,18 @@ public async Task Api_DeveTerSwaggerDisponivel() { ... }
 ```
 
 ### 3. OpenApiSpecificationTests
-Valida a especificação OpenAPI/Swagger gerada.
+Valida a especificaï¿½ï¿½o OpenAPI/Swagger gerada.
 
 **O que testa:**
-- ? JSON do Swagger é válido
-- ? Informações da API presentes
+- ? JSON do Swagger ï¿½ vï¿½lido
+- ? Informaï¿½ï¿½es da API presentes
 - ? Paths documentados
 - ? Endpoints aparecem no Swagger
-- ? Métodos HTTP corretos
+- ? Mï¿½todos HTTP corretos
 - ? Respostas documentadas (201, 400, 500)
 - ? Request body definido
 - ? Schemas presentes
-- ? Swagger UI acessível
+- ? Swagger UI acessï¿½vel
 
 **Exemplos:**
 ```csharp
@@ -78,7 +78,7 @@ public async Task SwaggerJson_EndpointAdicionarConvidado_DeveTermoRespostas() { 
 dotnet test --filter "Swagger"
 ```
 
-### Testes de Integração apenas
+### Testes de Integraï¿½ï¿½o apenas
 ```bash
 dotnet test --filter "IntegrationTests"
 ```
@@ -106,23 +106,23 @@ dotnet watch test
 
 ---
 
-## ?? Benefícios
+## ?? Benefï¿½cios
 
-### 1. **Documentação Sempre Atualizada**
-- Testes falham se documentação ficar desatualizada
-- Force sincronização entre código e documentação
+### 1. **Documentaï¿½ï¿½o Sempre Atualizada**
+- Testes falham se documentaï¿½ï¿½o ficar desatualizada
+- Force sincronizaï¿½ï¿½o entre cï¿½digo e documentaï¿½ï¿½o
 
 ### 2. **Contrato da API Validado**
-- Garante que respostas 201, 400, 500 estão documentadas
+- Garante que respostas 201, 400, 500 estï¿½o documentadas
 - Valida estrutura do JSON
 
-### 3. **Swagger Sempre Válido**
-- Especificação OpenAPI sempre gerável
+### 3. **Swagger Sempre Vï¿½lido**
+- Especificaï¿½ï¿½o OpenAPI sempre gerï¿½vel
 - Swagger UI sempre funcional
 
-### 4. **Detecção de Regressão**
-- Se alguém remover `[ProducesResponseType]`, teste falha
-- Se alguém mudar a rota, teste falha
+### 4. **Detecï¿½ï¿½o de Regressï¿½o**
+- Se alguï¿½m remover `[ProducesResponseType]`, teste falha
+- Se alguï¿½m mudar a rota, teste falha
 
 ---
 
@@ -145,7 +145,7 @@ public void AdicionarConvidado_DeveTermoProducesResponseType201()
 ```
 
 **O que valida:**
-- Método `AdicionarConvidado` existe
+- Mï¿½todo `AdicionarConvidado` existe
 - Tem atributo `[ProducesResponseType(201)]`
 - Isso garante que Swagger documenta resposta 201
 
@@ -174,7 +174,7 @@ public async Task Post_AdicionarConvidado_DeveRetornar201_QuandoDadosValidos()
 
 **O que valida:**
 - API real retorna 201 Created
-- Response é JSON válido
+- Response ï¿½ JSON vï¿½lido
 - Mensagem faz sentido
 
 ---
@@ -192,14 +192,14 @@ public async Task SwaggerJson_EndpointAdicionarConvidado_DeveTermoRespostas()
     // Parse do JSON...
     
     // Assert
-    Assert.True(responses.TryGetProperty("201", out _), "Resposta 201 não documentada");
-    Assert.True(responses.TryGetProperty("400", out _), "Resposta 400 não documentada");
+    Assert.True(responses.TryGetProperty("201", out _), "Resposta 201 nï¿½o documentada");
+    Assert.True(responses.TryGetProperty("400", out _), "Resposta 400 nï¿½o documentada");
 }
 ```
 
 **O que valida:**
-- Swagger JSON contém documentação de 201 e 400
-- Especificação está correta
+- Swagger JSON contï¿½m documentaï¿½ï¿½o de 201 e 400
+- Especificaï¿½ï¿½o estï¿½ correta
 
 ---
 
@@ -229,7 +229,7 @@ public async Task Get_NovoMetodo_DeveRetornar200()
 [Fact]
 public async Task SwaggerJson_DeveConterEndpointNovoMetodo()
 {
-    // Verificar se endpoint está no Swagger JSON
+    // Verificar se endpoint estï¿½ no Swagger JSON
 }
 ```
 
@@ -237,18 +237,18 @@ public async Task SwaggerJson_DeveConterEndpointNovoMetodo()
 
 ## ?? Troubleshooting
 
-| Problema | Solução |
+| Problema | Soluï¿½ï¿½o |
 |----------|---------|
-| "WebApplicationFactory" não encontrado | Adicionar `using Microsoft.AspNetCore.Mvc.Testing` |
-| Testes de integração lentos | Normal! Testes de integração criam toda a app |
-| Swagger JSON não encontrado | Verificar se Swagger está configurado em `Program.cs` |
-| Port já em uso | WebApplicationFactory usa porta aleatória |
+| "WebApplicationFactory" nï¿½o encontrado | Adicionar `using Microsoft.AspNetCore.Mvc.Testing` |
+| Testes de integraï¿½ï¿½o lentos | Normal! Testes de integraï¿½ï¿½o criam toda a app |
+| Swagger JSON nï¿½o encontrado | Verificar se Swagger estï¿½ configurado em `Program.cs` |
+| Port jï¿½ em uso | WebApplicationFactory usa porta aleatï¿½ria |
 
 ---
 
-## ?? Integração com CI/CD
+## ?? Integraï¿½ï¿½o com CI/CD
 
-Os testes são executados automaticamente via GitHub Actions:
+Os testes sï¿½o executados automaticamente via GitHub Actions:
 
 ```yaml
 - name: ?? Executar testes
@@ -268,4 +268,4 @@ Se algum teste falhar, o pipeline bloqueia o merge! ?
 
 ---
 
-**? Seus testes de Swagger estão 100% automatizados!**
+**? Seus testes de Swagger estï¿½o 100% automatizados!**

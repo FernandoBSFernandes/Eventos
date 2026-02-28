@@ -1,4 +1,4 @@
-# ?? Testes Automatizados - Eventos API
+ï»¿# ?? Testes Automatizados - Eventos API
 
 ## ? Resultado Atual
 
@@ -12,36 +12,36 @@ Todos os **15 testes passaram com sucesso** ?
 
 ## ?? Como Executar Testes
 
-### Opção 1: CLI Rápida (Recomendado)
+### Opï¿½ï¿½o 1: CLI Rï¿½pida (Recomendado)
 
 ```bash
-# Testes básicos
+# Testes bï¿½sicos
 dotnet test
 
-# Com saída detalhada
+# Com saï¿½da detalhada
 dotnet test --verbosity detailed
 
 # Apenas um arquivo de teste
 dotnet test --filter "FullyQualifiedName~EventoServiceTests"
 ```
 
-### Opção 2: Scripts Locais
+### Opï¿½ï¿½o 2: Scripts Locais
 
 #### PowerShell (Windows)
 ```powershell
 # Executar testes simples
 .\testes.ps1
 
-# Com cobertura de código
+# Com cobertura de cï¿½digo
 .\testes.ps1 -Coverage
 
 # Modo verbose
 .\testes.ps1 -Verbose
 
-# Watch mode (contínuo)
+# Watch mode (contï¿½nuo)
 .\testes.ps1 -Watch
 
-# Combinar opções
+# Combinar opï¿½ï¿½es
 .\testes.ps1 -Coverage -Verbose
 ```
 
@@ -50,36 +50,36 @@ dotnet test --filter "FullyQualifiedName~EventoServiceTests"
 # Executar testes simples
 bash testes.sh
 
-# Com cobertura de código
+# Com cobertura de cï¿½digo
 bash testes.sh --coverage
 
 # Modo verbose
 bash testes.sh --verbose
 
-# Watch mode (contínuo)
+# Watch mode (contï¿½nuo)
 bash testes.sh --watch
 
-# Combinar opções
+# Combinar opï¿½ï¿½es
 bash testes.sh --coverage --verbose
 ```
 
-### Opção 3: Watch Mode (Desenvolvimento Contínuo)
+### Opï¿½ï¿½o 3: Watch Mode (Desenvolvimento Contï¿½nuo)
 
 ```bash
 dotnet watch test
 ```
 
-Testes rodarão **automaticamente** sempre que você salvar um arquivo!
+Testes rodarï¿½o **automaticamente** sempre que vocï¿½ salvar um arquivo!
 
-### Opção 4: Com Cobertura de Código
+### Opï¿½ï¿½o 4: Com Cobertura de Cï¿½digo
 
 ```bash
 dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./coverage/
 ```
 
-Gera relatório em `./coverage/coverage.info`
+Gera relatï¿½rio em `./coverage/coverage.info`
 
-### Opção 5: Visual Studio
+### Opï¿½ï¿½o 5: Visual Studio
 
 1. Abra **Test Explorer** (`Ctrl + E, T`)
 2. Clique em **Run All Tests** ??
@@ -87,7 +87,7 @@ Gera relatório em `./coverage/coverage.info`
 
 ---
 
-## ?? Automação Contínua (GitHub Actions)
+## ?? Automaï¿½ï¿½o Contï¿½nua (GitHub Actions)
 
 Testes rodam **automaticamente** em cada push ou pull request!
 
@@ -96,26 +96,26 @@ Testes rodam **automaticamente** em cada push ou pull request!
 ### O que acontece automaticamente:
 
 - ? Testes rodam em Ubuntu Latest
-- ? .NET 8 é instalado
-- ? Dependências são restauradas
-- ? Projeto é buildado
+- ? .NET 8 ï¿½ instalado
+- ? Dependï¿½ncias sï¿½o restauradas
+- ? Projeto ï¿½ buildado
 - ? Testes executados
-- ? Cobertura de código é medida
+- ? Cobertura de cï¿½digo ï¿½ medida
 - ? Resultados publicados no PR
 
 **Visualizar resultados:** Na aba "Actions" do GitHub
 
 ---
 
-## ?? Cobertura de Código
+## ?? Cobertura de Cï¿½digo
 
-Após rodar testes com cobertura, você pode visualizar com ReportGenerator:
+Apï¿½s rodar testes com cobertura, vocï¿½ pode visualizar com ReportGenerator:
 
 ```bash
-# Instalar ReportGenerator (se necessário)
+# Instalar ReportGenerator (se necessï¿½rio)
 dotnet tool install -g dotnet-reportgenerator-globaltool
 
-# Gerar relatório HTML
+# Gerar relatï¿½rio HTML
 reportgenerator -reports:"./coverage/coverage.opencover.xml" -targetdir:"./coverage/report" -reporttypes:Html
 ```
 
@@ -131,24 +131,24 @@ Abra `./coverage/report/index.html` no navegador!
 - `AdicionarConvidado_DeveRegistrarComSucesso_QuandoDadosValidos`
 - `AdicionarConvidado_DeveRegistrarComAcompanhantes_QuandoAcompanhadoComNomesValidos`
 
-#### ? Validação de Nome
+#### ? Validaï¿½ï¿½o de Nome
 - `AdicionarConvidado_DeveRetornarBadRequest_QuandoNomeNulo`
 - `AdicionarConvidado_DeveRetornarBadRequest_QuandoNomeVazio`
 - `AdicionarConvidado_DeveRetornarBadRequest_QuandoNomeMuitoCurto`
 - `AdicionarConvidado_DeveRetornarBadRequest_QuandoNomeMuitoLongo`
 
-#### ? Validação de Acompanhantes
+#### ? Validaï¿½ï¿½o de Acompanhantes
 - `AdicionarConvidado_DeveRetornarBadRequest_QuandoQuantidadeAcompanhantesMaiorQue5`
 - `AdicionarConvidado_DeveRetornarBadRequest_QuandoQuantidadeAcompanhantesNegativa`
 - `AdicionarConvidado_DeveRetornarBadRequest_QuandoSozinhoComAcompanhantes`
 - `AdicionarConvidado_DeveRetornarBadRequest_QuandoQuantidadeNomesNaoCorresponde`
 
-#### ? Validação de Nomes de Acompanhantes
+#### ? Validaï¿½ï¿½o de Nomes de Acompanhantes
 - `AdicionarConvidado_DeveRetornarBadRequest_QuandoNomeAcompanhanteVazio`
 - `AdicionarConvidado_DeveRetornarBadRequest_QuandoNomeAcompanhanteMuitoCurto`
 - `AdicionarConvidado_DeveRetornarBadRequest_QuandoNomeAcompanhanteMuitoLongo`
 
-#### ? Erro Genérico
+#### ? Erro Genï¿½rico
 - `AdicionarConvidado_DeveRetornarInternalServerError_QuandoErroGeometrico`
 
 ---
@@ -156,14 +156,14 @@ Abra `./coverage/report/index.html` no navegador!
 ## ?? Dicas Importantes
 
 ### 1?? **Durante Desenvolvimento**
-Use `dotnet watch test` para feedback contínuo
+Use `dotnet watch test` para feedback contï¿½nuo
 
 ### 2?? **Antes de Commit**
 ```bash
 dotnet test /p:CollectCoverage=true
 ```
 
-### 3?? **CI/CD Automático**
+### 3?? **CI/CD Automï¿½tico**
 Testes rodam em GitHub Actions a cada push
 
 ### 4?? **Velocidade**
@@ -176,7 +176,7 @@ dotnet test --filter "FullyQualifiedName~EventoService"
 
 ## ?? Adicionar Novos Testes
 
-Crie um novo arquivo em `Eventos.Tests/Services/` com o padrão:
+Crie um novo arquivo em `Eventos.Tests/Services/` com o padrï¿½o:
 
 ```csharp
 using Xunit;
@@ -206,10 +206,10 @@ dotnet test
 
 ## ?? Troubleshooting
 
-| Problema | Solução |
+| Problema | Soluï¿½ï¿½o |
 |----------|---------|
-| Testes não encontrados | Execute `dotnet restore` |
-| Erro de compilação | `dotnet clean` depois `dotnet build` |
+| Testes nï¿½o encontrados | Execute `dotnet restore` |
+| Erro de compilaï¿½ï¿½o | `dotnet clean` depois `dotnet build` |
 | Database error | Verifique connection string em `appsettings.json` |
 | Timeout | Use `dotnet test --logger "console;verbosity=detailed"` |
 
@@ -224,4 +224,4 @@ dotnet test
 
 ---
 
-**? Pronto! Seus testes estão 100% automatizados!**
+**? Pronto! Seus testes estï¿½o 100% automatizados!**

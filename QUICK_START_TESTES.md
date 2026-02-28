@@ -1,16 +1,16 @@
-# ? QUICK START: Testes em 30 Segundos
+ï»¿# ? QUICK START: Testes em 30 Segundos
 
-## ?? Opção 1: Mais Rápido (Recomendado)
+## ?? Opï¿½ï¿½o 1: Mais Rï¿½pido (Recomendado)
 
 ```bash
 dotnet test
 ```
 
-**Pronto!** ? Testes rodam e você vê o resultado em segundos.
+**Pronto!** ? Testes rodam e vocï¿½ vï¿½ o resultado em segundos.
 
 ---
 
-## ?? Opção 2: Com Opções (PowerShell - Windows)
+## ?? Opï¿½ï¿½o 2: Com Opï¿½ï¿½es (PowerShell - Windows)
 
 ```powershell
 # Testes simples
@@ -19,7 +19,7 @@ dotnet test
 # Com cobertura
 .\testes.ps1 -Coverage
 
-# Contínuo (watch)
+# Contï¿½nuo (watch)
 .\testes.ps1 -Watch
 
 # Tudo
@@ -28,7 +28,7 @@ dotnet test
 
 ---
 
-## ?? Opção 3: Com Opções (Bash - Linux/Mac)
+## ?? Opï¿½ï¿½o 3: Com Opï¿½ï¿½es (Bash - Linux/Mac)
 
 ```bash
 # Testes simples
@@ -37,13 +37,13 @@ bash testes.sh
 # Com cobertura
 bash testes.sh --coverage
 
-# Contínuo (watch)
+# Contï¿½nuo (watch)
 bash testes.sh --watch
 ```
 
 ---
 
-## ?? Opção 4: Visual Studio
+## ?? Opï¿½ï¿½o 4: Visual Studio
 
 1. Abra: `Ctrl + E, T` (Test Explorer)
 2. Clique: **Run All** ??
@@ -57,12 +57,12 @@ bash testes.sh --watch
 ? Total: 15 testes
 ? Aprovados: 15
 ? Falhados: 0
-?? Duração: ~3.6s
+?? Duraï¿½ï¿½o: ~3.6s
 ```
 
 ---
 
-## ?? Automação Contínua
+## ?? Automaï¿½ï¿½o Contï¿½nua
 
 Testes rodam **automaticamente** no GitHub a cada push! ??
 
@@ -70,9 +70,9 @@ Veja em: `https://github.com/seu-usuario/Eventos/actions`
 
 ---
 
-**Pronto! É só isso! ??**
+**Pronto! ï¿½ sï¿½ isso! ??**
 
 Para mais detalhes:
-- `README_TESTES.md` - Documentação completa
+- `README_TESTES.md` - Documentaï¿½ï¿½o completa
 - `EXEMPLOS_PRATICOS_TESTES.md` - Exemplos de uso
 - `TESTES_AUTOMATIZADOS_RESUMO.md` - Resumo visual

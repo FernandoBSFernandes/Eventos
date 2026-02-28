@@ -1,4 +1,4 @@
-name: ?? Testes Automatizados
+ï»¿name: ?? Testes Automatizados
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
     name: Executar Testes (.NET 8)
 
     steps:
-    - name: ?? Checkout do código
+    - name: ?? Checkout do cï¿½digo
       uses: actions/checkout@v4
 
     - name: ?? Setup .NET 8
@@ -20,7 +20,7 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
-    - name: ?? Restaurar dependências
+    - name: ?? Restaurar dependï¿½ncias
       run: dotnet restore
 
     - name: ??? Build do projeto
@@ -36,7 +36,7 @@ jobs:
         files: '**/TestResults.trx'
         check_name: Resultados dos Testes
 
-    - name: ?? Gerar cobertura de código
+    - name: ?? Gerar cobertura de cï¿½digo
       run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage/ --no-build --configuration Release
 
     - name: ?? Upload de cobertura para Codecov

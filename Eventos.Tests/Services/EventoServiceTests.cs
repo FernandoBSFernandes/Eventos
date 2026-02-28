@@ -1,4 +1,4 @@
-using Xunit;
+ï»¿using Xunit;
 using NSubstitute;
 using Eventos.Application.Services;
 using Eventos.Application.DTOs.Request;
@@ -25,7 +25,7 @@ public class EventoServiceTests
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "João Silva",
+            nome: "Joï¿½o Silva",
             presencaConfirmada: true,
             participacao: Participacao.Sozinho,
             quantidadeAcompanhantes: 0,
@@ -71,7 +71,7 @@ public class EventoServiceTests
 
     #endregion
 
-    #region AdicionarConvidado - Validação de Nome
+    #region AdicionarConvidado - Validaï¿½ï¿½o de Nome
 
     [Fact]
     public async Task AdicionarConvidado_DeveRetornarBadRequest_QuandoNomeNulo()
@@ -90,7 +90,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome do convidado é obrigatório", response.Mensagem);
+        Assert.Equal("O nome do convidado ï¿½ obrigatï¿½rio", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -111,7 +111,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome do convidado é obrigatório", response.Mensagem);
+        Assert.Equal("O nome do convidado ï¿½ obrigatï¿½rio", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -160,14 +160,14 @@ public class EventoServiceTests
 
     #endregion
 
-    #region AdicionarConvidado - Validação de Acompanhantes
+    #region AdicionarConvidado - Validaï¿½ï¿½o de Acompanhantes
 
     [Fact]
     public async Task AdicionarConvidado_DeveRetornarBadRequest_QuandoQuantidadeAcompanhantesNegativa()
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "João Silva",
+            nome: "Joï¿½o Silva",
             presencaConfirmada: true,
             participacao: Participacao.Acompanhado,
             quantidadeAcompanhantes: -1,
@@ -179,7 +179,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("A quantidade de acompanhantes não pode ser negativa ou superior a 5", response.Mensagem);
+        Assert.Equal("A quantidade de acompanhantes nï¿½o pode ser negativa ou superior a 5", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -188,7 +188,7 @@ public class EventoServiceTests
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "João Silva",
+            nome: "Joï¿½o Silva",
             presencaConfirmada: true,
             participacao: Participacao.Acompanhado,
             quantidadeAcompanhantes: 6,
@@ -200,7 +200,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("A quantidade de acompanhantes não pode ser negativa ou superior a 5", response.Mensagem);
+        Assert.Equal("A quantidade de acompanhantes nï¿½o pode ser negativa ou superior a 5", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -209,7 +209,7 @@ public class EventoServiceTests
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "João Silva",
+            nome: "Joï¿½o Silva",
             presencaConfirmada: true,
             participacao: Participacao.Sozinho,
             quantidadeAcompanhantes: 1,
@@ -221,7 +221,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("Convidado que vai sozinho não pode ter acompanhantes", response.Mensagem);
+        Assert.Equal("Convidado que vai sozinho nï¿½o pode ter acompanhantes", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -230,7 +230,7 @@ public class EventoServiceTests
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "João Silva",
+            nome: "Joï¿½o Silva",
             presencaConfirmada: true,
             participacao: Participacao.Acompanhado,
             quantidadeAcompanhantes: 3,
@@ -242,7 +242,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("A quantidade de acompanhantes deve ser igual à quantidade de nomes informados", response.Mensagem);
+        Assert.Equal("A quantidade de acompanhantes deve ser igual ï¿½ quantidade de nomes informados", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -251,7 +251,7 @@ public class EventoServiceTests
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "João Silva",
+            nome: "Joï¿½o Silva",
             presencaConfirmada: true,
             participacao: Participacao.Acompanhado,
             quantidadeAcompanhantes: 2,
@@ -263,7 +263,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("Os nomes dos acompanhantes não podem estar vazios", response.Mensagem);
+        Assert.Equal("Os nomes dos acompanhantes nï¿½o podem estar vazios", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -272,7 +272,7 @@ public class EventoServiceTests
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "João Silva",
+            nome: "Joï¿½o Silva",
             presencaConfirmada: true,
             participacao: Participacao.Acompanhado,
             quantidadeAcompanhantes: 1,
@@ -294,7 +294,7 @@ public class EventoServiceTests
         // Arrange
         var nomeGrande = new string('a', 51);
         var request = new AdicionarConvidadoRequest(
-            nome: "João Silva",
+            nome: "Joï¿½o Silva",
             presencaConfirmada: true,
             participacao: Participacao.Acompanhado,
             quantidadeAcompanhantes: 1,
@@ -322,7 +322,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("Dados do convidado são obrigatórios", response.Mensagem);
+        Assert.Equal("Dados do convidado sï¿½o obrigatï¿½rios", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -335,7 +335,7 @@ public class EventoServiceTests
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "João Silva",
+            nome: "Joï¿½o Silva",
             presencaConfirmada: true,
             participacao: Participacao.Sozinho,
             quantidadeAcompanhantes: 0,
