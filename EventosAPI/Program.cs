@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.EntityFrameworkCore;
 
 namespace EventosAPI
 {
@@ -6,14 +7,30 @@ namespace EventosAPI
     {
         public static void Main(string[] args)
         {
+            CreateApp(args).Run();
+        }
+
+        public static WebApplication CreateApp(string[] args)
+        {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            // Garante que os controllers do assembly EventosAPI
+            // são sempre carregados, mesmo quando invocado por testhost
+            builder.Services
+                .AddControllers()
+                .PartManager.ApplicationParts.Add(
+                    new AssemblyPart(typeof(Program).Assembly)
+                );
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                // Inclui o XML de documentação se existir
+                var xmlFile = $"{typeof(Program).Assembly.GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                if (File.Exists(xmlPath))
+                    options.IncludeXmlComments(xmlPath);
+            });
 
             // Register DbContext
             builder.Services.AddDbContext<Eventos.Infrastructure.Data.EventosDbContext>(options =>
@@ -40,7 +57,7 @@ namespace EventosAPI
 
             app.MapControllers();
 
-            app.Run();
+            return app;
         }
     }
 }
