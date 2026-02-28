@@ -15,7 +15,7 @@ namespace EventosAPI
 
             // Register DDD projects services
             builder.Services.AddScoped<Eventos.Application.Interfaces.IEventoService, Eventos.Application.Services.EventoService>();
-            builder.Services.AddSingleton<Eventos.Infrastructure.Repositories.IEventoRepository, Eventos.Infrastructure.Repositories.EventoRepository>();
+            builder.Services.AddSingleton<Eventos.Domain.Repositories.IEventoRepository, Eventos.Infrastructure.Repositories.EventoRepository>();
 
             var app = builder.Build();
 

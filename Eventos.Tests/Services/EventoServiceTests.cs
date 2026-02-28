@@ -1,7 +1,7 @@
 using Xunit;
 using NSubstitute;
 using Eventos.Application.Services;
-using Eventos.Infrastructure.Repositories;
+using Eventos.Domain.Repositories;
 using Eventos.Domain.Entities;
 
 namespace Eventos.Tests.Services;

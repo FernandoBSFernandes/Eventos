@@ -1,4 +1,5 @@
 using Eventos.Domain.Entities;
+using Eventos.Domain.Repositories;
 
 namespace Eventos.Infrastructure.Repositories;
 
