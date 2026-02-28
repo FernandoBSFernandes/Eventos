@@ -5,6 +5,8 @@ namespace EventosAPI
 {
     public class Program
     {
+        private const string CorsPolicyName = "ProducaoPolicy";
+
         public static void Main(string[] args)
         {
             CreateApp(args).Run();
@@ -13,6 +15,17 @@ namespace EventosAPI
         public static WebApplication CreateApp(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(CorsPolicyName, policy =>
+                {
+                    policy
+                        .WithOrigins("https://fernandobsfernandes.github.io")
+                        .WithMethods("POST", "GET", "OPTIONS")
+                        .WithHeaders("Content-Type", "Accept");
+                });
+            });
 
             // Garante que os controllers do assembly EventosAPI
             // são sempre carregados, mesmo quando invocado por testhost
@@ -51,6 +64,8 @@ namespace EventosAPI
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors(CorsPolicyName);
 
             app.UseAuthorization();
 
