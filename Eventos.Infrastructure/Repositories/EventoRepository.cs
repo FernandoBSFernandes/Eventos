@@ -1,18 +1,29 @@
 using Eventos.Domain.Entities;
 using Eventos.Domain.Repositories;
+using Eventos.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Eventos.Infrastructure.Repositories;
 
 public class EventoRepository : IEventoRepository
 {
-    // In-memory sample implementation
-    private static readonly List<Evento> _store = new()
-    {
-        new Evento(Guid.NewGuid(), "Conferência .NET", DateTime.UtcNow.AddDays(10))
-    };
 
-    public Task<Evento?> GetByIdAsync(Guid id)
+    private readonly EventosDbContext _context;
+
+    public EventoRepository(EventosDbContext context)
     {
-        return Task.FromResult(_store.FirstOrDefault(e => e.Id == id));
+        _context = context;
     }
+
+    public async Task AdicionarConvidadoAsync(Convidado convidado)
+    {
+        await _context.Convidado.AddAsync(convidado);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<Convidado>> ObterTodosConvidadosAsync()
+    {
+        return await _context.Convidado.ToListAsync();
+    }
+
 }

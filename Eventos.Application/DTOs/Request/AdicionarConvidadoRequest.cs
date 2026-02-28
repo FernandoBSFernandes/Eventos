@@ -2,7 +2,7 @@
 
 namespace Eventos.Application.DTOs.Request
 {
-    public class RegistrarConvidadoRequestDto
+    public class AdicionarConvidadoRequest
     {
         [JsonPropertyName("nome")]
         public string Nome { get; set; }
@@ -18,7 +18,7 @@ namespace Eventos.Application.DTOs.Request
 
         public List<string> NomesAcompanhantes { get; set; }
 
-        public RegistrarConvidadoRequestDto(string nome, bool presencaConfirmada, Participacao participacao, int quantidadeAcompanhantes, List<string> nomesAcompanhantes)
+        public AdicionarConvidadoRequest(string nome, bool presencaConfirmada, Participacao participacao, int quantidadeAcompanhantes, List<string> nomesAcompanhantes)
         {
             Nome = nome;
             PresencaConfirmada = presencaConfirmada;

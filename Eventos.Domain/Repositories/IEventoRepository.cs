@@ -4,5 +4,6 @@ namespace Eventos.Domain.Repositories;
 
 public interface IEventoRepository
 {
-    Task<Evento?> GetByIdAsync(Guid id);
+    Task AdicionarConvidadoAsync(Convidado convidado);
+    Task<List<Convidado>> ObterTodosConvidadosAsync();
 }
