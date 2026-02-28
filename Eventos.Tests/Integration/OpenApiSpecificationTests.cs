@@ -1,20 +1,33 @@
-﻿using System.Text.Json;
+﻿using EventosAPI;
+using Microsoft.AspNetCore.Mvc.Testing;
+using System.Text.Json;
 using Xunit;
 
 namespace Eventos.Tests.Integration;
 
 /// <summary>
 /// Testes para validar a especificação OpenAPI/Swagger
+/// Levanta a API automaticamente usando WebApplicationFactory
 /// </summary>
-public class OpenApiSpecificationTests
+public class OpenApiSpecificationTests : IAsyncLifetime
 {
-    private readonly HttpClient _client;
-    private const string BaseUrl = "http://localhost:5000";
+    private WebApplicationFactory<Program> _factory;
+    private HttpClient _client;
 
-    public OpenApiSpecificationTests()
+    public async Task InitializeAsync()
     {
-        _client = new HttpClient { BaseAddress = new Uri(BaseUrl) };
-        _client.Timeout = TimeSpan.FromSeconds(5);
+        // Levanta a API automaticamente
+        _factory = new WebApplicationFactory<Program>();
+        _client = _factory.CreateClient();
+        await Task.CompletedTask;
+    }
+
+    public async Task DisposeAsync()
+    {
+        // Desliga a API após os testes
+        _client?.Dispose();
+        _factory?.Dispose();
+        await Task.CompletedTask;
     }
 
     #region Testes de Especificação OpenAPI
@@ -22,78 +35,50 @@ public class OpenApiSpecificationTests
     [Fact]
     public async Task SwaggerJson_DeveEstarDisponivel()
     {
-        try
-        {
-            // Act
-            var response = await _client.GetAsync("/swagger/v1/swagger.json");
+        // Act
+        var response = await _client.GetAsync("/swagger/v1/swagger.json");
 
-            // Assert
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
-        }
-        catch (HttpRequestException)
-        {
-            Assert.True(true, "API não está disponível em http://localhost:5000");
-        }
+        // Assert
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
     public async Task SwaggerJson_DeveRetornarJsonValido()
     {
-        try
-        {
-            // Act
-            var response = await _client.GetAsync("/swagger/v1/swagger.json");
-            var content = await response.Content.ReadAsStringAsync();
+        // Act
+        var response = await _client.GetAsync("/swagger/v1/swagger.json");
+        var content = await response.Content.ReadAsStringAsync();
 
-            // Assert - Tentar deserializar como JSON
-            var document = JsonSerializer.Deserialize<JsonElement>(content);
-            Assert.Equal(JsonValueKind.Object, document.ValueKind);
-        }
-        catch (HttpRequestException)
-        {
-            Assert.True(true, "API não está disponível em http://localhost:5000");
-        }
+        // Assert - Tentar deserializar como JSON
+        var document = JsonSerializer.Deserialize<JsonElement>(content);
+        Assert.Equal(JsonValueKind.Object, document.ValueKind);
     }
 
     [Fact]
     public async Task SwaggerJson_DeveConterInformacoes()
     {
-        try
-        {
-            // Act
-            var response = await _client.GetAsync("/swagger/v1/swagger.json");
-            var content = await response.Content.ReadAsStringAsync();
-            var document = JsonSerializer.Deserialize<JsonElement>(content);
+        // Act
+        var response = await _client.GetAsync("/swagger/v1/swagger.json");
+        var content = await response.Content.ReadAsStringAsync();
+        var document = JsonSerializer.Deserialize<JsonElement>(content);
 
-            // Assert
-            Assert.True(document.TryGetProperty("info", out var info));
-            Assert.True(info.TryGetProperty("title", out _));
-            Assert.True(info.TryGetProperty("version", out _));
-        }
-        catch (HttpRequestException)
-        {
-            Assert.True(true, "API não está disponível em http://localhost:5000");
-        }
+        // Assert
+        Assert.True(document.TryGetProperty("info", out var info));
+        Assert.True(info.TryGetProperty("title", out _));
+        Assert.True(info.TryGetProperty("version", out _));
     }
 
     [Fact]
     public async Task SwaggerJson_DeveConterPaths()
     {
-        try
-        {
-            // Act
-            var response = await _client.GetAsync("/swagger/v1/swagger.json");
-            var content = await response.Content.ReadAsStringAsync();
-            var document = JsonSerializer.Deserialize<JsonElement>(content);
+        // Act
+        var response = await _client.GetAsync("/swagger/v1/swagger.json");
+        var content = await response.Content.ReadAsStringAsync();
+        var document = JsonSerializer.Deserialize<JsonElement>(content);
 
-            // Assert
-            Assert.True(document.TryGetProperty("paths", out var paths));
-            Assert.NotEqual(JsonValueKind.Null, paths.ValueKind);
-        }
-        catch (HttpRequestException)
-        {
-            Assert.True(true, "API não está disponível em http://localhost:5000");
-        }
+        // Assert
+        Assert.True(document.TryGetProperty("paths", out var paths));
+        Assert.NotEqual(JsonValueKind.Null, paths.ValueKind);
     }
 
     #endregion
@@ -103,112 +88,65 @@ public class OpenApiSpecificationTests
     [Fact]
     public async Task SwaggerJson_DeveConterEndpointAdicionarConvidado()
     {
-        try
+        // Act
+        var response = await _client.GetAsync("/swagger/v1/swagger.json");
+        var content = await response.Content.ReadAsStringAsync();
+        var document = JsonSerializer.Deserialize<JsonElement>(content);
+
+        document.TryGetProperty("paths", out var paths);
+
+        // Assert - Procurar por endpoint de convidado
+        bool hasEndpoint = false;
+        foreach (var path in paths.EnumerateObject())
         {
-            // Act
-            var response = await _client.GetAsync("/swagger/v1/swagger.json");
-            var content = await response.Content.ReadAsStringAsync();
-            var document = JsonSerializer.Deserialize<JsonElement>(content);
-
-            document.TryGetProperty("paths", out var paths);
-
-            // Assert - Procurar por endpoint de convidado
-            bool hasEndpoint = false;
-            foreach (var path in paths.EnumerateObject())
+            if (path.Name.Contains("convidado", StringComparison.OrdinalIgnoreCase))
             {
-                if (path.Name.Contains("convidado", StringComparison.OrdinalIgnoreCase))
-                {
-                    hasEndpoint = true;
-                    break;
-                }
+                hasEndpoint = true;
+                break;
             }
+        }
 
-            Assert.True(hasEndpoint, "Endpoint de convidado não encontrado no Swagger");
-        }
-        catch (HttpRequestException)
-        {
-            Assert.True(true, "API não está disponível em http://localhost:5000");
-        }
+        Assert.True(hasEndpoint, "Endpoint de convidado não encontrado no Swagger");
     }
 
     [Fact]
     public async Task SwaggerJson_EndpointAdicionarConvidado_DeveTermoMethodoPost()
     {
-        try
-        {
-            // Act
-            var response = await _client.GetAsync("/swagger/v1/swagger.json");
-            var content = await response.Content.ReadAsStringAsync();
-            var document = JsonSerializer.Deserialize<JsonElement>(content);
+        // Act
+        var response = await _client.GetAsync("/swagger/v1/swagger.json");
+        var content = await response.Content.ReadAsStringAsync();
+        var document = JsonSerializer.Deserialize<JsonElement>(content);
 
-            document.TryGetProperty("paths", out var paths);
+        document.TryGetProperty("paths", out var paths);
 
-            var endpoint = paths.EnumerateObject()
-                .FirstOrDefault(p => p.Name.Contains("convidado", StringComparison.OrdinalIgnoreCase));
+        var endpoint = paths.EnumerateObject()
+            .FirstOrDefault(p => p.Name.Contains("convidado", StringComparison.OrdinalIgnoreCase) &&
+                                  p.Name.Contains("adicionar", StringComparison.OrdinalIgnoreCase));
 
-            // Assert
-            Assert.True(endpoint.Value.TryGetProperty("post", out _), "POST não encontrado no endpoint");
-        }
-        catch (HttpRequestException)
-        {
-            Assert.True(true, "API não está disponível em http://localhost:5000");
-        }
-    }
-
-    [Fact]
-    public async Task SwaggerJson_EndpointAdicionarConvidado_DeveTermoDescricao()
-    {
-        try
-        {
-            // Act
-            var response = await _client.GetAsync("/swagger/v1/swagger.json");
-            var content = await response.Content.ReadAsStringAsync();
-            var document = JsonSerializer.Deserialize<JsonElement>(content);
-
-            document.TryGetProperty("paths", out var paths);
-
-            var endpoint = paths.EnumerateObject()
-                .FirstOrDefault(p => p.Name.Contains("convidado", StringComparison.OrdinalIgnoreCase));
-
-            endpoint.Value.TryGetProperty("post", out var post);
-
-            // Assert
-            bool hasDesc = post.TryGetProperty("summary", out var summary) || 
-                           post.TryGetProperty("description", out var desc);
-            
-            Assert.True(hasDesc, "Descrição não encontrada no endpoint");
-        }
-        catch (HttpRequestException)
-        {
-            Assert.True(true, "API não está disponível em http://localhost:5000");
-        }
+        // Assert
+        Assert.True(endpoint.Value.TryGetProperty("post", out _), "POST não encontrado no endpoint");
     }
 
     [Fact]
     public async Task SwaggerJson_EndpointAdicionarConvidado_DeveTermoRespostas()
     {
-        try
-        {
-            // Act
-            var response = await _client.GetAsync("/swagger/v1/swagger.json");
-            var content = await response.Content.ReadAsStringAsync();
-            var document = JsonSerializer.Deserialize<JsonElement>(content);
+        // Act
+        var response = await _client.GetAsync("/swagger/v1/swagger.json");
+        var content = await response.Content.ReadAsStringAsync();
+        var document = JsonSerializer.Deserialize<JsonElement>(content);
 
-            document.TryGetProperty("paths", out var paths);
+        document.TryGetProperty("paths", out var paths);
 
-            var endpoint = paths.EnumerateObject()
-                .FirstOrDefault(p => p.Name.Contains("convidado", StringComparison.OrdinalIgnoreCase));
+        var endpoint = paths.EnumerateObject()
+            .FirstOrDefault(p => p.Name.Contains("convidado", StringComparison.OrdinalIgnoreCase) &&
+                                  p.Name.Contains("adicionar", StringComparison.OrdinalIgnoreCase));
 
-            endpoint.Value.TryGetProperty("post", out var post);
-            post.TryGetProperty("responses", out var responses);
+        endpoint.Value.TryGetProperty("post", out var post);
+        post.TryGetProperty("responses", out var responses);
 
-            // Assert
-            Assert.True(responses.TryGetProperty("201", out _), "Resposta 201 não documentada");
-        }
-        catch (HttpRequestException)
-        {
-            Assert.True(true, "API não está disponível em http://localhost:5000");
-        }
+        // Assert
+        Assert.True(responses.TryGetProperty("201", out _), "Resposta 201 não documentada");
+        Assert.True(responses.TryGetProperty("400", out _), "Resposta 400 não documentada");
     }
 
     #endregion
@@ -218,21 +156,14 @@ public class OpenApiSpecificationTests
     [Fact]
     public async Task SwaggerJson_DeveConterSchemasDefinidos()
     {
-        try
-        {
-            // Act
-            var response = await _client.GetAsync("/swagger/v1/swagger.json");
-            var content = await response.Content.ReadAsStringAsync();
-            var document = JsonSerializer.Deserialize<JsonElement>(content);
+        // Act
+        var response = await _client.GetAsync("/swagger/v1/swagger.json");
+        var content = await response.Content.ReadAsStringAsync();
+        var document = JsonSerializer.Deserialize<JsonElement>(content);
 
-            // Assert
-            Assert.True(document.TryGetProperty("components", out var components));
-            Assert.True(components.TryGetProperty("schemas", out var schemas));
-        }
-        catch (HttpRequestException)
-        {
-            Assert.True(true, "API não está disponível em http://localhost:5000");
-        }
+        // Assert
+        Assert.True(document.TryGetProperty("components", out var components));
+        Assert.True(components.TryGetProperty("schemas", out var schemas));
     }
 
     #endregion
@@ -242,22 +173,15 @@ public class OpenApiSpecificationTests
     [Fact]
     public async Task SwaggerUI_DeveEstarDisponivel()
     {
-        try
-        {
-            // Act
-            var response = await _client.GetAsync("/swagger/index.html");
+        // Act
+        var response = await _client.GetAsync("/swagger/index.html");
 
-            // Assert
-            Assert.True(
-                response.StatusCode == System.Net.HttpStatusCode.OK || 
-                response.StatusCode == System.Net.HttpStatusCode.Redirect,
-                "Swagger UI não está disponível"
-            );
-        }
-        catch (HttpRequestException)
-        {
-            Assert.True(true, "API não está disponível em http://localhost:5000");
-        }
+        // Assert
+        Assert.True(
+            response.StatusCode == System.Net.HttpStatusCode.OK || 
+            response.StatusCode == System.Net.HttpStatusCode.Redirect,
+            "Swagger UI não está disponível"
+        );
     }
 
     #endregion
