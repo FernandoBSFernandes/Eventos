@@ -1,0 +1,268 @@
+# ?? Exemplos Práticos: Testes Automatizados
+
+## Cenário 1: Desenvolvedor Trabalhando Localmente
+
+```bash
+# Inicia o projeto com watch mode
+dotnet watch test
+
+# Resultado: Sempre que você salva um arquivo C#, os testes rodam automaticamente
+# Feedback imediato sobre quebras de código!
+```
+
+**Fluxo:**
+1. Você edita `EventoService.cs`
+2. Salva o arquivo (`Ctrl + S`)
+3. Testes rodam automaticamente ?
+4. Você vê resultado no terminal em segundos
+
+---
+
+## Cenário 2: Antes de Fazer Commit
+
+```bash
+# Executar testes com cobertura
+dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=./coverage/
+
+# Se tudo passar ?
+git add .
+git commit -m "feat: adicionar validação de convidado"
+git push origin main
+```
+
+---
+
+## Cenário 3: CI/CD no GitHub (Automático)
+
+**Você faz:**
+```bash
+git push origin main
+```
+
+**GitHub faz automaticamente:**
+1. Dispara workflow em `.github/workflows/testes.yml`
+2. Cria VM Ubuntu
+3. Instala .NET 8
+4. Executa testes
+5. Gera relatório de cobertura
+6. Publica resultados
+
+**Você vê:**
+- ? ou ? no commit
+- Badge no README
+- Relatório de cobertura
+
+---
+
+## Cenário 4: Validar Antes de Merge no PR
+
+**Alguém abre um Pull Request**
+
+GitHub Actions **automaticamente**:
+1. Executa todos os testes
+2. Verifica cobertura
+3. Publica comentário com resultados
+4. Bloqueia merge se testes falharem
+
+```
+? Tests passed (15/15)
+? Coverage: 85%
+? Ready to merge!
+```
+
+---
+
+## Cenário 5: Windows PowerShell Script
+
+```powershell
+# Script completo com opções
+PS> .\testes.ps1 -Coverage -Verbose
+
+# Output:
+??????????????????????????????????????????????????????????????????
+?           ?? Testes Automatizados - Eventos API               ?
+??????????????????????????????????????????????????????????????????
+
+? .NET: 8.0.24
+?? Gerando cobertura de código...
+?? Modo verboso ativado
+
+??  Executando: dotnet test /p:CollectCoverage=true ... --verbosity detailed
+
+[xUnit.net 00:00:00.83] Discovering: Eventos.Tests
+[xUnit.net 00:00:00.86] Discovered:  Eventos.Tests
+[xUnit.net 00:00:00.87] Starting:    Eventos.Tests
+...
+[xUnit.net 00:00:01.78] Finished:    Eventos.Tests
+
+??????????????????????????????????????????????????????????????????
+? ? TESTES EXECUTADOS COM SUCESSO!                              ?
+??????????????????????????????????????????????????????????????????
+
+?? Relatório de cobertura gerado em: ./coverage/coverage.info
+```
+
+---
+
+## Cenário 6: Linux/Mac Bash Script
+
+```bash
+$ bash testes.sh --coverage --verbose
+
+??????????????????????????????????????????????????????????????????
+?           ?? Testes Automatizados - Eventos API               ?
+??????????????????????????????????????????????????????????????????
+
+? .NET: 8.0.24
+?? Gerando cobertura de código...
+?? Modo verboso ativado
+
+??  Executando: dotnet test /p:CollectCoverage=true ... --verbosity detailed
+
+Aprovado!  – Com falha:     0, Aprovado:    15, Ignorado:     0
+
+??????????????????????????????????????????????????????????????????
+? ? TESTES EXECUTADOS COM SUCESSO!                              ?
+??????????????????????????????????????????????????????????????????
+
+?? Relatório de cobertura gerado em: ./coverage/coverage.info
+```
+
+---
+
+## Cenário 7: Visual Studio Test Explorer
+
+**Abrir:**
+1. `Ctrl + E, T` ? Abre Test Explorer
+2. Vê lista de todos os testes
+3. Clica em um teste específico
+4. Resultado aparece em tempo real
+
+```
+? AdicionarConvidado_DeveRegistrarComSucesso_QuandoDadosValidos
+? AdicionarConvidado_DeveRegistrarComAcompanhantes_QuandoAcompanhadoComNomesValidos
+? AdicionarConvidado_DeveRetornarBadRequest_QuandoNomeNulo
+? AdicionarConvidado_DeveRetornarBadRequest_QuandoNomeVazio
+...
+(15 total - 15 passed)
+```
+
+---
+
+## Cenário 8: Testes de um Arquivo Específico
+
+```bash
+# Executar apenas testes de EventoService
+dotnet test --filter "FullyQualifiedName~EventoService"
+
+# Output:
+Resumo do teste: total: 15; falhou: 0; bem-sucedido: 15; ignorado: 0
+```
+
+---
+
+## Cenário 9: Monitoramento Contínuo em Produção
+
+**Configuração:**
+- GitHub Actions executa testes a cada push
+- ReportGenerator gera HTML visual
+- Codecov monitora cobertura ao longo do tempo
+
+**Resultado:**
+- Badge no README: `![Coverage](https://img.shields.io/codecov/c/github/seu-usuario/Eventos)`
+- Histórico de cobertura
+- Alertas se cobertura cair
+
+---
+
+## Cenário 10: Integração com SonarQube (Avançado)
+
+```yaml
+# Adicionar ao .github/workflows/testes.yml
+- name: SonarCloud Scan
+  uses: SonarSource/sonarcloud-github-action@master
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    SONARCLOUD_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+```
+
+**Resultado:**
+- Análise de qualidade completa
+- Detecção de code smells
+- Sugestões de melhoria
+- Dashboard visual
+
+---
+
+## ?? Fluxo Recomendado
+
+```
+1. Desenvolvimento Local
+   ?
+   dotnet watch test (feedback contínuo)
+   ?
+   
+2. Antes do Commit
+   ?
+   dotnet test /p:CollectCoverage=true (validação final)
+   ?
+   
+3. Push para GitHub
+   ?
+   GitHub Actions roda automaticamente
+   ?
+   
+4. Resultado
+   ?
+   ? Sucesso ? Deploy automático
+   ? Falha ? Bloqueia merge
+```
+
+---
+
+## ?? Combinações de Comandos Úteis
+
+```bash
+# Desenvolvimento rápido
+dotnet watch test
+
+# Validação pre-commit
+dotnet test /p:CollectCoverage=true
+
+# CI/CD no servidor
+dotnet test --verbosity minimal --logger "trx;LogFileName=TestResults.trx"
+
+# Testes específicos
+dotnet test --filter "Category=Unit"
+
+# Sem compilação (após build recente)
+dotnet test --no-build
+
+# Timeout customizado
+dotnet test --blame-hang-timeout 30000
+
+# Formato de saída para CI
+dotnet test --logger "console;verbosity=minimal" --logger "trx"
+```
+
+---
+
+## ?? Interpretando Resultados
+
+```
+Resumo do teste: total: 15; falhou: 0; bem-sucedido: 15; ignorado: 0; duração: 3,6s
+
+?? total: 15              ? Número total de testes
+?? falhou: 0              ? ? Nenhum falhou
+?? bem-sucedido: 15       ? ? Todos passaram
+?? ignorado: 0            ? Nenhum foi pulado
+?? duração: 3,6s          ? ? Velocidade ótima
+```
+
+**O que significa:**
+- ? Se `falhou: 0` e `bem-sucedido: 15` ? Tudo OK! Deploy liberado
+- ? Se `falhou > 0` ? Correção necessária antes do merge
+
+---
+
+**?? Você agora domina testes automatizados!**
