@@ -1,0 +1,48 @@
+name: ?? Testes Automatizados
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Executar Testes (.NET 8)
+
+    steps:
+    - name: ?? Checkout do código
+      uses: actions/checkout@v4
+
+    - name: ?? Setup .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: ?? Restaurar dependências
+      run: dotnet restore
+
+    - name: ??? Build do projeto
+      run: dotnet build --no-restore --configuration Release
+
+    - name: ?? Executar testes
+      run: dotnet test --no-build --verbosity normal --configuration Release --logger "trx;LogFileName=TestResults.trx"
+
+    - name: ?? Publicar resultados de teste
+      if: always()
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      with:
+        files: '**/TestResults.trx'
+        check_name: Resultados dos Testes
+
+    - name: ?? Gerar cobertura de código
+      run: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage/ --no-build --configuration Release
+
+    - name: ?? Upload de cobertura para Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage/coverage.opencover.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
