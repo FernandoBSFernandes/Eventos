@@ -21,12 +21,9 @@ namespace EventosAPI
                 options.AddPolicy(CorsPolicyName, policy =>
                 {
                     policy
-                        .WithOrigins(
-                            "https://fernandobsfernandes.github.io",
-                            "file://"
-                        )
-                        .WithMethods("POST", "GET", "OPTIONS")
-                        .WithHeaders("Content-Type", "Accept");
+                        .AllowAnyOrigin()
+                        .WithMethods("POST", "OPTIONS")
+                        .WithHeaders("Content-Type");
                 });
             });
 
