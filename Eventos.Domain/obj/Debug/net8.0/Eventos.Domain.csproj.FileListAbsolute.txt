@@ -1,0 +1,11 @@
+C:\Projetos\Eventos\Eventos.Domain\bin\Debug\net8.0\Eventos.Domain.deps.json
+C:\Projetos\Eventos\Eventos.Domain\bin\Debug\net8.0\Eventos.Domain.dll
+C:\Projetos\Eventos\Eventos.Domain\bin\Debug\net8.0\Eventos.Domain.pdb
+C:\Projetos\Eventos\Eventos.Domain\obj\Debug\net8.0\Eventos.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projetos\Eventos\Eventos.Domain\obj\Debug\net8.0\Eventos.Domain.AssemblyInfoInputs.cache
+C:\Projetos\Eventos\Eventos.Domain\obj\Debug\net8.0\Eventos.Domain.AssemblyInfo.cs
+C:\Projetos\Eventos\Eventos.Domain\obj\Debug\net8.0\Eventos.Domain.csproj.CoreCompileInputs.cache
+C:\Projetos\Eventos\Eventos.Domain\obj\Debug\net8.0\Eventos.Domain.dll
+C:\Projetos\Eventos\Eventos.Domain\obj\Debug\net8.0\refint\Eventos.Domain.dll
+C:\Projetos\Eventos\Eventos.Domain\obj\Debug\net8.0\Eventos.Domain.pdb
+C:\Projetos\Eventos\Eventos.Domain\obj\Debug\net8.0\ref\Eventos.Domain.dll

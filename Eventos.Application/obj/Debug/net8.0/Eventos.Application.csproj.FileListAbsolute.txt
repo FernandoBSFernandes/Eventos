@@ -1,0 +1,15 @@
+C:\Projetos\Eventos\Eventos.Application\bin\Debug\net8.0\Eventos.Application.deps.json
+C:\Projetos\Eventos\Eventos.Application\bin\Debug\net8.0\Eventos.Application.dll
+C:\Projetos\Eventos\Eventos.Application\bin\Debug\net8.0\Eventos.Application.pdb
+C:\Projetos\Eventos\Eventos.Application\bin\Debug\net8.0\Eventos.Domain.dll
+C:\Projetos\Eventos\Eventos.Application\bin\Debug\net8.0\Eventos.Domain.pdb
+C:\Projetos\Eventos\Eventos.Application\obj\Debug\net8.0\Eventos.Application.csproj.AssemblyReference.cache
+C:\Projetos\Eventos\Eventos.Application\obj\Debug\net8.0\Eventos.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projetos\Eventos\Eventos.Application\obj\Debug\net8.0\Eventos.Application.AssemblyInfoInputs.cache
+C:\Projetos\Eventos\Eventos.Application\obj\Debug\net8.0\Eventos.Application.AssemblyInfo.cs
+C:\Projetos\Eventos\Eventos.Application\obj\Debug\net8.0\Eventos.Application.csproj.CoreCompileInputs.cache
+C:\Projetos\Eventos\Eventos.Application\obj\Debug\net8.0\Eventos..210DD30F.Up2Date
+C:\Projetos\Eventos\Eventos.Application\obj\Debug\net8.0\Eventos.Application.dll
+C:\Projetos\Eventos\Eventos.Application\obj\Debug\net8.0\refint\Eventos.Application.dll
+C:\Projetos\Eventos\Eventos.Application\obj\Debug\net8.0\Eventos.Application.pdb
+C:\Projetos\Eventos\Eventos.Application\obj\Debug\net8.0\ref\Eventos.Application.dll

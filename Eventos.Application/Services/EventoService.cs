@@ -1,0 +1,20 @@
+using Eventos.Application.Interfaces;
+using Eventos.Domain.Entities;
+using Eventos.Domain.Repositories;
+
+namespace Eventos.Application.Services;
+
+public class EventoService : IEventoService
+{
+    private readonly IEventoRepository _repo;
+
+    public EventoService(IEventoRepository repo)
+    {
+        _repo = repo;
+    }
+
+    public Task<Evento?> GetByIdAsync(Guid id)
+    {
+        return _repo.GetByIdAsync(id);
+    }
+}
