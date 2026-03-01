@@ -30,13 +30,13 @@ jobs:
 
       - name: Executar testes com cobertura
         run: |
-          dotnet test \
+          dotnet test Eventos.Tests/Eventos.Tests.csproj \
             --no-build \
             --configuration Release \
             --logger "trx;LogFileName=TestResults.trx" \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
-            /p:CoverletOutput=${{ github.workspace }}/coverage/ \
+            /p:CoverletOutput=coverage.opencover.xml \
             /p:Threshold=80 \
             /p:ThresholdType=line \
             /p:ThresholdStat=total
@@ -51,7 +51,7 @@ jobs:
       - name: Resumo de cobertura
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
-          filename: coverage/coverage.opencover.xml
+          filename: '**/coverage.opencover.xml'
           badge: true
           format: markdown
           indicators: true
@@ -63,5 +63,5 @@ jobs:
         if: always()
         with:
           name: coverage-report
-          path: coverage/
+          path: '**/coverage.opencover.xml'
           retention-days: 30
