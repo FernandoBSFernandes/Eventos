@@ -460,6 +460,46 @@ public class EventoServiceTests
 
     #endregion
 
+    #region ZerarTabelas - Sucesso
+
+    [Fact]
+    public async Task ZerarTabelas_DeveRetornarSucesso_QuandoRepositorioZeraComSucesso()
+    {
+        // Arrange
+        _repo.ZerarTabelasAsync().Returns(Task.CompletedTask);
+
+        // Act
+        var response = await _service.ZerarTabelasAsync();
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(200, response.CodigoStatus);
+        Assert.Equal("Tabelas zeradas com sucesso.", response.Mensagem);
+        await _repo.Received(1).ZerarTabelasAsync();
+    }
+
+    #endregion
+
+    #region ZerarTabelas - Erro Interno
+
+    [Fact]
+    public async Task ZerarTabelas_DeveRetornarServerError_QuandoRepositorioLancaExcecao()
+    {
+        // Arrange
+        _repo.ZerarTabelasAsync()
+            .Returns(Task.FromException(new Exception("Erro na base de dados")));
+
+        // Act
+        var response = await _service.ZerarTabelasAsync();
+
+        // Assert
+        Assert.Equal(500, response.CodigoStatus);
+        Assert.Contains("Ocorreu um erro ao zerar as tabelas: Erro na base de dados", response.Mensagem);
+        await _repo.Received(1).ZerarTabelasAsync();
+    }
+
+    #endregion
+
     #region ObterRelatorio - Sucesso
 
     [Fact]

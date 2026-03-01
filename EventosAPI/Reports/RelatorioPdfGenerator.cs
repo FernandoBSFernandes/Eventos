@@ -7,9 +7,9 @@ namespace EventosAPI.Reports;
 
 public static class RelatorioPdfGenerator
 {
-    public static byte[] Gerar(RelatorioEventoResponse relatorio)
+    public static Task<byte[]> GerarAsync(RelatorioEventoResponse relatorio)
     {
-        return Document.Create(container =>
+        return Task.Run(() => Document.Create(container =>
         {
             container.Page(page =>
             {
@@ -25,7 +25,7 @@ public static class RelatorioPdfGenerator
                     text.Span(DateTime.Now.ToString("dd/MM/yyyy HH:mm")).FontSize(9).FontColor(Colors.Grey.Medium);
                 });
             });
-        }).GeneratePdf();
+        }).GeneratePdf());
     }
 
     private static void ComposeHeader(IContainer container)

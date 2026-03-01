@@ -93,7 +93,7 @@ namespace EventosAPI.Controllers
             if (response.CodigoStatus != 200)
                 return StatusCode(response.CodigoStatus, response);
 
-            var bytes = RelatorioExcelGenerator.Gerar(response);
+            var bytes = await RelatorioExcelGenerator.GerarAsync(response);
             var nomeArquivo = $"relatorio-convidados-{DateTime.Now:yyyy-MM-dd}.xlsx";
 
             return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", nomeArquivo);
@@ -112,7 +112,7 @@ namespace EventosAPI.Controllers
             if (response.CodigoStatus != 200)
                 return StatusCode(response.CodigoStatus, response);
 
-            var bytes = RelatorioPdfGenerator.Gerar(response);
+            var bytes = await RelatorioPdfGenerator.GerarAsync(response);
             var nomeArquivo = $"Relação de Participantes do Rodizio.pdf";
 
             return File(bytes, "application/pdf", nomeArquivo);
