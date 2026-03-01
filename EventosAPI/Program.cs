@@ -52,15 +52,29 @@ namespace EventosAPI
             });
 
             // Register DbContext
-            builder.Services.AddDbContext<Eventos.Infrastructure.Data.EventosDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-            );
+            builder.Services.AddDbContext<Eventos.Infrastructure.Data.EventosDbContext>((serviceProvider, options) =>
+            {
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+
+                var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+                options.UseLoggerFactory(loggerFactory);
+                options.EnableDetailedErrors();
+
+                if (builder.Environment.IsDevelopment())
+                    options.EnableSensitiveDataLogging();
+            });
 
             // Register DDD projects services
             builder.Services.AddScoped<Eventos.Application.Interfaces.IEventoService, Eventos.Application.Services.EventoService>();
             builder.Services.AddScoped<Eventos.Domain.Repositories.IEventoRepository, Eventos.Infrastructure.Repositories.EventoRepository>();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<Eventos.Infrastructure.Data.EventosDbContext>();
+                db.Database.Migrate();
+            }
 
             // Configure the HTTP request pipeline.
             app.UseSwagger();

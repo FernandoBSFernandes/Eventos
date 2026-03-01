@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -15,11 +16,11 @@ namespace Eventos.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    PresencaConfirmada = table.Column<bool>(type: "bit", nullable: false),
-                    Participacao = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    QuantidadeAcompanhantes = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Nome = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    PresencaConfirmada = table.Column<bool>(type: "boolean", nullable: false),
+                    Participacao = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    QuantidadeAcompanhantes = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -31,8 +32,8 @@ namespace Eventos.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Nome = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Nome = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     ConvidadoId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
@@ -55,11 +56,8 @@ namespace Eventos.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Acompanhante");
-
-            migrationBuilder.DropTable(
-                name: "Convidado");
+            migrationBuilder.DropTable(name: "Acompanhante");
+            migrationBuilder.DropTable(name: "Convidado");
         }
     }
 }
