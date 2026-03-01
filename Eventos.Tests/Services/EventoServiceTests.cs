@@ -4,6 +4,7 @@ using Eventos.Application.Services;
 using Eventos.Application.DTOs.Request;
 using Eventos.Domain.Repositories;
 using Eventos.Domain.Entities;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Eventos.Tests.Services;
 
@@ -15,7 +16,7 @@ public class EventoServiceTests
     public EventoServiceTests()
     {
         _repo = Substitute.For<IEventoRepository>();
-        _service = new EventoService(_repo);
+        _service = new EventoService(_repo, NullLogger<EventoService>.Instance);
     }
 
     #region AdicionarConvidado - Sucesso

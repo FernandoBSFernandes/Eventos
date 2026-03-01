@@ -3,22 +3,36 @@ using Eventos.Application.DTOs.Response;
 using Eventos.Application.Interfaces;
 using Eventos.Domain.Entities;
 using Eventos.Domain.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace Eventos.Application.Services;
 
 public class EventoService : IEventoService
 {
     private readonly IEventoRepository _repo;
+    private readonly ILogger<EventoService> _logger;
 
-    public EventoService(IEventoRepository repo)
+    public EventoService(IEventoRepository repo, ILogger<EventoService> logger)
     {
         _repo = repo;
+        _logger = logger;
     }
 
     public async Task<BaseResponse> AdicionarConvidadoAsync(AdicionarConvidadoRequest request)
     {
         try
         {
+            var quantidadeNomes = request?.NomesAcompanhantes?.Count ?? 0;
+            var tamanhoLista = request?.NomesAcompanhantes?.Count ?? 0;
+
+            _logger.LogInformation(
+                "[AdicionarConvidado] Requisição recebida | Nome: {Nome} | QuantidadeAcompanhantes (campo): {QuantidadeAcompanhantes} | NomesAcompanhantes.Count: {QuantidadeNomes} | Tamanho da lista: {TamanhoLista} | Nomes: [{Nomes}]",
+                request?.Nome,
+                request?.QuantidadeAcompanhantes,
+                quantidadeNomes,
+                tamanhoLista,
+                string.Join(", ", request?.NomesAcompanhantes ?? []));
+
             // Validar dados do convidado
             ValidarConvidado(request);
 
@@ -71,7 +85,7 @@ public class EventoService : IEventoService
         }
     }
 
-    private void ValidarConvidado(AdicionarConvidadoRequest request)
+    private static void ValidarConvidado(AdicionarConvidadoRequest request)
     {
         if (request == null)
             throw new ArgumentException("Dados do convidado são obrigatórios.");
