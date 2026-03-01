@@ -31,12 +31,11 @@ jobs:
       - name: Executar testes com cobertura
         run: |
           dotnet test Eventos.Tests/Eventos.Tests.csproj \
-            --no-build \
             --configuration Release \
             --logger "trx;LogFileName=TestResults.trx" \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
-            /p:CoverletOutput=Eventos.Tests/coverage.opencover.xml \
+            /p:CoverletOutput=./coverage.opencover.xml \
             /p:Threshold=80 \
             /p:ThresholdType=line \
             /p:ThresholdStat=total
@@ -47,16 +46,6 @@ jobs:
         with:
           files: '**/TestResults.trx'
           check_name: Resultados dos Testes
-
-      - name: Resumo de cobertura
-        uses: irongut/CodeCoverageSummary@v1.3.0
-        with:
-          filename: '**/coverage.opencover.xml'
-          badge: true
-          format: markdown
-          indicators: true
-          output: both
-          thresholds: '60 80'
 
       - name: Upload do artefato de cobertura
         uses: actions/upload-artifact@v4
