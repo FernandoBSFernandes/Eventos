@@ -7,4 +7,6 @@ public interface IEventoService
 {
     Task<BaseResponse> AdicionarConvidadoAsync(AdicionarConvidadoRequest request);
     Task<VerificarConvidadoResponse> VerificarConvidadoExisteAsync(string nome);
+    Task<BaseResponse> ZerarTabelasAsync();
+    Task<RelatorioEventoResponse> ObterRelatorioAsync();
 }

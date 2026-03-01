@@ -86,6 +86,56 @@ public class EventoService : IEventoService
         }
     }
 
+    public async Task<BaseResponse> ZerarTabelasAsync()
+    {
+        try
+        {
+            _logger.LogInformation("[ZerarTabelas] Requisição para zerar as tabelas recebida.");
+
+            await _repo.ZerarTabelasAsync();
+
+            _logger.LogInformation("[ZerarTabelas] Tabelas zeradas com sucesso.");
+
+            return new BaseResponse(200, "Tabelas zeradas com sucesso.");
+        }
+        catch (Exception ex)
+        {
+            return new BaseResponse(500, $"Ocorreu um erro ao zerar as tabelas: {ex.Message}");
+        }
+    }
+
+    public async Task<RelatorioEventoResponse> ObterRelatorioAsync()
+    {
+        try
+        {
+            _logger.LogInformation("[ObterRelatorio] Requisição de relatório recebida.");
+
+            var convidados = await _repo.ObterConvidadosConfirmadosAsync();
+
+            var itens = convidados.Select(c => new ConvidadoRelatorioItem(
+                c.Nome,
+                c.Acompanhantes.Select(a => a.Nome).ToList()
+            )).ToList();
+
+            // Total = convidados confirmados + todos os seus acompanhantes, sem duplicatas de nome
+            var todosOsNomes = convidados
+                .Select(c => c.Nome)
+                .Concat(convidados.SelectMany(c => c.Acompanhantes.Select(a => a.Nome)))
+                .Select(n => n.Trim().ToLower())
+                .Distinct()
+                .Count();
+
+            _logger.LogInformation("[ObterRelatorio] Relatório gerado | Convidados confirmados: {TotalConvidados} | Total de pessoas: {TotalPessoas}",
+                itens.Count, todosOsNomes);
+
+            return new RelatorioEventoResponse(200, "Relatório gerado com sucesso.", itens, todosOsNomes);
+        }
+        catch (Exception ex)
+        {
+            return new RelatorioEventoResponse(500, $"Ocorreu um erro ao gerar o relatório: {ex.Message}", [], 0);
+        }
+    }
+
     private static void ValidarConvidado(AdicionarConvidadoRequest request)
     {
         if (request == null)

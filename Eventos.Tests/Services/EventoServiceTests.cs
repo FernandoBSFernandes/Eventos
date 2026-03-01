@@ -5,6 +5,9 @@ using Eventos.Application.DTOs.Request;
 using Eventos.Domain.Repositories;
 using Eventos.Domain.Entities;
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System;
 
 namespace Eventos.Tests.Services;
 
@@ -26,7 +29,7 @@ public class EventoServiceTests
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "Jo�o Silva",
+            nome: "João Silva",
             presencaConfirmada: true,
             participacao: Participacao.Sozinho,
             quantidadeAcompanhantes: 0,
@@ -72,7 +75,7 @@ public class EventoServiceTests
 
     #endregion
 
-    #region AdicionarConvidado - Valida��o de Nome
+    #region AdicionarConvidado - Validação de Nome
 
     [Fact]
     public async Task AdicionarConvidado_DeveRetornarBadRequest_QuandoNomeNulo()
@@ -161,14 +164,14 @@ public class EventoServiceTests
 
     #endregion
 
-    #region AdicionarConvidado - Valida��o de Acompanhantes
+    #region AdicionarConvidado - Validação de Acompanhantes
 
     [Fact]
     public async Task AdicionarConvidado_DeveRetornarBadRequest_QuandoQuantidadeAcompanhantesNegativa()
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "Jo�o Silva",
+            nome: "João Silva",
             presencaConfirmada: true,
             participacao: Participacao.Acompanhado,
             quantidadeAcompanhantes: -1,
@@ -189,7 +192,7 @@ public class EventoServiceTests
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "Jo�o Silva",
+            nome: "João Silva",
             presencaConfirmada: true,
             participacao: Participacao.Acompanhado,
             quantidadeAcompanhantes: 6,
@@ -210,7 +213,7 @@ public class EventoServiceTests
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "Jo�o Silva",
+            nome: "João Silva",
             presencaConfirmada: true,
             participacao: Participacao.Sozinho,
             quantidadeAcompanhantes: 1,
@@ -231,7 +234,7 @@ public class EventoServiceTests
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "Jo�o Silva",
+            nome: "João Silva",
             presencaConfirmada: true,
             participacao: Participacao.Acompanhado,
             quantidadeAcompanhantes: 3,
@@ -252,7 +255,7 @@ public class EventoServiceTests
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "Jo�o Silva",
+            nome: "João Silva",
             presencaConfirmada: true,
             participacao: Participacao.Acompanhado,
             quantidadeAcompanhantes: 2,
@@ -273,7 +276,7 @@ public class EventoServiceTests
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "Jo�o Silva",
+            nome: "João Silva",
             presencaConfirmada: true,
             participacao: Participacao.Acompanhado,
             quantidadeAcompanhantes: 1,
@@ -295,7 +298,7 @@ public class EventoServiceTests
         // Arrange
         var nomeGrande = new string('a', 51);
         var request = new AdicionarConvidadoRequest(
-            nome: "Jo�o Silva",
+            nome: "João Silva",
             presencaConfirmada: true,
             participacao: Participacao.Acompanhado,
             quantidadeAcompanhantes: 1,
@@ -336,7 +339,7 @@ public class EventoServiceTests
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: "Jo�o Silva",
+            nome: "João Silva",
             presencaConfirmada: true,
             participacao: Participacao.Sozinho,
             quantidadeAcompanhantes: 0,
@@ -453,6 +456,146 @@ public class EventoServiceTests
         Assert.Equal(500, response.CodigoStatus);
         Assert.Contains("Ocorreu um erro ao verificar o convidado: Erro na base de dados", response.Mensagem);
         Assert.False(response.Existe);
+    }
+
+    #endregion
+
+    #region ObterRelatorio - Sucesso
+
+    [Fact]
+    public async Task ObterRelatorio_DeveRetornarRelatorioComConvidadosEAcompanhantes_QuandoHaConfirmados()
+    {
+        // Arrange
+        var convidados = new List<Convidado>
+        {
+            new Convidado
+            {
+                Nome = "João Silva",
+                PresencaConfirmada = true,
+                Participacao = "Acompanhado",
+                QuantidadeAcompanhantes = 2,
+                Acompanhantes = new List<Acompanhante>
+                {
+                    new Acompanhante { Nome = "Ana Silva" },
+                    new Acompanhante { Nome = "Pedro Silva" }
+                }
+            },
+            new Convidado
+            {
+                Nome = "Maria Souza",
+                PresencaConfirmada = true,
+                Participacao = "Sozinho",
+                QuantidadeAcompanhantes = 0,
+                Acompanhantes = new List<Acompanhante>()
+            }
+        };
+
+        _repo.ObterConvidadosConfirmadosAsync().Returns(convidados);
+
+        // Act
+        var response = await _service.ObterRelatorioAsync();
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(200, response.CodigoStatus);
+        Assert.Equal("Relatório gerado com sucesso.", response.Mensagem);
+        Assert.Equal(2, response.Convidados.Count);
+        Assert.Equal(4, response.TotalPessoas); // João + Ana + Pedro + Maria
+        await _repo.Received(1).ObterConvidadosConfirmadosAsync();
+    }
+
+    [Fact]
+    public async Task ObterRelatorio_DeveRetornarTotalSemDuplicatas_QuandoNomesRepetidos()
+    {
+        // Arrange
+        var convidados = new List<Convidado>
+        {
+            new Convidado
+            {
+                Nome = "João Silva",
+                PresencaConfirmada = true,
+                Participacao = "Acompanhado",
+                QuantidadeAcompanhantes = 1,
+                Acompanhantes = new List<Acompanhante>
+                {
+                    new Acompanhante { Nome = "João Silva" } // mesmo nome do convidado
+                }
+            }
+        };
+
+        _repo.ObterConvidadosConfirmadosAsync().Returns(convidados);
+
+        // Act
+        var response = await _service.ObterRelatorioAsync();
+
+        // Assert
+        Assert.Equal(200, response.CodigoStatus);
+        Assert.Equal(1, response.TotalPessoas); // duplicata eliminada
+    }
+
+    [Fact]
+    public async Task ObterRelatorio_DeveRetornarListaVaziaETotalZero_QuandoNaoHaConfirmados()
+    {
+        // Arrange
+        _repo.ObterConvidadosConfirmadosAsync().Returns(new List<Convidado>());
+
+        // Act
+        var response = await _service.ObterRelatorioAsync();
+
+        // Assert
+        Assert.Equal(200, response.CodigoStatus);
+        Assert.Equal("Relatório gerado com sucesso.", response.Mensagem);
+        Assert.Empty(response.Convidados);
+        Assert.Equal(0, response.TotalPessoas);
+    }
+
+    [Fact]
+    public async Task ObterRelatorio_DeveRetornarAcompanhantesVazios_QuandoConvidadoVaiSozinho()
+    {
+        // Arrange
+        var convidados = new List<Convidado>
+        {
+            new Convidado
+            {
+                Nome = "Carlos Lima",
+                PresencaConfirmada = true,
+                Participacao = "Sozinho",
+                QuantidadeAcompanhantes = 0,
+                Acompanhantes = new List<Acompanhante>()
+            }
+        };
+
+        _repo.ObterConvidadosConfirmadosAsync().Returns(convidados);
+
+        // Act
+        var response = await _service.ObterRelatorioAsync();
+
+        // Assert
+        Assert.Equal(200, response.CodigoStatus);
+        Assert.Single(response.Convidados);
+        Assert.Empty(response.Convidados[0].Acompanhantes);
+        Assert.Equal(1, response.TotalPessoas);
+    }
+
+    #endregion
+
+    #region ObterRelatorio - Erro Interno
+
+    [Fact]
+    public async Task ObterRelatorio_DeveRetornarServerError_QuandoRepositorioLancaExcecao()
+    {
+        // Arrange
+        _repo.ObterConvidadosConfirmadosAsync()
+            .Returns(Task.FromException<List<Convidado>>(new Exception("Erro na base de dados")));
+
+        // Act
+        var response = await _service.ObterRelatorioAsync();
+
+        // Assert
+        Assert.Equal(500, response.CodigoStatus);
+        Assert.Contains("Ocorreu um erro ao gerar o relatório: Erro na base de dados", response.Mensagem);
+        Assert.Empty(response.Convidados);
+        Assert.Equal(0, response.TotalPessoas);
     }
 
     #endregion

@@ -6,6 +6,7 @@ using Eventos.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using QuestPDF.Infrastructure;
 
 namespace EventosAPI
 {
@@ -20,6 +21,8 @@ namespace EventosAPI
 
         public static WebApplication CreateApp(string[] args)
         {
+            QuestPDF.Settings.License = LicenseType.Community;
+
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddCors(options =>

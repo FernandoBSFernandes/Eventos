@@ -32,4 +32,18 @@ public class EventoRepository : IEventoRepository
             .AnyAsync(c => c.Nome.ToLower() == nome.ToLower());
     }
 
+    public async Task ZerarTabelasAsync()
+    {
+        _context.Convidado.RemoveRange(_context.Convidado);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<List<Convidado>> ObterConvidadosConfirmadosAsync()
+    {
+        return await _context.Convidado
+            .Include(c => c.Acompanhantes)
+            .Where(c => c.PresencaConfirmada)
+            .OrderBy(c => c.Nome)
+            .ToListAsync();
+    }
 }

@@ -7,4 +7,6 @@ public interface IEventoRepository
     Task AdicionarConvidadoAsync(Convidado convidado);
     Task<List<Convidado>> ObterTodosConvidadosAsync();
     Task<bool> ConvidadoExisteAsync(string nome);
+    Task ZerarTabelasAsync();
+    Task<List<Convidado>> ObterConvidadosConfirmadosAsync();
 }
