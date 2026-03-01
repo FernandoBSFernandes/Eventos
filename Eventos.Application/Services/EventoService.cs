@@ -26,8 +26,9 @@ public class EventoService : IEventoService
             var tamanhoLista = request?.NomesAcompanhantes?.Count ?? 0;
 
             _logger.LogInformation(
-                "[AdicionarConvidado] Requisição recebida | Nome: {Nome} | QuantidadeAcompanhantes (campo): {QuantidadeAcompanhantes} | NomesAcompanhantes.Count: {QuantidadeNomes} | Tamanho da lista: {TamanhoLista} | Nomes: [{Nomes}]",
+                "[AdicionarConvidado] Requisição recebida | Nome: {Nome} | VaiAoEvento: {VaiAoEvento} | QuantidadeAcompanhantes (campo): {QuantidadeAcompanhantes} | NomesAcompanhantes.Count: {QuantidadeNomes} | Tamanho da lista: {TamanhoLista} | Nomes: [{Nomes}]",
                 request?.Nome,
+                request?.PresencaConfirmada == true ? "Sim" : "Não",
                 request?.QuantidadeAcompanhantes,
                 quantidadeNomes,
                 tamanhoLista,
