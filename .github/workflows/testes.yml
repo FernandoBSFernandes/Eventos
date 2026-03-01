@@ -36,7 +36,7 @@ jobs:
             --logger "trx;LogFileName=TestResults.trx" \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
-            /p:CoverletOutput=coverage.opencover.xml \
+            /p:CoverletOutput=Eventos.Tests/coverage.opencover.xml \
             /p:Threshold=80 \
             /p:ThresholdType=line \
             /p:ThresholdStat=total
