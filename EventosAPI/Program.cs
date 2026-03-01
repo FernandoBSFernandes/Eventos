@@ -23,7 +23,7 @@ namespace EventosAPI
                 {
                     policy
                         .WithOrigins("https://fernandobsfernandes.github.io/ConvidadosCasamentoPage/", "http://127.0.0.1:5500")
-                        .WithMethods("POST")
+                        .WithMethods("POST", "GET")
                         .WithHeaders("Content-Type");
                 });
             });

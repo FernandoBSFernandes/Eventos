@@ -34,5 +34,21 @@ namespace EventosAPI.Controllers
 
             return StatusCode(response.CodigoStatus, response);
         }
+
+        /// <summary>
+        /// Verifica se um convidado já está cadastrado pelo nome
+        /// </summary>
+        /// <param name="nome">Nome do convidado a ser verificado</param>
+        /// <returns>Booleano indicando se o convidado existe na base</returns>
+        [HttpGet("verificar")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> VerificarConvidadoAsync([FromQuery] string nome)
+        {
+            var response = await _service.VerificarConvidadoExisteAsync(nome);
+
+            return StatusCode(response.CodigoStatus, response);
+        }
     }
 }

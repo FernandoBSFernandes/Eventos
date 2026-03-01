@@ -26,4 +26,10 @@ public class EventoRepository : IEventoRepository
         return await _context.Convidado.ToListAsync();
     }
 
+    public async Task<bool> ConvidadoExisteAsync(string nome)
+    {
+        return await _context.Convidado
+            .AnyAsync(c => c.Nome.ToLower() == nome.ToLower());
+    }
+
 }

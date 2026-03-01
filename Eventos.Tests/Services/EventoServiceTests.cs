@@ -90,7 +90,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome do convidado � obrigat�rio", response.Mensagem);
+        Assert.Equal("O nome do convidado é obrigatório.", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -111,7 +111,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome do convidado � obrigat�rio", response.Mensagem);
+        Assert.Equal("O nome do convidado é obrigatório.", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -132,7 +132,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome deve ter entre 3 e 50 caracteres", response.Mensagem);
+        Assert.Equal("O nome deve ter entre 3 e 50 caracteres.", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -154,7 +154,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome deve ter entre 3 e 50 caracteres", response.Mensagem);
+        Assert.Equal("O nome deve ter entre 3 e 50 caracteres.", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -179,7 +179,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("A quantidade de acompanhantes n�o pode ser negativa ou superior a 5", response.Mensagem);
+        Assert.Equal("A quantidade de acompanhantes não pode ser negativa ou superior a 5.", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -200,7 +200,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("A quantidade de acompanhantes n�o pode ser negativa ou superior a 5", response.Mensagem);
+        Assert.Equal("A quantidade de acompanhantes não pode ser negativa ou superior a 5.", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -221,7 +221,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("Convidado que vai sozinho n�o pode ter acompanhantes", response.Mensagem);
+        Assert.Equal("Convidado que vai sozinho não pode ter acompanhantes.", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -242,7 +242,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("A quantidade de acompanhantes deve ser igual � quantidade de nomes informados", response.Mensagem);
+        Assert.Equal("A quantidade de acompanhantes deve ser igual a quantidade de nomes informados.", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -263,7 +263,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("Os nomes dos acompanhantes n�o podem estar vazios", response.Mensagem);
+        Assert.Equal("Os nomes dos acompanhantes não podem estar vazios.", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -284,7 +284,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome de cada acompanhante deve ter entre 3 e 50 caracteres", response.Mensagem);
+        Assert.Equal("O nome de cada acompanhante deve ter entre 3 e 50 caracteres.", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -306,7 +306,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome de cada acompanhante deve ter entre 3 e 50 caracteres", response.Mensagem);
+        Assert.Equal("O nome de cada acompanhante deve ter entre 3 e 50 caracteres.", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -322,7 +322,7 @@ public class EventoServiceTests
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("Dados do convidado s�o obrigat�rios", response.Mensagem);
+        Assert.Equal("Dados do convidado são obrigatórios.", response.Mensagem);
         await _repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -351,6 +351,107 @@ public class EventoServiceTests
         // Assert
         Assert.Equal(500, response.CodigoStatus);
         Assert.Contains("Ocorreu um erro ao adicionar o convidado: Erro na base de dados", response.Mensagem);
+    }
+
+    #endregion
+
+    #region VerificarConvidadoExiste - Sucesso
+
+    [Fact]
+    public async Task VerificarConvidadoExiste_DeveRetornarExistsTrue_QuandoConvidadoCadastrado()
+    {
+        // Arrange
+        _repo.ConvidadoExisteAsync("João Silva").Returns(true);
+
+        // Act
+        var response = await _service.VerificarConvidadoExisteAsync("João Silva");
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(200, response.CodigoStatus);
+        Assert.Equal("Consulta realizada com sucesso.", response.Mensagem);
+        Assert.True(response.Existe);
+        await _repo.Received(1).ConvidadoExisteAsync("João Silva");
+    }
+
+    [Fact]
+    public async Task VerificarConvidadoExiste_DeveRetornarExistsFalse_QuandoConvidadoNaoCadastrado()
+    {
+        // Arrange
+        _repo.ConvidadoExisteAsync("Maria Souza").Returns(false);
+
+        // Act
+        var response = await _service.VerificarConvidadoExisteAsync("Maria Souza");
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.Equal(200, response.CodigoStatus);
+        Assert.Equal("Consulta realizada com sucesso.", response.Mensagem);
+        Assert.False(response.Existe);
+        await _repo.Received(1).ConvidadoExisteAsync("Maria Souza");
+    }
+
+    #endregion
+
+    #region VerificarConvidadoExiste - Validação
+
+    [Fact]
+    public async Task VerificarConvidadoExiste_DeveRetornarBadRequest_QuandoNomeNulo()
+    {
+        // Act
+        var response = await _service.VerificarConvidadoExisteAsync(null);
+
+        // Assert
+        Assert.Equal(400, response.CodigoStatus);
+        Assert.Equal("O nome do convidado é obrigatório.", response.Mensagem);
+        Assert.False(response.Existe);
+        await _repo.DidNotReceive().ConvidadoExisteAsync(Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task VerificarConvidadoExiste_DeveRetornarBadRequest_QuandoNomeVazio()
+    {
+        // Act
+        var response = await _service.VerificarConvidadoExisteAsync("");
+
+        // Assert
+        Assert.Equal(400, response.CodigoStatus);
+        Assert.Equal("O nome do convidado é obrigatório.", response.Mensagem);
+        Assert.False(response.Existe);
+        await _repo.DidNotReceive().ConvidadoExisteAsync(Arg.Any<string>());
+    }
+
+    [Fact]
+    public async Task VerificarConvidadoExiste_DeveRetornarBadRequest_QuandoNomeEspacoEmBranco()
+    {
+        // Act
+        var response = await _service.VerificarConvidadoExisteAsync("   ");
+
+        // Assert
+        Assert.Equal(400, response.CodigoStatus);
+        Assert.Equal("O nome do convidado é obrigatório.", response.Mensagem);
+        Assert.False(response.Existe);
+        await _repo.DidNotReceive().ConvidadoExisteAsync(Arg.Any<string>());
+    }
+
+    #endregion
+
+    #region VerificarConvidadoExiste - Erro Interno
+
+    [Fact]
+    public async Task VerificarConvidadoExiste_DeveRetornarServerError_QuandoRepositorioLancaExcecao()
+    {
+        // Arrange
+        _repo.ConvidadoExisteAsync(Arg.Any<string>())
+            .Returns(Task.FromException<bool>(new Exception("Erro na base de dados")));
+
+        // Act
+        var response = await _service.VerificarConvidadoExisteAsync("João Silva");
+
+        // Assert
+        Assert.Equal(500, response.CodigoStatus);
+        Assert.Contains("Ocorreu um erro ao verificar o convidado: Erro na base de dados", response.Mensagem);
+        Assert.False(response.Existe);
     }
 
     #endregion

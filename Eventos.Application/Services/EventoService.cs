@@ -54,6 +54,23 @@ public class EventoService : IEventoService
         }
     }
 
+    public async Task<VerificarConvidadoResponse> VerificarConvidadoExisteAsync(string nome)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(nome))
+                return new VerificarConvidadoResponse(400, "O nome do convidado é obrigatório.", false);
+
+            var existe = await _repo.ConvidadoExisteAsync(nome);
+
+            return new VerificarConvidadoResponse(200, "Consulta realizada com sucesso.", existe);
+        }
+        catch (Exception ex)
+        {
+            return new VerificarConvidadoResponse(500, $"Ocorreu um erro ao verificar o convidado: {ex.Message}", false);
+        }
+    }
+
     private void ValidarConvidado(AdicionarConvidadoRequest request)
     {
         if (request == null)
