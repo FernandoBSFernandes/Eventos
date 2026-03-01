@@ -13,6 +13,9 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["EventosAPI/EventosAPI.csproj", "EventosAPI/"]
+COPY ["Eventos.Application/Eventos.Application.csproj", "Eventos.Application/"]
+COPY ["Eventos.Domain/Eventos.Domain.csproj", "Eventos.Domain/"]
+COPY ["Eventos.Infrastructure/Eventos.Infrastructure.csproj", "Eventos.Infrastructure/"]
 RUN dotnet restore "./EventosAPI/EventosAPI.csproj"
 COPY . .
 WORKDIR "/src/EventosAPI"
