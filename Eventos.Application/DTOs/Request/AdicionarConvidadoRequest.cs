@@ -11,7 +11,6 @@ namespace Eventos.Application.DTOs.Request
         public bool PresencaConfirmada { get; set; }
 
         [JsonPropertyName("participacao")]
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public Participacao Participacao { get; set; }
 
         public int QuantidadeAcompanhantes { get; set; }

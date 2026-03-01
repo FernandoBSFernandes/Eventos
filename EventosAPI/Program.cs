@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace EventosAPI
 {
@@ -21,8 +22,8 @@ namespace EventosAPI
                 options.AddPolicy(CorsPolicyName, policy =>
                 {
                     policy
-                        .AllowAnyOrigin()
-                        .WithMethods("POST", "OPTIONS")
+                        .WithOrigins("https://fernandobsfernandes.github.io/ConvidadosCasamentoPage/", "http://127.0.0.1:5500")
+                        .WithMethods("POST")
                         .WithHeaders("Content-Type");
                 });
             });
@@ -31,6 +32,10 @@ namespace EventosAPI
             // são sempre carregados, mesmo quando invocado por testhost
             builder.Services
                 .AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                })
                 .PartManager.ApplicationParts.Add(
                     new AssemblyPart(typeof(Program).Assembly)
                 );
@@ -38,6 +43,7 @@ namespace EventosAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
+                options.UseInlineDefinitionsForEnums();
                 // Inclui o XML de documentação se existir
                 var xmlFile = $"{typeof(Program).Assembly.GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -68,7 +74,6 @@ namespace EventosAPI
             app.UseCors(CorsPolicyName);
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
