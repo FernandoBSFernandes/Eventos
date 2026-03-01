@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
+﻿using Eventos.Application.Interfaces;
+using Eventos.Application.Services;
+using Eventos.Domain.Repositories;
+using Eventos.Infrastructure.Data;
+using Eventos.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
@@ -22,8 +27,11 @@ namespace EventosAPI
                 options.AddPolicy(CorsPolicyName, policy =>
                 {
                     policy
-                        .WithOrigins("https://fernandobsfernandes.github.io/ConvidadosCasamentoPage/", "http://127.0.0.1:5500")
-                        .WithMethods("POST", "GET")
+                        .WithOrigins(
+                            "https://fernandobsfernandes.github.io",
+                            "http://127.0.0.1:5500"
+                        )
+                        .WithMethods("POST", "GET", "OPTIONS")
                         .WithHeaders("Content-Type");
                 });
             });
@@ -52,7 +60,7 @@ namespace EventosAPI
             });
 
             // Register DbContext
-            builder.Services.AddDbContext<Eventos.Infrastructure.Data.EventosDbContext>((serviceProvider, options) =>
+            builder.Services.AddDbContext<EventosDbContext>((serviceProvider, options) =>
             {
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 
@@ -65,14 +73,14 @@ namespace EventosAPI
             });
 
             // Register DDD projects services
-            builder.Services.AddScoped<Eventos.Application.Interfaces.IEventoService, Eventos.Application.Services.EventoService>();
-            builder.Services.AddScoped<Eventos.Domain.Repositories.IEventoRepository, Eventos.Infrastructure.Repositories.EventoRepository>();
+            builder.Services.AddScoped<IEventoService, EventoService>();
+            builder.Services.AddScoped<IEventoRepository, EventoRepository>();
 
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())
             {
-                var db = scope.ServiceProvider.GetRequiredService<Eventos.Infrastructure.Data.EventosDbContext>();
+                var db = scope.ServiceProvider.GetRequiredService<EventosDbContext>();
                 db.Database.Migrate();
             }
 
@@ -80,9 +88,9 @@ namespace EventosAPI
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            app.UseHttpsRedirection();
-
             app.UseCors(CorsPolicyName);
+
+            app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
