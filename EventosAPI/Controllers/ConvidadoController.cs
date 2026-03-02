@@ -67,20 +67,6 @@ namespace EventosAPI.Controllers
         }
 
         /// <summary>
-        /// Retorna o relatório de convidados confirmados e o total de pessoas no evento
-        /// </summary>
-        /// <returns>Lista de convidados com acompanhantes e total de pessoas</returns>
-        [HttpGet("relatorio")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ObterRelatorio()
-        {
-            var response = await _service.ObterRelatorioAsync();
-
-            return StatusCode(response.CodigoStatus, response);
-        }
-
-        /// <summary>
         /// Exporta o relatório de convidados confirmados em formato Excel (.xlsx)
         /// </summary>
         [HttpGet("relatorio/excel")]
@@ -94,7 +80,7 @@ namespace EventosAPI.Controllers
                 return StatusCode(response.CodigoStatus, response);
 
             var bytes = await RelatorioExcelGenerator.GerarAsync(response);
-            var nomeArquivo = $"relatorio-convidados-{DateTime.Now:yyyy-MM-dd}.xlsx";
+            var nomeArquivo = "Relação de Participantes do Rodizio.xlsx";
 
             return File(bytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", nomeArquivo);
         }
@@ -113,7 +99,7 @@ namespace EventosAPI.Controllers
                 return StatusCode(response.CodigoStatus, response);
 
             var bytes = await RelatorioPdfGenerator.GerarAsync(response);
-            var nomeArquivo = $"Relação de Participantes do Rodizio.pdf";
+            var nomeArquivo = "Relação de Participantes do Rodizio.pdf";
 
             return File(bytes, "application/pdf", nomeArquivo);
         }
