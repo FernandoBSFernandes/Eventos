@@ -6,7 +6,7 @@ API REST para gerenciamento de convidados de eventos, desenvolvida em **.NET 8**
 
 ## ?? Sobre o projeto
 
-A API permite registrar convidados para um evento, informando se irão sozinhos ou acompanhados, a quantidade de acompanhantes e os respectivos nomes. Também é possível verificar se um convidado já está cadastrado na base pelo nome.
+A API permite registrar convidados para um evento, informando se irão sozinhos ou acompanhados, a quantidade de acompanhantes e os respectivos nomes. Também é possível verificar se um convidado já está cadastrado na base pelo nome, gerar relatórios de confirmados e zerar os dados do evento.
 
 ---
 
@@ -86,6 +86,43 @@ GET /api/convidado/verificar?nome=João Silva
 
 ---
 
+### `GET /api/convidado/relatorio/excel`
+
+Exporta o relatório de convidados confirmados em formato **Excel** (`.xlsx`).
+
+O arquivo gerado é nomeado `Relação de Participantes do Rodizio.xlsx`.
+
+| Código | Descrição |
+|---|---|
+| `200` | Arquivo gerado e retornado |
+| `500` | Erro interno do servidor |
+
+---
+
+### `GET /api/convidado/relatorio/pdf`
+
+Exporta o relatório de convidados confirmados em formato **PDF**.
+
+O arquivo gerado é nomeado `Relação de Participantes do Rodizio.pdf`.
+
+| Código | Descrição |
+|---|---|
+| `200` | Arquivo gerado e retornado |
+| `500` | Erro interno do servidor |
+
+---
+
+### `DELETE /api/convidado/zerar-tabelas`
+
+Zera todos os registros de convidados e seus acompanhantes do banco de dados.
+
+| Código | Descrição |
+|---|---|
+| `200` | Dados removidos com sucesso |
+| `500` | Erro interno do servidor |
+
+---
+
 ## ? Regras de negócio
 
 - O nome do convidado deve ter entre **3 e 50 caracteres**
@@ -103,7 +140,9 @@ GET /api/convidado/verificar?nome=João Silva
 | .NET 8 | Framework principal |
 | ASP.NET Core | Web API |
 | Entity Framework Core | ORM |
-| SQL Server | Banco de dados |
+| PostgreSQL | Banco de dados |
+| ClosedXML | Geração de Excel |
+| QuestPDF | Geração de PDF |
 | xUnit | Testes de unidade |
 | NSubstitute | Mocking nos testes |
 | Swagger / OpenAPI | Documentação interativa |
@@ -115,7 +154,7 @@ GET /api/convidado/verificar?nome=João Silva
 ### Pré-requisitos
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- SQL Server
+- PostgreSQL
 
 ### String de conexão
 
@@ -124,7 +163,7 @@ Configure a connection string no `appsettings.json` do projeto `EventosAPI`:
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=SEU_SERVIDOR;Database=EventosDb;Trusted_Connection=True;"
+    "DefaultConnection": "Host=SEU_HOST;Database=EventosDb;Username=SEU_USUARIO;Password=SUA_SENHA"
   }
 }
 ```
@@ -154,4 +193,3 @@ Os testes de unidade estão no projeto `Eventos.Tests` e utilizam mocks para isol
 
 ```bash
 dotnet test Eventos.Tests
-```
