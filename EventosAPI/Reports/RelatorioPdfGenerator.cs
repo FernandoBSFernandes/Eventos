@@ -15,7 +15,7 @@ public static class RelatorioPdfGenerator
             {
                 page.Size(PageSizes.A4);
                 page.Margin(2, Unit.Centimetre);
-                page.DefaultTextStyle(x => x.FontSize(11).FontFamily("Arial"));
+                page.DefaultTextStyle(x => x.FontSize(11).FontFamily("Segoe UI"));
 
                 page.Header().Element(ComposeHeader);
                 page.Content().Element(content => ComposeContent(content, relatorio));
@@ -73,7 +73,7 @@ public static class RelatorioPdfGenerator
                     table.Cell().Background(cor).Padding(5).Text(
                         convidado.Acompanhantes.Count > 0
                             ? string.Join(", ", convidado.Acompanhantes)
-                            : "—"
+                            : "0"
                     ).FontColor(convidado.Acompanhantes.Count > 0 ? Colors.Black : Colors.Grey.Medium);
                     table.Cell().Background(cor).Padding(5).Text(convidado.Acompanhantes.Count.ToString()).AlignCenter();
                 }

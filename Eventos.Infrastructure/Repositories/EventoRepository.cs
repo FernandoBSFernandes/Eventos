@@ -29,7 +29,7 @@ public class EventoRepository : IEventoRepository
     public async Task<bool> ConvidadoExisteAsync(string nome)
     {
         return await _context.Convidado
-            .AnyAsync(c => c.Nome.Equals(nome, StringComparison.CurrentCultureIgnoreCase));
+            .AnyAsync(c => c.Nome.Contains(nome, StringComparison.InvariantCultureIgnoreCase));
     }
 
     public async Task ZerarTabelasAsync()
