@@ -23,15 +23,13 @@ public class EventoService : IEventoService
         try
         {
             var quantidadeNomes = request?.NomesAcompanhantes?.Count ?? 0;
-            var tamanhoLista = request?.NomesAcompanhantes?.Count ?? 0;
 
             _logger.LogInformation(
-                "[AdicionarConvidado] Requisição recebida | Nome: {Nome} | VaiAoEvento: {VaiAoEvento} | QuantidadeAcompanhantes (campo): {QuantidadeAcompanhantes} | NomesAcompanhantes.Count: {QuantidadeNomes} | Tamanho da lista: {TamanhoLista} | Nomes: [{Nomes}]",
+                "[AdicionarConvidado] Requisição recebida | Nome: {Nome} | VaiAoEvento: {VaiAoEvento} | QuantidadeAcompanhantes (campo): {QuantidadeAcompanhantes} | NomesAcompanhantes.Count: {QuantidadeNomes} | Nomes: [{Nomes}]",
                 request?.Nome,
                 request?.PresencaConfirmada == true ? "Sim" : "Não",
                 request?.QuantidadeAcompanhantes,
                 quantidadeNomes,
-                tamanhoLista,
                 string.Join(", ", request?.NomesAcompanhantes ?? []));
 
             // Validar dados do convidado
@@ -133,6 +131,46 @@ public class EventoService : IEventoService
         catch (Exception ex)
         {
             return new RelatorioEventoResponse(500, $"Ocorreu um erro ao gerar o relatório: {ex.Message}", [], 0);
+        }
+    }
+
+    public async Task<List<ConvidadoItem>> ListarConvidadosAsync()
+    {
+        _logger.LogInformation("[ListarConvidados] Requisição para listar todos os convidados recebida.");
+
+        var convidados = await _repo.ObterTodosConvidadosAsync();
+
+        var itens = convidados.Select(c => new ConvidadoItem(
+            c.Nome,
+            c.PresencaConfirmada,
+            c.Participacao,
+            c.QuantidadeAcompanhantes,
+            c.Acompanhantes.Select(a => a.Nome).ToList()
+        )).ToList();
+
+        _logger.LogInformation("[ListarConvidados] Convidados listados com sucesso | Total: {Total}", itens.Count);
+
+        return itens;
+    }
+
+    public async Task<BaseResponse> RemoverDuplicatasAsync()
+    {
+        try
+        {
+            _logger.LogInformation("[RemoverDuplicatas] Requisição para remover duplicatas recebida.");
+
+            var (convidadosRemovidos, acompanhantesRemovidos) = await _repo.RemoverDuplicatasAsync();
+
+            _logger.LogInformation(
+                "[RemoverDuplicatas] Duplicatas removidas | Convidados: {Convidados} | Acompanhantes: {Acompanhantes}",
+                convidadosRemovidos, acompanhantesRemovidos);
+
+            return new BaseResponse(200,
+                $"Duplicatas removidas com sucesso. Convidados removidos: {convidadosRemovidos}. Acompanhantes removidos: {acompanhantesRemovidos}.");
+        }
+        catch (Exception ex)
+        {
+            return new BaseResponse(500, $"Ocorreu um erro ao remover duplicatas: {ex.Message}");
         }
     }
 

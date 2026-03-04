@@ -6,7 +6,7 @@ API REST para gerenciamento de convidados de eventos, desenvolvida em **.NET 8**
 
 ## ?? Sobre o projeto
 
-A API permite registrar convidados para um evento, informando se irão sozinhos ou acompanhados, a quantidade de acompanhantes e os respectivos nomes. Também é possível verificar se um convidado já está cadastrado na base pelo nome, gerar relatórios de confirmados e zerar os dados do evento.
+A API permite registrar convidados para um evento, informando se irão sozinhos ou acompanhados, a quantidade de acompanhantes e os respectivos nomes. Também é possível listar todos os convidados, verificar se um convidado já está cadastrado, remover registros duplicados, gerar relatórios de confirmados e zerar os dados do evento.
 
 ---
 
@@ -60,6 +60,30 @@ Registra um novo convidado no evento.
 
 ---
 
+### `GET /api/convidado/listar`
+
+Lista todos os convidados cadastrados, confirmados ou não, com seus respectivos acompanhantes.
+
+**Resposta `200`:**
+```json
+[
+  {
+    "nome": "João Silva",
+    "presencaConfirmada": true,
+    "participacao": "Acompanhado",
+    "quantidadeAcompanhantes": 1,
+    "nomesAcompanhantes": ["Maria Silva"]
+  }
+]
+```
+
+| Código | Descrição |
+|---|---|
+| `200` | Lista retornada com sucesso |
+| `500` | Erro interno do servidor |
+
+---
+
 ### `GET /api/convidado/verificar?nome={nome}`
 
 Verifica se um convidado já está cadastrado pelo nome (sem distinção de maiúsculas/minúsculas).
@@ -108,6 +132,25 @@ O arquivo gerado é nomeado `Relação de Participantes do Rodizio.pdf`.
 | Código | Descrição |
 |---|---|
 | `200` | Arquivo gerado e retornado |
+| `500` | Erro interno do servidor |
+
+---
+
+### `DELETE /api/convidado/remover-duplicatas`
+
+Remove registros duplicados de convidados e seus acompanhantes. O critério de duplicidade é o nome idêntico após normalização (sem distinção de maiúsculas/minúsculas e sem espaços nas bordas). O **primeiro** registro de cada grupo é sempre preservado.
+
+**Resposta `200`:**
+```json
+{
+  "codigoStatus": 200,
+  "mensagem": "Duplicatas removidas com sucesso. Convidados removidos: 2. Acompanhantes removidos: 4."
+}
+```
+
+| Código | Descrição |
+|---|---|
+| `200` | Duplicatas removidas com sucesso |
 | `500` | Erro interno do servidor |
 
 ---
@@ -189,7 +232,19 @@ http://localhost:{porta}/swagger
 
 ## ?? Testes
 
-Os testes de unidade estão no projeto `Eventos.Tests` e utilizam mocks para isolar completamente as dependências externas.
+Os testes de unidade estão no projeto `Eventos.Tests` e utilizam mocks para isolar completamente as dependências externas. Os arquivos são organizados por funcionalidade:
+
+```
+Eventos.Tests/
+??? Services/
+    ??? EventoServiceTestBase.cs       # Setup compartilhado
+    ??? AdicionarConvidadoTests.cs     # 18 testes
+    ??? VerificarConvidadoTests.cs     #  7 testes
+    ??? ZerarTabelasTests.cs           #  3 testes
+    ??? ObterRelatorioTests.cs         #  8 testes
+    ??? ListarConvidadosTests.cs       # 11 testes
+    ??? RemoverDuplicatasTests.cs      #  8 testes
+```
 
 ```bash
 dotnet test Eventos.Tests

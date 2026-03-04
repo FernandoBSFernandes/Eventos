@@ -9,4 +9,6 @@ public interface IEventoService
     Task<VerificarConvidadoResponse> VerificarConvidadoExisteAsync(string nome);
     Task<BaseResponse> ZerarTabelasAsync();
     Task<RelatorioEventoResponse> ObterRelatorioAsync();
+    Task<List<ConvidadoItem>> ListarConvidadosAsync();
+    Task<BaseResponse> RemoverDuplicatasAsync();
 }

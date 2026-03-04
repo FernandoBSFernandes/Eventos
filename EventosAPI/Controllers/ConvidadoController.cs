@@ -53,6 +53,33 @@ namespace EventosAPI.Controllers
         }
 
         /// <summary>
+        /// Lista todos os convidados cadastrados
+        /// </summary>
+        /// <returns>Lista de convidados com seus respectivos acompanhantes</returns>
+        [HttpGet("listar")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ListarConvidados()
+        {
+            var convidados = await _service.ListarConvidadosAsync();
+
+            return Ok(convidados);
+        }
+
+        /// <summary>
+        /// Remove convidados e acompanhantes duplicados (critério: mesmo nome, sem distinção de maiúsculas/minúsculas)
+        /// </summary>
+        [HttpDelete("remover-duplicatas")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> RemoverDuplicatas()
+        {
+            var response = await _service.RemoverDuplicatasAsync();
+
+            return StatusCode(response.CodigoStatus, response);
+        }
+
+        /// <summary>
         /// Zera todas as tabelas do banco de dados
         /// </summary>
         /// <returns>Resposta com status da operação</returns>

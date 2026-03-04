@@ -9,4 +9,5 @@ public interface IEventoRepository
     Task<bool> ConvidadoExisteAsync(string nome);
     Task ZerarTabelasAsync();
     Task<List<Convidado>> ObterConvidadosConfirmadosAsync();
+    Task<(int convidadosRemovidos, int acompanhantesRemovidos)> RemoverDuplicatasAsync();
 }
