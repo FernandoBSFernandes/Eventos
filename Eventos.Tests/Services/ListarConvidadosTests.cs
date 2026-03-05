@@ -16,7 +16,7 @@ public class ListarConvidadosTests : EventoServiceTestBase
         {
             new Convidado
             {
-                Nome = "Jo„o Silva",
+                Nome = "Jo√£o Silva",
                 PresencaConfirmada = true,
                 Participacao = "Acompanhado",
                 QuantidadeAcompanhantes = 2,

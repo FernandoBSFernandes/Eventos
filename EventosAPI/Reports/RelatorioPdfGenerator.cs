@@ -32,7 +32,7 @@ public static class RelatorioPdfGenerator
     {
         container.PaddingBottom(10).Column(col =>
         {
-            col.Item().Text("Relatório de Convidados Confirmados")
+            col.Item().Text("RelatÃ³rio de Convidados Confirmados")
                 .FontSize(18).Bold().FontColor(Colors.Blue.Darken2).AlignCenter();
 
             col.Item().PaddingTop(4).LineHorizontal(1).LineColor(Colors.Blue.Lighten2);
@@ -53,7 +53,7 @@ public static class RelatorioPdfGenerator
                     columns.RelativeColumn(2);
                 });
 
-                // Cabeçalho da tabela
+                // CabeÃ§alho da tabela
                 table.Header(header =>
                 {
                     foreach (var titulo in new[] { "Convidado", "Acompanhantes", "Qtd." })

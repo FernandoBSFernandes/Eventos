@@ -10,18 +10,18 @@ public static class RelatorioExcelGenerator
         return await Task.Run(() =>
         {
             using var workbook = new XLWorkbook();
-            var sheet = workbook.Worksheets.Add("Relatório");
+            var sheet = workbook.Worksheets.Add("RelatÃ³rio");
 
-            // Cabeçalho principal
+            // CabeÃ§alho principal
             var titulo = sheet.Range("A1:C1").Merge();
-            titulo.Value = "Relatório de Convidados Confirmados";
+            titulo.Value = "RelatÃ³rio de Convidados Confirmados";
             titulo.Style.Font.Bold = true;
             titulo.Style.Font.FontSize = 14;
             titulo.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             titulo.Style.Fill.BackgroundColor = XLColor.FromHtml("#2E75B6");
             titulo.Style.Font.FontColor = XLColor.White;
 
-            // Cabeçalhos das colunas
+            // CabeÃ§alhos das colunas
             sheet.Cell("A2").Value = "Convidado";
             sheet.Cell("B2").Value = "Acompanhantes";
             sheet.Cell("C2").Value = "Qtd. Acompanhantes";
@@ -38,7 +38,7 @@ public static class RelatorioExcelGenerator
                 sheet.Cell(linha, 1).Value = convidado.Nome;
                 sheet.Cell(linha, 2).Value = convidado.Acompanhantes.Count > 0
                     ? string.Join(", ", convidado.Acompanhantes)
-                    : "—";
+                    : "â€”";
                 sheet.Cell(linha, 3).Value = convidado.Acompanhantes.Count;
                 sheet.Cell(linha, 3).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 

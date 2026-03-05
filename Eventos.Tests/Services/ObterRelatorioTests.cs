@@ -16,7 +16,7 @@ public class ObterRelatorioTests : EventoServiceTestBase
         {
             new Convidado
             {
-                Nome = "Jo„o Silva",
+                Nome = "Jo√£o Silva",
                 PresencaConfirmada = true,
                 Participacao = "Acompanhado",
                 QuantidadeAcompanhantes = 2,
@@ -44,9 +44,9 @@ public class ObterRelatorioTests : EventoServiceTestBase
         // Assert
         Assert.NotNull(response);
         Assert.Equal(200, response.CodigoStatus);
-        Assert.Equal("RelatÛrio gerado com sucesso.", response.Mensagem);
+        Assert.Equal("Relat√≥rio gerado com sucesso.", response.Mensagem);
         Assert.Equal(2, response.Convidados.Count);
-        Assert.Equal(4, response.TotalPessoas); // Jo„o + Ana + Pedro + Maria
+        Assert.Equal(4, response.TotalPessoas); // Jo√£o + Ana + Pedro + Maria
         await Repo.Received(1).ObterConvidadosConfirmadosAsync();
     }
 
@@ -61,7 +61,7 @@ public class ObterRelatorioTests : EventoServiceTestBase
 
         // Assert
         Assert.Equal(200, response.CodigoStatus);
-        Assert.Equal("RelatÛrio gerado com sucesso.", response.Mensagem);
+        Assert.Equal("Relat√≥rio gerado com sucesso.", response.Mensagem);
         Assert.Empty(response.Convidados);
         Assert.Equal(0, response.TotalPessoas);
     }
@@ -102,13 +102,13 @@ public class ObterRelatorioTests : EventoServiceTestBase
         {
             new Convidado
             {
-                Nome = "Jo„o Silva",
+                Nome = "Jo√£o Silva",
                 PresencaConfirmada = true,
                 Participacao = "Acompanhado",
                 QuantidadeAcompanhantes = 1,
                 Acompanhantes = new List<Acompanhante>
                 {
-                    new Acompanhante { Nome = "Jo„o Silva" }
+                    new Acompanhante { Nome = "Jo√£o Silva" }
                 }
             }
         };
@@ -131,13 +131,13 @@ public class ObterRelatorioTests : EventoServiceTestBase
         {
             new Convidado
             {
-                Nome = "Jo„o Silva",
+                Nome = "Jo√£o Silva",
                 PresencaConfirmada = true,
                 Participacao = "Acompanhado",
                 QuantidadeAcompanhantes = 1,
                 Acompanhantes = new List<Acompanhante>
                 {
-                    new Acompanhante { Nome = "JO√O SILVA" }
+                    new Acompanhante { Nome = "JO√ÉO SILVA" }
                 }
             }
         };
@@ -242,7 +242,7 @@ public class ObterRelatorioTests : EventoServiceTestBase
 
         // Assert
         Assert.Equal(500, response.CodigoStatus);
-        Assert.Contains("Ocorreu um erro ao gerar o relatÛrio: Erro na base de dados", response.Mensagem);
+        Assert.Contains("Ocorreu um erro ao gerar o relat√≥rio: Erro na base de dados", response.Mensagem);
         Assert.Empty(response.Convidados);
         Assert.Equal(0, response.TotalPessoas);
     }
