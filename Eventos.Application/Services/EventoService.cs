@@ -1,4 +1,4 @@
-﻿using Eventos.Application.DTOs.Request;
+using Eventos.Application.DTOs.Request;
 using Eventos.Application.DTOs.Response;
 using Eventos.Application.Interfaces;
 using Eventos.Domain.Entities;
@@ -34,6 +34,19 @@ public class EventoService : IEventoService
 
             // Validar dados do convidado
             ValidarConvidado(request);
+
+            // Verificar limite de 100 pessoas
+            var totalAtual = await _repo.ObterTotalPessoasAsync();
+            var novasPessoas = 1 + request.QuantidadeAcompanhantes;
+
+            if (totalAtual + novasPessoas > 100)
+            {
+                _logger.LogWarning(
+                    "[AdicionarConvidado] Limite de 100 pessoas excedido | Total atual: {TotalAtual} | Novas pessoas: {NovasPessoas}",
+                    totalAtual, novasPessoas);
+
+                return new BaseResponse(401, "A quantidade máxima de pessoas a serem cadastrados extrapolou o limite de 100 convidados.");
+            }
 
             // Preparar o objeto para persistência
             var convidado = new Convidado

@@ -462,6 +462,223 @@ public class AdicionarConvidadoTests : EventoServiceTestBase
 
     #endregion
 
+    #region Limite de 100 Pessoas
+
+    [Fact]
+    public async Task DeveRegistrarComSucesso_QuandoTotalAtualMaisNovasPessoasIgualA100()
+    {
+        // Arrange - 99 pessoas já cadastradas + 1 nova (sozinho) = 100
+        Repo.ObterTotalPessoasAsync().Returns(99);
+
+        var request = new AdicionarConvidadoRequest(
+            nome: "João Silva",
+            presencaConfirmada: true,
+            participacao: Participacao.Sozinho,
+            quantidadeAcompanhantes: 0,
+            nomesAcompanhantes: new List<string>()
+        );
+
+        // Act
+        var response = await Service.AdicionarConvidadoAsync(request);
+
+        // Assert
+        Assert.Equal(201, response.CodigoStatus);
+        Assert.Equal("Convidado foi registrado com sucesso", response.Mensagem);
+        await Repo.Received(1).AdicionarConvidadoAsync(Arg.Any<Convidado>());
+    }
+
+    [Fact]
+    public async Task DeveRegistrarComSucesso_QuandoConvidadoComAcompanhantesNaoExcedeLimite()
+    {
+        // Arrange - 94 pessoas já cadastradas + 1 convidado + 5 acompanhantes = 100
+        Repo.ObterTotalPessoasAsync().Returns(94);
+
+        var request = new AdicionarConvidadoRequest(
+            nome: "Maria Santos",
+            presencaConfirmada: true,
+            participacao: Participacao.Acompanhado,
+            quantidadeAcompanhantes: 5,
+            nomesAcompanhantes: new List<string>
+            {
+                "Nome Um", "Nome Dois", "Nome Tres", "Nome Qua", "Nome Cin"
+            }
+        );
+
+        // Act
+        var response = await Service.AdicionarConvidadoAsync(request);
+
+        // Assert
+        Assert.Equal(201, response.CodigoStatus);
+        Assert.Equal("Convidado foi registrado com sucesso", response.Mensagem);
+        await Repo.Received(1).AdicionarConvidadoAsync(Arg.Any<Convidado>());
+    }
+
+    [Fact]
+    public async Task DeveRetornar401_QuandoConvidadoSozinhoExcedeLimite()
+    {
+        // Arrange - 100 pessoas já cadastradas + 1 nova = 101
+        Repo.ObterTotalPessoasAsync().Returns(100);
+
+        var request = new AdicionarConvidadoRequest(
+            nome: "João Silva",
+            presencaConfirmada: true,
+            participacao: Participacao.Sozinho,
+            quantidadeAcompanhantes: 0,
+            nomesAcompanhantes: new List<string>()
+        );
+
+        // Act
+        var response = await Service.AdicionarConvidadoAsync(request);
+
+        // Assert
+        Assert.Equal(401, response.CodigoStatus);
+        Assert.Equal("A quantidade máxima de pessoas a serem cadastrados extrapolou o limite de 100 convidados.", response.Mensagem);
+        await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
+    }
+
+    [Fact]
+    public async Task DeveRetornar401_QuandoConvidadoComAcompanhantesExcedeLimite()
+    {
+        // Arrange - 98 pessoas já cadastradas + 1 convidado + 2 acompanhantes = 101
+        Repo.ObterTotalPessoasAsync().Returns(98);
+
+        var request = new AdicionarConvidadoRequest(
+            nome: "Maria Santos",
+            presencaConfirmada: true,
+            participacao: Participacao.Acompanhado,
+            quantidadeAcompanhantes: 2,
+            nomesAcompanhantes: new List<string> { "Ana Costa", "Pedro Costa" }
+        );
+
+        // Act
+        var response = await Service.AdicionarConvidadoAsync(request);
+
+        // Assert
+        Assert.Equal(401, response.CodigoStatus);
+        Assert.Equal("A quantidade máxima de pessoas a serem cadastrados extrapolou o limite de 100 convidados.", response.Mensagem);
+        await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
+    }
+
+    [Fact]
+    public async Task DeveRetornar401_QuandoAcompanhantesUltrapassamLimiteExato()
+    {
+        // Arrange - 95 pessoas já cadastradas + 1 convidado + 5 acompanhantes = 101
+        Repo.ObterTotalPessoasAsync().Returns(95);
+
+        var request = new AdicionarConvidadoRequest(
+            nome: "Fernanda Rocha",
+            presencaConfirmada: true,
+            participacao: Participacao.Acompanhado,
+            quantidadeAcompanhantes: 5,
+            nomesAcompanhantes: new List<string>
+            {
+                "Nome Um", "Nome Dois", "Nome Tres", "Nome Qua", "Nome Cin"
+            }
+        );
+
+        // Act
+        var response = await Service.AdicionarConvidadoAsync(request);
+
+        // Assert
+        Assert.Equal(401, response.CodigoStatus);
+        Assert.Equal("A quantidade máxima de pessoas a serem cadastrados extrapolou o limite de 100 convidados.", response.Mensagem);
+        await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
+    }
+
+    [Fact]
+    public async Task DeveRegistrarComSucesso_QuandoBaseVaziaEConvidadoSozinho()
+    {
+        // Arrange - base vazia + 1 pessoa = 1
+        Repo.ObterTotalPessoasAsync().Returns(0);
+
+        var request = new AdicionarConvidadoRequest(
+            nome: "Carlos Lima",
+            presencaConfirmada: true,
+            participacao: Participacao.Sozinho,
+            quantidadeAcompanhantes: 0,
+            nomesAcompanhantes: new List<string>()
+        );
+
+        // Act
+        var response = await Service.AdicionarConvidadoAsync(request);
+
+        // Assert
+        Assert.Equal(201, response.CodigoStatus);
+        await Repo.Received(1).AdicionarConvidadoAsync(Arg.Any<Convidado>());
+    }
+
+    [Fact]
+    public async Task DeveRegistrarComSucesso_QuandoBaseVaziaEConvidadoComAcompanhantes()
+    {
+        // Arrange - base vazia + 1 convidado + 5 acompanhantes = 6
+        Repo.ObterTotalPessoasAsync().Returns(0);
+
+        var request = new AdicionarConvidadoRequest(
+            nome: "Fernanda Rocha",
+            presencaConfirmada: true,
+            participacao: Participacao.Acompanhado,
+            quantidadeAcompanhantes: 5,
+            nomesAcompanhantes: new List<string>
+            {
+                "Nome Um", "Nome Dois", "Nome Tres", "Nome Qua", "Nome Cin"
+            }
+        );
+
+        // Act
+        var response = await Service.AdicionarConvidadoAsync(request);
+
+        // Assert
+        Assert.Equal(201, response.CodigoStatus);
+        await Repo.Received(1).AdicionarConvidadoAsync(Arg.Any<Convidado>());
+    }
+
+    [Fact]
+    public async Task NaoDevePersistir_QuandoLimiteExcedido()
+    {
+        // Arrange - 100 já cadastradas, qualquer adição excede
+        Repo.ObterTotalPessoasAsync().Returns(100);
+
+        var request = new AdicionarConvidadoRequest(
+            nome: "Novo Convidado",
+            presencaConfirmada: true,
+            participacao: Participacao.Sozinho,
+            quantidadeAcompanhantes: 0,
+            nomesAcompanhantes: new List<string>()
+        );
+
+        // Act
+        var response = await Service.AdicionarConvidadoAsync(request);
+
+        // Assert
+        Assert.Equal(401, response.CodigoStatus);
+        await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
+    }
+
+    [Fact]
+    public async Task DeveRetornar401_QuandoLimiteExcedidoMesmoComPresencaNaoConfirmada()
+    {
+        // Arrange - presença não confirmada ainda conta para o limite
+        Repo.ObterTotalPessoasAsync().Returns(100);
+
+        var request = new AdicionarConvidadoRequest(
+            nome: "Carlos Lima",
+            presencaConfirmada: false,
+            participacao: Participacao.Sozinho,
+            quantidadeAcompanhantes: 0,
+            nomesAcompanhantes: new List<string>()
+        );
+
+        // Act
+        var response = await Service.AdicionarConvidadoAsync(request);
+
+        // Assert
+        Assert.Equal(401, response.CodigoStatus);
+        Assert.Equal("A quantidade máxima de pessoas a serem cadastrados extrapolou o limite de 100 convidados.", response.Mensagem);
+        await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
+    }
+
+    #endregion
+
     #region Erro Interno
 
     [Fact]

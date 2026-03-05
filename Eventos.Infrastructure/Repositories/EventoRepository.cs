@@ -1,4 +1,4 @@
-﻿using Eventos.Domain.Entities;
+using Eventos.Domain.Entities;
 using Eventos.Domain.Repositories;
 using Eventos.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -82,5 +82,12 @@ public class EventoRepository : IEventoRepository
         await _context.SaveChangesAsync();
 
         return (duplicatasConvidados.Count, acompanhantesRemovidos);
+    }
+
+    public async Task<int> ObterTotalPessoasAsync()
+    {
+        var totalConvidados = await _context.Convidado.CountAsync();
+        var totalAcompanhantes = await _context.Set<Acompanhante>().CountAsync();
+        return totalConvidados + totalAcompanhantes;
     }
 }

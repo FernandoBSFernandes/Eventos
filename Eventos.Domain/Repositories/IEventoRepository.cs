@@ -1,4 +1,4 @@
-﻿using Eventos.Domain.Entities;
+using Eventos.Domain.Entities;
 
 namespace Eventos.Domain.Repositories;
 
@@ -10,4 +10,5 @@ public interface IEventoRepository
     Task ZerarTabelasAsync();
     Task<List<Convidado>> ObterConvidadosConfirmadosAsync();
     Task<(int convidadosRemovidos, int acompanhantesRemovidos)> RemoverDuplicatasAsync();
+    Task<int> ObterTotalPessoasAsync();
 }
