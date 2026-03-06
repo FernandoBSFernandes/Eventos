@@ -11,4 +11,6 @@ public interface IEventoRepository
     Task<List<Convidado>> ObterConvidadosConfirmadosAsync();
     Task<(int convidadosRemovidos, int acompanhantesRemovidos)> RemoverDuplicatasAsync();
     Task<int> ObterTotalPessoasAsync();
+    Task<List<Convidado>> BuscarConvidadosPorNomeAsync(string nome);
+    Task RemoverConvidadoAsync(Convidado convidado);
 }

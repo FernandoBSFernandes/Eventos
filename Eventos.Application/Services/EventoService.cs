@@ -187,6 +187,42 @@ public class EventoService : IEventoService
         }
     }
 
+    public async Task<BaseResponse> RemoverConvidadoPorNomeAsync(string nome)
+    {
+        try
+        {
+            _logger.LogInformation("[RemoverConvidado] Requisição para remover convidado recebida | Nome: {Nome}", nome);
+
+            if (string.IsNullOrWhiteSpace(nome))
+                return new BaseResponse(400, "O nome do convidado é obrigatório.");
+
+            var convidadosEncontrados = await _repo.BuscarConvidadosPorNomeAsync(nome);
+
+            if (convidadosEncontrados.Count == 0)
+            {
+                _logger.LogWarning("[RemoverConvidado] Convidado não encontrado | Nome: {Nome}", nome);
+                return new BaseResponse(404, "O convidado não foi encontrado. Ele ainda não foi convidado ou já foi apagado.");
+            }
+
+            if (convidadosEncontrados.Count > 1)
+            {
+                var nomesEncontrados = string.Join(", ", convidadosEncontrados.Select(c => c.Nome));
+                _logger.LogWarning("[RemoverConvidado] Múltiplos convidados encontrados | Nome: {Nome} | Encontrados: {Encontrados}", nome, nomesEncontrados);
+                return new BaseResponse(400, $"Foram encontrados {convidadosEncontrados.Count} convidados com nome semelhante: {nomesEncontrados}. Por favor, informe o nome completo para identificar o convidado correto.");
+            }
+
+            var convidado = convidadosEncontrados[0];
+            await _repo.RemoverConvidadoAsync(convidado);
+
+            _logger.LogInformation("[RemoverConvidado] Convidado removido com sucesso | Nome: {Nome}", convidado.Nome);
+            return new BaseResponse(200, "Convidado removido com sucesso.");
+        }
+        catch (Exception ex)
+        {
+            return new BaseResponse(500, $"Ocorreu um erro ao remover o convidado: {ex.Message}");
+        }
+    }
+
     private static void ValidarConvidado(AdicionarConvidadoRequest request)
     {
         if (request == null)

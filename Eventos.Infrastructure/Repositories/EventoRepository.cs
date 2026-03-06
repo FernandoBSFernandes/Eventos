@@ -90,4 +90,18 @@ public class EventoRepository : IEventoRepository
         var totalAcompanhantes = await _context.Set<Acompanhante>().CountAsync();
         return totalConvidados + totalAcompanhantes;
     }
+
+    public async Task<List<Convidado>> BuscarConvidadosPorNomeAsync(string nome)
+    {
+        return await _context.Convidado
+            .Include(c => c.Acompanhantes)
+            .Where(c => EF.Functions.ILike(c.Nome, $"%{nome}%"))
+            .ToListAsync();
+    }
+
+    public async Task RemoverConvidadoAsync(Convidado convidado)
+    {
+        _context.Convidado.Remove(convidado);
+        await _context.SaveChangesAsync();
+    }
 }

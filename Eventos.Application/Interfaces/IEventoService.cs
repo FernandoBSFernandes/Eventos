@@ -1,4 +1,4 @@
-﻿using Eventos.Application.DTOs.Request;
+using Eventos.Application.DTOs.Request;
 using Eventos.Application.DTOs.Response;
 
 namespace Eventos.Application.Interfaces;
@@ -11,4 +11,5 @@ public interface IEventoService
     Task<RelatorioEventoResponse> ObterRelatorioAsync();
     Task<List<ConvidadoItem>> ListarConvidadosAsync();
     Task<BaseResponse> RemoverDuplicatasAsync();
+    Task<BaseResponse> RemoverConvidadoPorNomeAsync(string nome);
 }

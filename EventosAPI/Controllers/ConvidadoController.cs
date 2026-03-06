@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Eventos.Application.Interfaces;
 using Eventos.Application.DTOs.Request;
@@ -75,6 +75,23 @@ namespace EventosAPI.Controllers
         public async Task<IActionResult> RemoverDuplicatas()
         {
             var response = await _service.RemoverDuplicatasAsync();
+
+            return StatusCode(response.CodigoStatus, response);
+        }
+
+        /// <summary>
+        /// Remove um convidado pelo nome
+        /// </summary>
+        /// <param name="nome">Nome do convidado a ser removido</param>
+        /// <returns>Resposta com status da operação</returns>
+        [HttpDelete("remover")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> RemoverConvidado([FromQuery] string nome)
+        {
+            var response = await _service.RemoverConvidadoPorNomeAsync(nome);
 
             return StatusCode(response.CodigoStatus, response);
         }

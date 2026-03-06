@@ -1,4 +1,4 @@
-﻿using Eventos.Application.Interfaces;
+using Eventos.Application.Interfaces;
 using Eventos.Application.Services;
 using Eventos.Domain.Repositories;
 using Eventos.Infrastructure.Data;
@@ -90,6 +90,8 @@ namespace EventosAPI
             // Configure the HTTP request pipeline.
             app.UseSwagger();
             app.UseSwaggerUI();
+
+            app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
 
             app.UseCors(CorsPolicyName);
 
