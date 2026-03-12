@@ -1,31 +1,38 @@
-name: CI
+name: Qualidade
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: ["**"]
     paths-ignore:
-      - '**.md'
-      - '.gitignore'
+      - "**.md"
+      - ".gitignore"
+  pull_request:
+    branches: ["**"]
+    paths-ignore:
+      - "**.md"
+      - ".gitignore"
 
 permissions:
   contents: read
   checks: write
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+
+  # ─── Build + Cobertura de código ────────────────────────────────────────────
+  qualidade:
     name: Build, Testes e Cobertura (.NET 8)
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout do codigo
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: "8.0.x"
 
-      - name: Restaurar dependencias
+      - name: Restaurar dependências
         run: dotnet restore
 
       - name: Build
@@ -47,7 +54,7 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          files: '**/TestResults.trx'
+          files: "**/TestResults.trx"
           check_name: Resultados dos Testes
 
       - name: Upload do artefato de cobertura
@@ -55,5 +62,5 @@ jobs:
         if: always()
         with:
           name: coverage-report
-          path: '**/coverage.opencover.xml'
+          path: "**/coverage.opencover.xml"
           retention-days: 30
