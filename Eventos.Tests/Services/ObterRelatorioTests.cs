@@ -242,7 +242,7 @@ public class ObterRelatorioTests : RelatorioServiceTestBase
 
         // Assert
         Assert.Equal(500, response.CodigoStatus);
-        Assert.Contains("Ocorreu um erro ao gerar o relatório: Erro na base de dados", response.Mensagem);
+        Assert.Equal("Ocorreu um erro interno. Tente novamente mais tarde.", response.Mensagem);
         Assert.Empty(response.Convidados);
         Assert.Equal(0, response.TotalPessoas);
     }

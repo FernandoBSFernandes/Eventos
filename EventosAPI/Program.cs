@@ -31,8 +31,7 @@ namespace EventosAPI
                 {
                     policy
                         .WithOrigins(
-                            "https://fernandobsfernandes.github.io",
-                            "http://127.0.0.1:5500"
+                            "https://fernandobsfernandes.github.io"
                         )
                         .WithMethods("POST", "GET", "OPTIONS")
                         .WithHeaders("Content-Type");
@@ -42,7 +41,14 @@ namespace EventosAPI
             // Garante que os controllers do assembly EventosAPI
             // são sempre carregados, mesmo quando invocado por testhost
             builder.Services
-                .AddControllers()
+                .AddControllers(options =>
+                {
+                    options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+                })
+                .ConfigureApiBehaviorOptions(options =>
+                {
+                    options.SuppressModelStateInvalidFilter = true;
+                })
                 .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -55,11 +61,20 @@ namespace EventosAPI
             builder.Services.AddSwaggerGen(options =>
             {
                 options.UseInlineDefinitionsForEnums();
-                // Inclui o XML de documentação se existir
-                var xmlFile = $"{typeof(Program).Assembly.GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                if (File.Exists(xmlPath))
-                    options.IncludeXmlComments(xmlPath);
+
+                var assemblies = new[]
+                {
+                    typeof(Program).Assembly,
+                    typeof(Eventos.Application.DTOs.Request.AdicionarConvidadoRequest).Assembly
+                };
+
+                foreach (var assembly in assemblies)
+                {
+                    var xmlFile = $"{assembly.GetName().Name}.xml";
+                    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                    if (File.Exists(xmlPath))
+                        options.IncludeXmlComments(xmlPath);
+                }
             });
 
             // Register DbContext
@@ -69,10 +84,12 @@ namespace EventosAPI
 
                 var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
                 options.UseLoggerFactory(loggerFactory);
-                options.EnableDetailedErrors();
 
                 if (builder.Environment.IsDevelopment())
+                {
+                    options.EnableDetailedErrors();
                     options.EnableSensitiveDataLogging();
+                }
             });
 
             // Register DDD projects services
@@ -90,8 +107,11 @@ namespace EventosAPI
             }
 
             // Configure the HTTP request pipeline.
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            if (app.Environment.IsDevelopment() || builder.Configuration.GetValue<bool>("Swagger:Enabled"))
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
 
             app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
 

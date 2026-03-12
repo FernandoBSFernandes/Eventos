@@ -115,7 +115,7 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(500, response.CodigoStatus);
-        Assert.Contains("Ocorreu um erro ao verificar o convidado: Erro na base de dados", response.Mensagem);
+        Assert.Equal("Ocorreu um erro interno. Tente novamente mais tarde.", response.Mensagem);
         Assert.False(response.Existe);
     }
 

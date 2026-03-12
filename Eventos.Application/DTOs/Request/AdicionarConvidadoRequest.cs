@@ -1,4 +1,3 @@
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
@@ -10,10 +9,13 @@ namespace Eventos.Application.DTOs.Request
     public class AdicionarConvidadoRequest
     {
         /// <summary>
-        /// Nome completo do convidado. Deve ter entre 3 e 50 caracteres.
+        /// Nome completo do convidado
         /// </summary>
         /// <example>João Silva</example>
         [JsonPropertyName("nome")]
+        [Required]
+        [MinLength(3)]
+        [MaxLength(50)]
         public string Nome { get; set; }
 
         /// <summary>
@@ -31,9 +33,10 @@ namespace Eventos.Application.DTOs.Request
         public Participacao Participacao { get; set; }
 
         /// <summary>
-        /// Quantidade de acompanhantes. Deve ser entre 0 e 5. Obrigatoriamente 0 quando a participação for Sozinho.
+        /// Quantidade de acompanhantes. Deve ser 0 quando a participação for Sozinho.
         /// </summary>
         /// <example>2</example>
+        [Range(0, 5)]
         public int QuantidadeAcompanhantes { get; set; }
 
         /// <summary>

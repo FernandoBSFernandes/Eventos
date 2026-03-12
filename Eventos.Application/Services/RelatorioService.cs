@@ -24,17 +24,22 @@ public class RelatorioService : IRelatorioService
 
             var convidados = await _repo.ObterConvidadosConfirmadosAsync();
 
-            var itens = convidados.Select(c => new ConvidadoRelatorioItem(
-                c.Nome,
-                c.Acompanhantes.Select(a => a.Nome).ToList()
-            )).ToList();
+            var itens = new List<ConvidadoRelatorioItem>(convidados.Count);
+            var nomesUnicos = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-            var todosOsNomes = convidados
-                .Select(c => c.Nome)
-                .Concat(convidados.SelectMany(c => c.Acompanhantes.Select(a => a.Nome)))
-                .Select(n => n.Trim().ToLower())
-                .Distinct()
-                .Count();
+            foreach (var c in convidados)
+            {
+                itens.Add(new ConvidadoRelatorioItem(
+                    c.Nome,
+                    c.Acompanhantes.Select(a => a.Nome).ToList()
+                ));
+
+                nomesUnicos.Add(c.Nome.Trim());
+                foreach (var a in c.Acompanhantes)
+                    nomesUnicos.Add(a.Nome.Trim());
+            }
+
+            var todosOsNomes = nomesUnicos.Count;
 
             _logger.LogInformation("[ObterRelatorio] Relatório gerado | Convidados confirmados: {TotalConvidados} | Total de pessoas: {TotalPessoas}",
                 itens.Count, todosOsNomes);
@@ -43,7 +48,8 @@ public class RelatorioService : IRelatorioService
         }
         catch (Exception ex)
         {
-            return new RelatorioEventoResponse(500, $"Ocorreu um erro ao gerar o relatório: {ex.Message}", [], 0);
+            _logger.LogError(ex, "[ObterRelatorio] Erro inesperado ao gerar o relatório.");
+            return new RelatorioEventoResponse(500, "Ocorreu um erro interno. Tente novamente mais tarde.", [], 0);
         }
     }
 

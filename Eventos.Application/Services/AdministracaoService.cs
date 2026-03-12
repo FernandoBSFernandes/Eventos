@@ -30,7 +30,8 @@ public class AdministracaoService : IAdministracaoService
         }
         catch (Exception ex)
         {
-            return new BaseResponse(500, $"Ocorreu um erro ao zerar as tabelas: {ex.Message}");
+            _logger.LogError(ex, "[ZerarTabelas] Erro inesperado ao zerar as tabelas.");
+            return new BaseResponse(500, "Ocorreu um erro interno. Tente novamente mais tarde.");
         }
     }
 
@@ -51,7 +52,8 @@ public class AdministracaoService : IAdministracaoService
         }
         catch (Exception ex)
         {
-            return new BaseResponse(500, $"Ocorreu um erro ao remover duplicatas: {ex.Message}");
+            _logger.LogError(ex, "[RemoverDuplicatas] Erro inesperado ao remover duplicatas.");
+            return new BaseResponse(500, "Ocorreu um erro interno. Tente novamente mais tarde.");
         }
     }
 }

@@ -701,7 +701,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(500, response.CodigoStatus);
-        Assert.Contains("Ocorreu um erro ao adicionar o convidado: Erro na base de dados", response.Mensagem);
+        Assert.Equal("Ocorreu um erro interno. Tente novamente mais tarde.", response.Mensagem);
+        await Repo.Received(1).AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
     #endregion

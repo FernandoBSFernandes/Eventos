@@ -69,7 +69,8 @@ public class ConvidadoService : IConvidadoService
         }
         catch (Exception ex)
         {
-            return new BaseResponse(500, $"Ocorreu um erro ao adicionar o convidado: {ex.Message}");
+            _logger.LogError(ex, "[AdicionarConvidado] Erro inesperado ao adicionar convidado.");
+            return new BaseResponse(500, "Ocorreu um erro interno. Tente novamente mais tarde.");
         }
     }
 
@@ -86,7 +87,8 @@ public class ConvidadoService : IConvidadoService
         }
         catch (Exception ex)
         {
-            return new VerificarConvidadoResponse(500, $"Ocorreu um erro ao verificar o convidado: {ex.Message}", false);
+            _logger.LogError(ex, "[VerificarConvidado] Erro inesperado ao verificar convidado.");
+            return new VerificarConvidadoResponse(500, "Ocorreu um erro interno. Tente novamente mais tarde.", false);
         }
     }
 
@@ -141,7 +143,8 @@ public class ConvidadoService : IConvidadoService
         }
         catch (Exception ex)
         {
-            return new BaseResponse(500, $"Ocorreu um erro ao remover o convidado: {ex.Message}");
+            _logger.LogError(ex, "[RemoverConvidado] Erro inesperado ao remover convidado.");
+            return new BaseResponse(500, "Ocorreu um erro interno. Tente novamente mais tarde.");
         }
     }
 

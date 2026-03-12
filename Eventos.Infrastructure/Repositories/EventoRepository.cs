@@ -86,13 +86,11 @@ public class EventoRepository : IEventoRepository
 
     public async Task<int> ObterTotalPessoasAsync()
     {
-        var convidadosConfirmados = await _context.Convidado
-            .Where(c => c.PresencaConfirmada)
-            .Include(c => c.Acompanhantes)
-            .ToListAsync();
+        var totalConvidados = await _context.Convidado
+            .CountAsync(c => c.PresencaConfirmada);
 
-        var totalConvidados = convidadosConfirmados.Count;
-        var totalAcompanhantes = convidadosConfirmados.Sum(c => c.Acompanhantes.Count);
+        var totalAcompanhantes = await _context.Set<Acompanhante>()
+            .CountAsync(a => a.Convidado.PresencaConfirmada);
 
         return totalConvidados + totalAcompanhantes;
     }

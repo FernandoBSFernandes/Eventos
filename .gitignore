@@ -362,3 +362,6 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /EventosAPI/EventosAPI.csproj.user
+
+# Arquivos de configuração com segredos locais
+appsettings.Development.json

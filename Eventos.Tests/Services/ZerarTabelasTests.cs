@@ -52,7 +52,7 @@ public class ZerarTabelasTests : AdministracaoServiceTestBase
 
         // Assert
         Assert.Equal(500, response.CodigoStatus);
-        Assert.Contains("Ocorreu um erro ao zerar as tabelas: Erro na base de dados", response.Mensagem);
+        Assert.Equal("Ocorreu um erro interno. Tente novamente mais tarde.", response.Mensagem);
         await Repo.Received(1).ZerarTabelasAsync();
     }
 
