@@ -59,7 +59,7 @@ public static class RelatorioPdfGenerator
                 // Cabeçalho da tabela
                 table.Header(header =>
                 {
-                    foreach (var titulo in new[] { "Convidado", "Acompanhantes", "Qtd." })
+                    foreach (var titulo in new[] { "Convidado", "Acompanhantes", "Qtd. Total" })
                     {
                         header.Cell().Background(Colors.Blue.Darken2).Padding(6).Text(titulo)
                             .Bold().FontColor(Colors.White).AlignCenter();
@@ -76,9 +76,9 @@ public static class RelatorioPdfGenerator
                     table.Cell().Background(cor).Padding(5).Text(
                         convidado.Acompanhantes.Count > 0
                             ? string.Join(", ", convidado.Acompanhantes)
-                            : "0"
+                            : "—"
                     ).FontColor(convidado.Acompanhantes.Count > 0 ? Colors.Black : Colors.Grey.Medium);
-                    table.Cell().Background(cor).Padding(5).Text(convidado.Acompanhantes.Count.ToString()).AlignCenter();
+                    table.Cell().Background(cor).Padding(5).Text((1 + convidado.Acompanhantes.Count).ToString()).AlignCenter();
                 }
             });
 

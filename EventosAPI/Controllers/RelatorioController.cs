@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Eventos.Application.Interfaces;
 using Eventos.Application.DTOs.Response;

@@ -24,7 +24,7 @@ public static class RelatorioExcelGenerator
             // Cabeçalhos das colunas
             sheet.Cell("A2").Value = "Convidado";
             sheet.Cell("B2").Value = "Acompanhantes";
-            sheet.Cell("C2").Value = "Qtd. Acompanhantes";
+            sheet.Cell("C2").Value = "Qtd. Total";
 
             var cabecalho = sheet.Range("A2:C2");
             cabecalho.Style.Font.Bold = true;
@@ -39,7 +39,7 @@ public static class RelatorioExcelGenerator
                 sheet.Cell(linha, 2).Value = convidado.Acompanhantes.Count > 0
                     ? string.Join(", ", convidado.Acompanhantes)
                     : "—";
-                sheet.Cell(linha, 3).Value = convidado.Acompanhantes.Count;
+                sheet.Cell(linha, 3).Value = 1 + convidado.Acompanhantes.Count;
                 sheet.Cell(linha, 3).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
                 if (linha % 2 == 0)
