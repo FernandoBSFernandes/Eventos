@@ -1,5 +1,4 @@
 import http from 'k6/http';
-import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Trend, Rate, Counter } from 'k6/metrics';
 
@@ -213,3 +212,4 @@ export function teardown(data) {
 
     console.log(`[teardown] ${removidos} convidado(s) de teste removido(s). Base limpa.`);
 }
+
