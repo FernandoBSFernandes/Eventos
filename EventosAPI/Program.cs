@@ -100,10 +100,13 @@ namespace EventosAPI
 
             var app = builder.Build();
 
-            using (var scope = app.Services.CreateScope())
+            if (!app.Environment.IsDevelopment())
             {
-                var db = scope.ServiceProvider.GetRequiredService<EventosDbContext>();
-                db.Database.Migrate();
+                using (var scope = app.Services.CreateScope())
+                {
+                    var db = scope.ServiceProvider.GetRequiredService<EventosDbContext>();
+                    db.Database.Migrate();
+                } 
             }
 
             // Configure the HTTP request pipeline.

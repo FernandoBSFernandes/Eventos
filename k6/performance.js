@@ -1,12 +1,14 @@
 import http from 'k6/http';
+import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Trend, Rate, Counter } from 'k6/metrics';
 
 // ─── Métricas customizadas ────────────────────────────────────────────────────
-const duracao_adicionar  = new Trend('duracao_adicionar',  true);
-const duracao_verificar  = new Trend('duracao_verificar',  true);
-const duracao_listar     = new Trend('duracao_listar',     true);
-const duracao_relatorio  = new Trend('duracao_relatorio',  true);
+const duracao_adicionar      = new Trend('duracao_adicionar',      true);
+const duracao_verificar      = new Trend('duracao_verificar',      true);
+const duracao_listar         = new Trend('duracao_listar',         true);
+const duracao_relatorio      = new Trend('duracao_relatorio',      true);
+const duracao_vagas_restantes = new Trend('duracao_vagas_restantes', true);
 
 const taxa_erro          = new Rate('taxa_erro');
 const total_requisicoes  = new Counter('total_requisicoes');
@@ -20,14 +22,15 @@ export const options = {
     ],
     thresholds: {
         // 95% das requisições devem responder em menos de 2s
-        'duracao_adicionar': ['p(95)<2000'],
-        'duracao_verificar': ['p(95)<500'],
-        'duracao_listar':    ['p(95)<1000'],
-        'duracao_relatorio': ['p(95)<3000'],
+        'duracao_adicionar':       ['p(95)<2000'],
+        'duracao_verificar':       ['p(95)<500'],
+        'duracao_listar':          ['p(95)<1000'],
+        'duracao_relatorio':       ['p(95)<3000'],
+        'duracao_vagas_restantes': ['p(95)<500'],
         // Taxa de erro abaixo de 5%
-        'taxa_erro':         ['rate<0.05'],
+        'taxa_erro':               ['rate<0.05'],
         // Tempo de resposta geral
-        'http_req_duration': ['p(95)<2000'],
+        'http_req_duration':       ['p(95)<2000'],
     },
 };
 
@@ -151,6 +154,22 @@ export default function (data) {
             'relatorio/excel: status 200': (r) => r.status === 200,
             'relatorio/excel: content-type xlsx': (r) =>
                 r.headers['Content-Type'].includes('spreadsheetml'),
+        });
+        taxa_erro.add(!ok);
+    }
+
+    sleep(0.3);
+
+    // 5. Vagas restantes
+    {
+        const res = http.get(`${BASE_URL}/api/convidado/vagas-restantes`, { headers: HEADERS });
+        duracao_vagas_restantes.add(res.timings.duration);
+        total_requisicoes.add(1);
+
+        const ok = check(res, {
+            'vagas-restantes: status 200': (r) => r.status === 200,
+            'vagas-restantes: campo vagasRestantes presente': (r) => JSON.parse(r.body).vagasRestantes !== undefined,
+            'vagas-restantes: vagasRestantes nao negativo': (r) => JSON.parse(r.body).vagasRestantes >= 0,
         });
         taxa_erro.add(!ok);
     }

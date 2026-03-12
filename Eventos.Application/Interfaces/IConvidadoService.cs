@@ -9,4 +9,5 @@ public interface IConvidadoService
     Task<VerificarConvidadoResponse> VerificarConvidadoExisteAsync(string nome);
     Task<List<ConvidadoItem>> ListarConvidadosAsync();
     Task<BaseResponse> RemoverConvidadoPorNomeAsync(string nome);
+    Task<VagasRestantesResponse> ObterVagasRestantesAsync();
 }

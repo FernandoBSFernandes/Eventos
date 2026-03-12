@@ -148,6 +148,28 @@ public class ConvidadoService : IConvidadoService
         }
     }
 
+    public async Task<VagasRestantesResponse> ObterVagasRestantesAsync()
+    {
+        try
+        {
+            _logger.LogInformation("[ObterVagasRestantes] Requisição de vagas restantes recebida.");
+
+            var pessoasConfirmadas = await _repo.ObterTotalPessoasAsync();
+            var vagasRestantes = Math.Max(0, 100 - pessoasConfirmadas);
+
+            _logger.LogInformation(
+                "[ObterVagasRestantes] Vagas restantes: {VagasRestantes} | Pessoas confirmadas: {PessoasConfirmadas}",
+                vagasRestantes, pessoasConfirmadas);
+
+            return new VagasRestantesResponse(200, "Consulta realizada com sucesso.", vagasRestantes, pessoasConfirmadas);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[ObterVagasRestantes] Erro inesperado ao obter vagas restantes.");
+            return new VagasRestantesResponse(500, "Ocorreu um erro interno. Tente novamente mais tarde.", 0, 0);
+        }
+    }
+
     private static void ValidarConvidado(AdicionarConvidadoRequest request)
     {
         if (request == null)

@@ -91,5 +91,21 @@ namespace EventosAPI.Controllers
 
             return StatusCode(response.CodigoStatus, response);
         }
+
+        /// <summary>
+        /// Retorna a quantidade de vagas restantes no evento
+        /// </summary>
+        /// <returns>Vagas restantes e total de pessoas já confirmadas</returns>
+        /// <response code="200">Consulta realizada com sucesso</response>
+        /// <response code="500">Erro interno ao processar a requisição</response>
+        [HttpGet("vagas-restantes")]
+        [ProducesResponseType(typeof(VagasRestantesResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ObterVagasRestantes()
+        {
+            var response = await _convidadoService.ObterVagasRestantesAsync();
+
+            return StatusCode(response.CodigoStatus, response);
+        }
     }
 }
