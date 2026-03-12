@@ -85,14 +85,14 @@ jobs:
       - name: Aguardar API ficar disponível
         run: |
           echo "Aguardando API..."
-          for i in $(seq 1 30); do
+          for i in $(seq 1 60); do
             if curl -sf http://localhost:5000/api/convidado/listar > /dev/null 2>&1; then
-              echo "API disponível após ${i}s"
+              echo "API disponível após $((i * 2))s"
               exit 0
             fi
             sleep 2
           done
-          echo "API não respondeu em 60s"
+          echo "API não respondeu em 120s"
           exit 1
 
       - name: Setup K6
