@@ -7,12 +7,12 @@ using Microsoft.Extensions.Logging;
 
 namespace Eventos.Application.Services;
 
-public class EventoService : IEventoService
+public class ConvidadoService : IConvidadoService
 {
     private readonly IEventoRepository _repo;
-    private readonly ILogger<EventoService> _logger;
+    private readonly ILogger<ConvidadoService> _logger;
 
-    public EventoService(IEventoRepository repo, ILogger<EventoService> logger)
+    public ConvidadoService(IEventoRepository repo, ILogger<ConvidadoService> logger)
     {
         _repo = repo;
         _logger = logger;
@@ -22,20 +22,18 @@ public class EventoService : IEventoService
     {
         try
         {
-            var quantidadeNomes = request?.NomesAcompanhantes?.Count ?? 0;
-
-            _logger.LogInformation(
-                "[AdicionarConvidado] Requisição recebida | Nome: {Nome} | VaiAoEvento: {VaiAoEvento} | QuantidadeAcompanhantes (campo): {QuantidadeAcompanhantes} | NomesAcompanhantes.Count: {QuantidadeNomes} | Nomes: [{Nomes}]",
-                request?.Nome,
-                request?.PresencaConfirmada == true ? "Sim" : "Não",
-                request?.QuantidadeAcompanhantes,
-                quantidadeNomes,
-                string.Join(", ", request?.NomesAcompanhantes ?? []));
-
-            // Validar dados do convidado
             ValidarConvidado(request);
 
-            // Verificar limite de 100 pessoas
+            var quantidadeNomes = request.NomesAcompanhantes?.Count ?? 0;
+
+            _logger.LogInformation(
+                "[AdicionarConvidado] Requisição recebida | Nome: {Nome} | PresencaConfirmada: {PresencaConfirmada} | QuantidadeAcompanhantes: {QuantidadeAcompanhantes} | QuantidadeNomes: {QuantidadeNomes} | Nomes: {Nomes}",
+                request.Nome,
+                request.PresencaConfirmada,
+                request.QuantidadeAcompanhantes,
+                quantidadeNomes,
+                string.Join(", ", request.NomesAcompanhantes ?? []));
+
             var totalAtual = await _repo.ObterTotalPessoasAsync();
             var novasPessoas = 1 + request.QuantidadeAcompanhantes;
 
@@ -48,34 +46,29 @@ public class EventoService : IEventoService
                 return new BaseResponse(401, "A quantidade máxima de pessoas a serem cadastrados extrapolou o limite de 100 convidados.");
             }
 
-            // Preparar o objeto para persistência
             var convidado = new Convidado
             {
                 Nome = request.Nome,
                 PresencaConfirmada = request.PresencaConfirmada,
                 Participacao = request.Participacao.ToString(),
                 QuantidadeAcompanhantes = request.QuantidadeAcompanhantes,
-                Acompanhantes = request.Participacao.ToString() == "Sozinho" 
+                Acompanhantes = request.Participacao.ToString() == "Sozinho"
                     ? new List<Acompanhante>()
                     : request.NomesAcompanhantes?
                         .Select(nome => new Acompanhante { Nome = nome })
                         .ToList() ?? new List<Acompanhante>()
             };
 
-            // Persistir na base de dados
             await _repo.AdicionarConvidadoAsync(convidado);
 
-            // Retornar sucesso com código 201
             return new BaseResponse(201, "Convidado foi registrado com sucesso");
         }
         catch (ArgumentException ex)
         {
-            // Erro de validação - retornar código 400
             return new BaseResponse(400, ex.Message);
         }
         catch (Exception ex)
         {
-            // Outro tipo de erro - retornar código 500
             return new BaseResponse(500, $"Ocorreu um erro ao adicionar o convidado: {ex.Message}");
         }
     }
@@ -97,56 +90,6 @@ public class EventoService : IEventoService
         }
     }
 
-    public async Task<BaseResponse> ZerarTabelasAsync()
-    {
-        try
-        {
-            _logger.LogInformation("[ZerarTabelas] Requisição para zerar as tabelas recebida.");
-
-            await _repo.ZerarTabelasAsync();
-
-            _logger.LogInformation("[ZerarTabelas] Tabelas zeradas com sucesso.");
-
-            return new BaseResponse(200, "Tabelas zeradas com sucesso.");
-        }
-        catch (Exception ex)
-        {
-            return new BaseResponse(500, $"Ocorreu um erro ao zerar as tabelas: {ex.Message}");
-        }
-    }
-
-    public async Task<RelatorioEventoResponse> ObterRelatorioAsync()
-    {
-        try
-        {
-            _logger.LogInformation("[ObterRelatorio] Requisição de relatório recebida.");
-
-            var convidados = await _repo.ObterConvidadosConfirmadosAsync();
-
-            var itens = convidados.Select(c => new ConvidadoRelatorioItem(
-                c.Nome,
-                c.Acompanhantes.Select(a => a.Nome).ToList()
-            )).ToList();
-
-            // Total = convidados confirmados + todos os seus acompanhantes, sem duplicatas de nome
-            var todosOsNomes = convidados
-                .Select(c => c.Nome)
-                .Concat(convidados.SelectMany(c => c.Acompanhantes.Select(a => a.Nome)))
-                .Select(n => n.Trim().ToLower())
-                .Distinct()
-                .Count();
-
-            _logger.LogInformation("[ObterRelatorio] Relatório gerado | Convidados confirmados: {TotalConvidados} | Total de pessoas: {TotalPessoas}",
-                itens.Count, todosOsNomes);
-
-            return new RelatorioEventoResponse(200, "Relatório gerado com sucesso.", itens, todosOsNomes);
-        }
-        catch (Exception ex)
-        {
-            return new RelatorioEventoResponse(500, $"Ocorreu um erro ao gerar o relatório: {ex.Message}", [], 0);
-        }
-    }
-
     public async Task<List<ConvidadoItem>> ListarConvidadosAsync()
     {
         _logger.LogInformation("[ListarConvidados] Requisição para listar todos os convidados recebida.");
@@ -164,27 +107,6 @@ public class EventoService : IEventoService
         _logger.LogInformation("[ListarConvidados] Convidados listados com sucesso | Total: {Total}", itens.Count);
 
         return itens;
-    }
-
-    public async Task<BaseResponse> RemoverDuplicatasAsync()
-    {
-        try
-        {
-            _logger.LogInformation("[RemoverDuplicatas] Requisição para remover duplicatas recebida.");
-
-            var (convidadosRemovidos, acompanhantesRemovidos) = await _repo.RemoverDuplicatasAsync();
-
-            _logger.LogInformation(
-                "[RemoverDuplicatas] Duplicatas removidas | Convidados: {Convidados} | Acompanhantes: {Acompanhantes}",
-                convidadosRemovidos, acompanhantesRemovidos);
-
-            return new BaseResponse(200,
-                $"Duplicatas removidas com sucesso. Convidados removidos: {convidadosRemovidos}. Acompanhantes removidos: {acompanhantesRemovidos}.");
-        }
-        catch (Exception ex)
-        {
-            return new BaseResponse(500, $"Ocorreu um erro ao remover duplicatas: {ex.Message}");
-        }
     }
 
     public async Task<BaseResponse> RemoverConvidadoPorNomeAsync(string nome)

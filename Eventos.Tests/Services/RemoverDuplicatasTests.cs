@@ -3,7 +3,7 @@ using NSubstitute;
 
 namespace Eventos.Tests.Services;
 
-public class RemoverDuplicatasTests : EventoServiceTestBase
+public class RemoverDuplicatasTests : AdministracaoServiceTestBase
 {
     #region Sucesso
 

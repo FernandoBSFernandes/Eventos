@@ -76,7 +76,9 @@ namespace EventosAPI
             });
 
             // Register DDD projects services
-            builder.Services.AddScoped<IEventoService, EventoService>();
+            builder.Services.AddScoped<IConvidadoService, ConvidadoService>();
+            builder.Services.AddScoped<IAdministracaoService, AdministracaoService>();
+            builder.Services.AddScoped<IRelatorioService, RelatorioService>();
             builder.Services.AddScoped<IEventoRepository, EventoRepository>();
 
             var app = builder.Build();

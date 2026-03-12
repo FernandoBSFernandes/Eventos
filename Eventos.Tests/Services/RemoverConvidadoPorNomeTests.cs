@@ -5,7 +5,7 @@ using NSubstitute.ExceptionExtensions;
 
 namespace Eventos.Tests.Services;
 
-public class RemoverConvidadoPorNomeTests : EventoServiceTestBase
+public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
 {
     #region Sucesso
 

@@ -4,7 +4,7 @@ using NSubstitute;
 
 namespace Eventos.Tests.Services;
 
-public class ObterRelatorioTests : EventoServiceTestBase
+public class ObterRelatorioTests : RelatorioServiceTestBase
 {
     #region Sucesso
 

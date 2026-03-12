@@ -4,7 +4,7 @@ using NSubstitute;
 
 namespace Eventos.Tests.Services;
 
-public class ListarConvidadosTests : EventoServiceTestBase
+public class ListarConvidadosTests : ConvidadoServiceTestBase
 {
     #region Sucesso
 

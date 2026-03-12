@@ -3,13 +3,10 @@ using Eventos.Application.DTOs.Response;
 
 namespace Eventos.Application.Interfaces;
 
-public interface IEventoService
+public interface IConvidadoService
 {
     Task<BaseResponse> AdicionarConvidadoAsync(AdicionarConvidadoRequest request);
     Task<VerificarConvidadoResponse> VerificarConvidadoExisteAsync(string nome);
-    Task<BaseResponse> ZerarTabelasAsync();
-    Task<RelatorioEventoResponse> ObterRelatorioAsync();
     Task<List<ConvidadoItem>> ListarConvidadosAsync();
-    Task<BaseResponse> RemoverDuplicatasAsync();
     Task<BaseResponse> RemoverConvidadoPorNomeAsync(string nome);
 }

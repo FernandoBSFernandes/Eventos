@@ -9,6 +9,9 @@ public static class RelatorioPdfGenerator
 {
     public static Task<byte[]> GerarAsync(RelatorioEventoResponse relatorio)
     {
+        var fusoHorarioBrasilia = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+        var agora = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, fusoHorarioBrasilia);
+
         return Task.Run(() => Document.Create(container =>
         {
             container.Page(page =>
@@ -22,7 +25,7 @@ public static class RelatorioPdfGenerator
                 page.Footer().AlignCenter().Text(text =>
                 {
                     text.Span("Gerado em: ").FontSize(9).FontColor(Colors.Grey.Medium);
-                    text.Span(DateTime.Now.ToString("dd/MM/yyyy HH:mm")).FontSize(9).FontColor(Colors.Grey.Medium);
+                    text.Span(agora.ToString("dd/MM/yyyy HH:mm")).FontSize(9).FontColor(Colors.Grey.Medium);
                 });
             });
         }).GeneratePdf());

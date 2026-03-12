@@ -4,7 +4,7 @@ using NSubstitute.ExceptionExtensions;
 
 namespace Eventos.Tests.Services;
 
-public class VerificarConvidadoTests : EventoServiceTestBase
+public class VerificarConvidadoTests : ConvidadoServiceTestBase
 {
     #region Sucesso
 

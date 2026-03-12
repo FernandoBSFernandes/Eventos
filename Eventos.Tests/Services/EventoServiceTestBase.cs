@@ -5,14 +5,38 @@ using NSubstitute;
 
 namespace Eventos.Tests.Services;
 
-public abstract class EventoServiceTestBase
+public abstract class ConvidadoServiceTestBase
 {
     protected readonly IEventoRepository Repo;
-    protected readonly EventoService Service;
+    protected readonly ConvidadoService Service;
 
-    protected EventoServiceTestBase()
+    protected ConvidadoServiceTestBase()
     {
         Repo = Substitute.For<IEventoRepository>();
-        Service = new EventoService(Repo, NullLogger<EventoService>.Instance);
+        Service = new ConvidadoService(Repo, NullLogger<ConvidadoService>.Instance);
+    }
+}
+
+public abstract class AdministracaoServiceTestBase
+{
+    protected readonly IEventoRepository Repo;
+    protected readonly AdministracaoService Service;
+
+    protected AdministracaoServiceTestBase()
+    {
+        Repo = Substitute.For<IEventoRepository>();
+        Service = new AdministracaoService(Repo, NullLogger<AdministracaoService>.Instance);
+    }
+}
+
+public abstract class RelatorioServiceTestBase
+{
+    protected readonly IEventoRepository Repo;
+    protected readonly RelatorioService Service;
+
+    protected RelatorioServiceTestBase()
+    {
+        Repo = Substitute.For<IEventoRepository>();
+        Service = new RelatorioService(Repo, NullLogger<RelatorioService>.Instance);
     }
 }

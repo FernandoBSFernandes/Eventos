@@ -6,7 +6,7 @@ using NSubstitute.ExceptionExtensions;
 
 namespace Eventos.Tests.Services;
 
-public class AdicionarConvidadoTests : EventoServiceTestBase
+public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 {
     #region Sucesso
 
@@ -75,7 +75,7 @@ public class AdicionarConvidadoTests : EventoServiceTestBase
         // Assert
         Assert.Equal(201, response.CodigoStatus);
         await Repo.Received(1).AdicionarConvidadoAsync(Arg.Is<Convidado>(c =>
-            c.PresencaConfirmada == false
+            !c.PresencaConfirmada
         ));
     }
 

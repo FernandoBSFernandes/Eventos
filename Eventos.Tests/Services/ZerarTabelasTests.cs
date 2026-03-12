@@ -3,7 +3,7 @@ using NSubstitute;
 
 namespace Eventos.Tests.Services;
 
-public class ZerarTabelasTests : EventoServiceTestBase
+public class ZerarTabelasTests : AdministracaoServiceTestBase
 {
     #region Sucesso
 
