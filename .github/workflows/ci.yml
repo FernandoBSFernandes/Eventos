@@ -65,21 +65,22 @@ jobs:
       - name: Restaurar dependências
         run: dotnet restore
 
-      - name: Build (Release)
-        run: dotnet build --no-restore --configuration Release
+      - name: Publicar API
+        run: |
+          dotnet publish EventosAPI/EventosAPI.csproj \
+            --configuration Release \
+            --output ./publish
 
       - name: Subir API em background
         env:
           ASPNETCORE_URLS: http://localhost:5000
           ASPNETCORE_ENVIRONMENT: Production
-          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=db_k6;Username=k6_user;Password=k6_pass"
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=db_k6;Username=k6_user;Password=k6_pass;SSL Mode=Disable"
           Swagger__Enabled: "false"
+          AllowedHosts: "*"
+          ASPNETCORE_FORWARDEDHEADERS_ENABLED: "false"
         run: |
-          dotnet run \
-            --project EventosAPI/EventosAPI.csproj \
-            --configuration Release \
-            --no-build \
-            &
+          dotnet ./publish/EventosAPI.dll > api.log 2>&1 &
           echo $! > api.pid
 
       - name: Aguardar API ficar disponível
@@ -92,6 +93,8 @@ jobs:
             fi
             sleep 2
           done
+          echo "--- LOG DA API ---"
+          cat api.log || true
           echo "API não respondeu em 120s"
           exit 1
 
@@ -105,6 +108,10 @@ jobs:
         env:
           BASE_URL: http://localhost:5000
           K6_NO_COLOR: "true"
+
+      - name: Exibir log da API
+        if: always()
+        run: cat api.log || true
 
       - name: Derrubar API
         if: always()
