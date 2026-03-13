@@ -9,18 +9,35 @@ namespace Eventos.IntegrationTests.Base;
 
 public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Program>, IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _postgres = new PostgreSqlBuilder()
-        .WithImage("postgres:16-alpine")
-        .Build();
+    // Quando rodando no CI, a connection string vem da variável de ambiente.
+    // Localmente, sobe um container PostgreSQL via Testcontainers.
+    private readonly string? _ciConnectionString =
+        Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+
+    private readonly PostgreSqlContainer? _postgres;
+
+    public EventosWebApplicationFactory()
+    {
+        if (string.IsNullOrWhiteSpace(_ciConnectionString))
+            _postgres = new PostgreSqlBuilder()
+                .WithImage("postgres:16-alpine")
+                .Build();
+    }
+
+    private string ConnectionString =>
+        _ciConnectionString ?? _postgres!.GetConnectionString();
 
     public async Task InitializeAsync()
     {
-        await _postgres.StartAsync();
+        if (_postgres is not null)
+            await _postgres.StartAsync();
     }
 
     public new async Task DisposeAsync()
     {
-        await _postgres.StopAsync();
+        if (_postgres is not null)
+            await _postgres.StopAsync();
+
         await base.DisposeAsync();
     }
 
@@ -28,16 +45,14 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
     {
         builder.ConfigureServices(services =>
         {
-            // Remove o DbContext registrado pela aplicação
             var descriptor = services.SingleOrDefault(
                 d => d.ServiceType == typeof(DbContextOptions<EventosDbContext>));
 
             if (descriptor != null)
                 services.Remove(descriptor);
 
-            // Registra o DbContext apontando para o container PostgreSQL
             services.AddDbContext<EventosDbContext>(options =>
-                options.UseNpgsql(_postgres.GetConnectionString()));
+                options.UseNpgsql(ConnectionString));
         });
 
         builder.UseEnvironment("Development");
