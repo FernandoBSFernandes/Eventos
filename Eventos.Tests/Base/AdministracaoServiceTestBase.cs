@@ -2,7 +2,7 @@ using Eventos.Application.Services;
 using Eventos.Domain.Repositories;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace Eventos.Tests.Services;
+namespace Eventos.Tests.Base;
 
 public abstract class AdministracaoServiceTestBase
 {

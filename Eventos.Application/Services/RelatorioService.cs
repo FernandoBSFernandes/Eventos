@@ -25,7 +25,7 @@ public class RelatorioService : IRelatorioService
             var convidados = await _repo.ObterConvidadosConfirmadosAsync();
 
             var itens = new List<ConvidadoRelatorioItem>(convidados.Count);
-            var nomesUnicos = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var totalPessoas = 0;
 
             foreach (var c in convidados)
             {
@@ -34,17 +34,13 @@ public class RelatorioService : IRelatorioService
                     c.Acompanhantes.Select(a => a.Nome).ToList()
                 ));
 
-                nomesUnicos.Add(c.Nome.Trim());
-                foreach (var a in c.Acompanhantes)
-                    nomesUnicos.Add(a.Nome.Trim());
+                totalPessoas += 1 + c.Acompanhantes.Count;
             }
 
-            var todosOsNomes = nomesUnicos.Count;
-
             _logger.LogInformation("[ObterRelatorio] Relatório gerado | Convidados confirmados: {TotalConvidados} | Total de pessoas: {TotalPessoas}",
-                itens.Count, todosOsNomes);
+                itens.Count, totalPessoas);
 
-            return new RelatorioEventoResponse(200, "Relatório gerado com sucesso.", itens, todosOsNomes);
+            return new RelatorioEventoResponse(200, "Relatório gerado com sucesso.", itens, totalPessoas);
         }
         catch (Exception ex)
         {

@@ -1,0 +1,78 @@
+name: Testes
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  unit-tests:
+    name: Testes Unitários
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restaurar dependências
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Executar testes unitários
+        run: >
+          dotnet test Eventos.Tests/Eventos.Tests.csproj
+          --no-build
+          --configuration Release
+          --logger "trx;LogFileName=unit-tests.trx"
+          --results-directory ./test-results
+
+      - name: Publicar relatório de testes unitários
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Relatório — Testes Unitários
+          path: ./test-results/unit-tests.trx
+          reporter: dotnet-trx
+
+  integration-tests:
+    name: Testes de Integração
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restaurar dependências
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Executar testes de integração
+        run: >
+          dotnet test Eventos.IntegrationTests/Eventos.IntegrationTests.csproj
+          --no-build
+          --configuration Release
+          --logger "trx;LogFileName=integration-tests.trx"
+          --results-directory ./test-results
+
+      - name: Publicar relatório de testes de integração
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Relatório — Testes de Integração
+          path: ./test-results/integration-tests.trx
+          reporter: dotnet-trx

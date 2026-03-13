@@ -4,7 +4,7 @@ using Eventos.Domain.Repositories;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
-namespace Eventos.Tests.Services;
+namespace Eventos.Tests.Base;
 
 public abstract class ConvidadoServiceTestBase
 {

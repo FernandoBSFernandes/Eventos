@@ -56,7 +56,7 @@ public class ConvidadoService : IConvidadoService
                 PresencaConfirmada = request.PresencaConfirmada,
                 Participacao = request.Participacao.ToString(),
                 QuantidadeAcompanhantes = request.QuantidadeAcompanhantes,
-                Acompanhantes = request.Participacao.ToString() == "Sozinho"
+                Acompanhantes = request.Participacao == Participacao.Sozinho
                     ? new List<Acompanhante>()
                     : request.NomesAcompanhantes?
                         .Select(nome => new Acompanhante { Nome = nome })
