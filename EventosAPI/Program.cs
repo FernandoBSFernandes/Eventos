@@ -1,3 +1,4 @@
+using Eventos.Application.Configuration;
 using Eventos.Application.Interfaces;
 using Eventos.Application.Services;
 using Eventos.Domain.Repositories;
@@ -93,6 +94,8 @@ namespace EventosAPI
             });
 
             // Register DDD projects services
+            builder.Services.Configure<EventoConfiguration>(
+                builder.Configuration.GetSection(EventoConfiguration.SectionName));
             builder.Services.AddScoped<IConvidadoService, ConvidadoService>();
             builder.Services.AddScoped<IAdministracaoService, AdministracaoService>();
             builder.Services.AddScoped<IRelatorioService, RelatorioService>();

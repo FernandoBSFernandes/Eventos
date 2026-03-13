@@ -24,6 +24,7 @@ public class EventoRepository : IEventoRepository
     public async Task<List<Convidado>> ObterTodosConvidadosAsync()
     {
         return await _context.Convidado
+            .AsNoTracking()
             .Include(c => c.Acompanhantes)
             .ToListAsync();
     }
@@ -31,6 +32,7 @@ public class EventoRepository : IEventoRepository
     public async Task<bool> ConvidadoExisteAsync(string nome)
     {
         return await _context.Convidado
+            .AsNoTracking()
             .AnyAsync(c => EF.Functions.ILike(c.Nome, $"%{nome}%"));
     }
 
@@ -42,6 +44,7 @@ public class EventoRepository : IEventoRepository
     public async Task<List<Convidado>> ObterConvidadosConfirmadosAsync()
     {
         return await _context.Convidado
+            .AsNoTracking()
             .Include(c => c.Acompanhantes)
             .Where(c => c.PresencaConfirmada)
             .OrderBy(c => c.Nome)

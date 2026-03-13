@@ -1,9 +1,11 @@
+using Eventos.Application.Configuration;
 using Eventos.Application.DTOs.Request;
 using Eventos.Application.DTOs.Response;
 using Eventos.Application.Interfaces;
 using Eventos.Domain.Entities;
 using Eventos.Domain.Repositories;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Eventos.Application.Services;
 
@@ -11,11 +13,13 @@ public class ConvidadoService : IConvidadoService
 {
     private readonly IEventoRepository _repo;
     private readonly ILogger<ConvidadoService> _logger;
+    private readonly int _limiteMaximoPessoas;
 
-    public ConvidadoService(IEventoRepository repo, ILogger<ConvidadoService> logger)
+    public ConvidadoService(IEventoRepository repo, ILogger<ConvidadoService> logger, IOptions<EventoConfiguration> options)
     {
         _repo = repo;
         _logger = logger;
+        _limiteMaximoPessoas = options.Value.LimiteMaximoPessoas;
     }
 
     public async Task<BaseResponse> AdicionarConvidadoAsync(AdicionarConvidadoRequest request)
@@ -37,13 +41,13 @@ public class ConvidadoService : IConvidadoService
             var totalAtual = await _repo.ObterTotalPessoasAsync();
             var novasPessoas = 1 + request.QuantidadeAcompanhantes;
 
-            if (totalAtual + novasPessoas > 100)
+            if (totalAtual + novasPessoas > _limiteMaximoPessoas)
             {
                 _logger.LogWarning(
-                    "[AdicionarConvidado] Limite de 100 pessoas excedido | Total atual: {TotalAtual} | Novas pessoas: {NovasPessoas}",
-                    totalAtual, novasPessoas);
+                    "[AdicionarConvidado] Limite de {LimiteMaximoPessoas} pessoas excedido | Total atual: {TotalAtual} | Novas pessoas: {NovasPessoas}",
+                    _limiteMaximoPessoas, totalAtual, novasPessoas);
 
-                return new BaseResponse(401, "A quantidade máxima de pessoas a serem cadastrados extrapolou o limite de 100 convidados.");
+                return new BaseResponse(401, $"A quantidade máxima de pessoas a serem cadastrados extrapolou o limite de {_limiteMaximoPessoas} convidados.");
             }
 
             var convidado = new Convidado
@@ -155,7 +159,7 @@ public class ConvidadoService : IConvidadoService
             _logger.LogInformation("[ObterVagasRestantes] Requisição de vagas restantes recebida.");
 
             var pessoasConfirmadas = await _repo.ObterTotalPessoasAsync();
-            var vagasRestantes = Math.Max(0, 100 - pessoasConfirmadas);
+            var vagasRestantes = Math.Max(0, _limiteMaximoPessoas - pessoasConfirmadas);
 
             _logger.LogInformation(
                 "[ObterVagasRestantes] Vagas restantes: {VagasRestantes} | Pessoas confirmadas: {PessoasConfirmadas}",

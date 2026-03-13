@@ -7,6 +7,7 @@ namespace EventosAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Consumes("application/json")]
     public class RelatorioController : ControllerBase
     {
         private readonly IRelatorioService _relatorioService;
@@ -23,6 +24,7 @@ namespace EventosAPI.Controllers
         /// <response code="200">Arquivo gerado com sucesso</response>
         /// <response code="500">Erro interno ao processar a requisição</response>
         [HttpGet("excel")]
+        [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
         [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObterRelatorioExcel()
@@ -38,6 +40,7 @@ namespace EventosAPI.Controllers
         /// <response code="200">Arquivo gerado com sucesso</response>
         /// <response code="500">Erro interno ao processar a requisição</response>
         [HttpGet("pdf")]
+        [Produces("application/pdf")]
         [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObterRelatorioPdf()

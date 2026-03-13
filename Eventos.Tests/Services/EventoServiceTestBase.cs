@@ -1,6 +1,8 @@
+using Eventos.Application.Configuration;
 using Eventos.Application.Services;
 using Eventos.Domain.Repositories;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 
 namespace Eventos.Tests.Services;
@@ -13,7 +15,8 @@ public abstract class ConvidadoServiceTestBase
     protected ConvidadoServiceTestBase()
     {
         Repo = Substitute.For<IEventoRepository>();
-        Service = new ConvidadoService(Repo, NullLogger<ConvidadoService>.Instance);
+        var options = Options.Create(new EventoConfiguration { LimiteMaximoPessoas = 100 });
+        Service = new ConvidadoService(Repo, NullLogger<ConvidadoService>.Instance, options);
     }
 }
 
