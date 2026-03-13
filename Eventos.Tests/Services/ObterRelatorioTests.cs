@@ -1,14 +1,12 @@
-using Xunit;
-using Eventos.Domain.Entities;
-using NSubstitute;
-
 namespace Eventos.Tests.Services;
 
+[Trait("Serviço", "ObterRelatorio")]
 public class ObterRelatorioTests : RelatorioServiceTestBase
 {
     #region Sucesso
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar relatório quando há convidados confirmados com acompanhantes")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornarRelatorio_QuandoHaConvidadosConfirmadosComAcompanhantes()
     {
         // Arrange
@@ -50,7 +48,8 @@ public class ObterRelatorioTests : RelatorioServiceTestBase
         await Repo.Received(1).ObterConvidadosConfirmadosAsync();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar lista vazia e total zero quando não há convidados confirmados")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornarListaVaziaETotalZero_QuandoNaoHaConvidadosConfirmados()
     {
         // Arrange
@@ -66,7 +65,8 @@ public class ObterRelatorioTests : RelatorioServiceTestBase
         Assert.Equal(0, response.TotalPessoas);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar acompanhantes vazios quando convidado vai sozinho")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornarAcompanhantesVazios_QuandoConvidadoVaiSozinho()
     {
         // Arrange
@@ -94,7 +94,8 @@ public class ObterRelatorioTests : RelatorioServiceTestBase
         Assert.Equal(1, response.TotalPessoas);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve eliminar duplicatas no total quando convidado e acompanhante têm mesmo nome")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveEliminarDuplicatasNoTotal_QuandoConvidadoEAcompanhanteTemMesmoNome()
     {
         // Arrange
@@ -123,7 +124,8 @@ public class ObterRelatorioTests : RelatorioServiceTestBase
         Assert.Equal(1, response.TotalPessoas);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve ignorar diferença de caixa ao comparar nomes duplicados")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveIgnorarDiferencaDeCaixa_QuandoNomesIguaisComCaixasDiferentes()
     {
         // Arrange
@@ -151,7 +153,8 @@ public class ObterRelatorioTests : RelatorioServiceTestBase
         Assert.Equal(1, response.TotalPessoas);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve mapear nomes de acompanhantes corretamente")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveMappearNomesAcompanhantesCorretamente_QuandoConvidadoAcompanhado()
     {
         // Arrange
@@ -184,7 +187,8 @@ public class ObterRelatorioTests : RelatorioServiceTestBase
         Assert.Contains("Beatriz Rocha", item.Acompanhantes);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve contabilizar total correto com múltiplos convidados e acompanhantes")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveContabilizarTotalCorreto_QuandoMultiplosConvidadosComAcompanhantes()
     {
         // Arrange
@@ -230,7 +234,8 @@ public class ObterRelatorioTests : RelatorioServiceTestBase
 
     #region Erro Interno
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 500 quando repositório lança exceção")]
+    [Trait("Categoria", "Erro Interno")]
     public async Task DeveRetornar500_QuandoRepositorioLancaExcecao()
     {
         // Arrange

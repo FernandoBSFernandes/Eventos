@@ -1,14 +1,12 @@
-using Xunit;
-using Eventos.Domain.Entities;
-using NSubstitute;
-
 namespace Eventos.Tests.Services;
 
+[Trait("Serviço", "ListarConvidados")]
 public class ListarConvidadosTests : ConvidadoServiceTestBase
 {
     #region Sucesso
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar todos os convidados quando há cadastros")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornarTodosConvidados_QuandoHaConvidadosCadastrados()
     {
         // Arrange
@@ -47,7 +45,8 @@ public class ListarConvidadosTests : ConvidadoServiceTestBase
         await Repo.Received(1).ObterTodosConvidadosAsync();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar lista vazia quando não há convidados cadastrados")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornarListaVazia_QuandoNaoHaConvidadosCadastrados()
     {
         // Arrange
@@ -62,7 +61,8 @@ public class ListarConvidadosTests : ConvidadoServiceTestBase
         await Repo.Received(1).ObterTodosConvidadosAsync();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve mapear todos os campos de convidado acompanhado")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveMappearTodosCampos_QuandoConvidadoAcompanhado()
     {
         // Arrange
@@ -96,7 +96,8 @@ public class ListarConvidadosTests : ConvidadoServiceTestBase
         Assert.Equal("Lucia Lima", item.NomesAcompanhantes[0]);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve mapear todos os campos de convidado sozinho")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveMappearTodosCampos_QuandoConvidadoSozinho()
     {
         // Arrange
@@ -126,7 +127,8 @@ public class ListarConvidadosTests : ConvidadoServiceTestBase
         Assert.Empty(item.NomesAcompanhantes);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve listar convidados confirmados e não confirmados")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveListarConvidadosConfirmadosENaoConfirmados_QuandoAmbosExistem()
     {
         // Arrange
@@ -161,7 +163,8 @@ public class ListarConvidadosTests : ConvidadoServiceTestBase
         Assert.Contains(resultado, c => c.PresencaConfirmada == false);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve mapear nomes de acompanhantes corretamente quando há múltiplos")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveMappearNomesAcompanhantesCorretamente_QuandoMultiplosAcompanhantes()
     {
         // Arrange
@@ -199,7 +202,8 @@ public class ListarConvidadosTests : ConvidadoServiceTestBase
 
     #region Erro Interno
 
-    [Fact]
+    [Fact(DisplayName = "Deve lançar exceção quando repositório falha")]
+    [Trait("Categoria", "Erro Interno")]
     public async Task DeveLancarExcecao_QuandoRepositorioFalha()
     {
         // Arrange

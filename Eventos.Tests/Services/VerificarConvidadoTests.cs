@@ -1,14 +1,12 @@
-using Xunit;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
-
 namespace Eventos.Tests.Services;
 
+[Trait("Serviço", "VerificarConvidado")]
 public class VerificarConvidadoTests : ConvidadoServiceTestBase
 {
     #region Sucesso
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar existe=true quando convidado está cadastrado")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornarExisteTrue_QuandoConvidadoCadastrado()
     {
         // Arrange
@@ -25,7 +23,8 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
         await Repo.Received(1).ConvidadoExisteAsync("João Silva");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar existe=false quando convidado não está cadastrado")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornarExisteFalse_QuandoConvidadoNaoCadastrado()
     {
         // Arrange
@@ -41,7 +40,8 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
         await Repo.Received(1).ConvidadoExisteAsync("Maria Souza");
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve passar o nome exato ao repositório")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DevePassarNomeExatoAoRepositorio_QuandoNomeValido()
     {
         // Arrange
@@ -60,7 +60,8 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
 
     #region Validação de Nome
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando nome é nulo")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoNomeNulo()
     {
         // Act
@@ -73,7 +74,8 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().ConvidadoExisteAsync(Arg.Any<string>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando nome é vazio")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoNomeVazio()
     {
         // Act
@@ -86,7 +88,8 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().ConvidadoExisteAsync(Arg.Any<string>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando nome é espaço em branco")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoNomeEspacoEmBranco()
     {
         // Act
@@ -103,7 +106,8 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
 
     #region Erro Interno
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 500 quando repositório lança exceção")]
+    [Trait("Categoria", "Erro Interno")]
     public async Task DeveRetornar500_QuandoRepositorioLancaExcecao()
     {
         // Arrange

@@ -1,16 +1,14 @@
-using Xunit;
 using Eventos.Application.DTOs.Request;
-using Eventos.Domain.Entities;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 
 namespace Eventos.Tests.Services;
 
+[Trait("Serviço", "AdicionarConvidado")]
 public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 {
     #region Sucesso
 
-    [Fact]
+    [Fact(DisplayName = "Deve registrar convidado sozinho com dados válidos")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRegistrarComSucesso_QuandoConvidadoSozinhoComDadosValidos()
     {
         // Arrange
@@ -32,7 +30,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.Received(1).AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve registrar convidado acompanhado com nomes válidos")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRegistrarComSucesso_QuandoConvidadoAcompanhadoComNomesValidos()
     {
         // Arrange
@@ -57,7 +56,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         ));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve registrar convidado sem presença confirmada")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRegistrarComSucesso_QuandoConvidadoNaoConfirmadoPresenca()
     {
         // Arrange
@@ -79,7 +79,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         ));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve registrar convidado com nome de 3 caracteres (mínimo)")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRegistrarComSucesso_QuandoNomeTem3Caracteres()
     {
         // Arrange
@@ -98,7 +99,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         Assert.Equal(201, response.CodigoStatus);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve registrar convidado com nome de 50 caracteres (máximo)")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRegistrarComSucesso_QuandoNomeTem50Caracteres()
     {
         // Arrange
@@ -117,7 +119,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         Assert.Equal(201, response.CodigoStatus);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve registrar convidado acompanhado com 5 acompanhantes (máximo)")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRegistrarComSucesso_QuandoAcompanhadoComMaximo5Acompanhantes()
     {
         // Arrange
@@ -142,7 +145,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         ));
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve garantir lista de acompanhantes vazia quando convidado vai sozinho")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveGarantirAcompanhantesVazios_QuandoConvidadoVaiSozinho()
     {
         // Arrange
@@ -167,7 +171,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
     #region Validação de Request Nulo
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando request é nulo")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoRequestNulo()
     {
         // Act
@@ -183,7 +188,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
     #region Validação de Nome
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando nome é nulo")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoNomeNulo()
     {
         // Arrange
@@ -204,7 +210,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando nome é vazio")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoNomeVazio()
     {
         // Arrange
@@ -225,7 +232,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando nome é espaço em branco")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoNomeEspacoEmBranco()
     {
         // Arrange
@@ -246,7 +254,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando nome tem menos de 3 caracteres")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoNomeMenorQue3Caracteres()
     {
         // Arrange
@@ -267,7 +276,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando nome tem mais de 50 caracteres")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoNomeMaiorQue50Caracteres()
     {
         // Arrange
@@ -292,7 +302,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
     #region Validação de Acompanhantes
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando quantidade de acompanhantes é negativa")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoQuantidadeAcompanhantesNegativa()
     {
         // Arrange
@@ -313,7 +324,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando quantidade de acompanhantes é maior que 5")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoQuantidadeAcompanhantesMaiorQue5()
     {
         // Arrange
@@ -334,7 +346,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando participação é Sozinho mas há acompanhantes")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoSozinhoComAcompanhantes()
     {
         // Arrange
@@ -355,7 +368,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando quantidade declarada não corresponde aos nomes informados")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoQuantidadeNaoCorrespondeAosNomes()
     {
         // Arrange
@@ -376,7 +390,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando nome de acompanhante é vazio")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoNomeAcompanhanteVazio()
     {
         // Arrange
@@ -397,7 +412,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando nome de acompanhante é espaço em branco")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoNomeAcompanhanteEspacoEmBranco()
     {
         // Arrange
@@ -418,7 +434,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando nome de acompanhante tem menos de 3 caracteres")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoNomeAcompanhanteMenorQue3Caracteres()
     {
         // Arrange
@@ -439,7 +456,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando nome de acompanhante tem mais de 50 caracteres")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoNomeAcompanhanteMaiorQue50Caracteres()
     {
         // Arrange
@@ -464,7 +482,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
     #region Limite de 100 Pessoas
 
-    [Fact]
+    [Fact(DisplayName = "Deve registrar quando total atual + novas pessoas é exatamente 100")]
+    [Trait("Categoria", "Limite")]
     public async Task DeveRegistrarComSucesso_QuandoTotalAtualMaisNovasPessoasIgualA100()
     {
         // Arrange - 99 pessoas já cadastradas + 1 nova (sozinho) = 100
@@ -487,7 +506,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.Received(1).AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve registrar convidado com acompanhantes quando não excede o limite")]
+    [Trait("Categoria", "Limite")]
     public async Task DeveRegistrarComSucesso_QuandoConvidadoComAcompanhantesNaoExcedeLimite()
     {
         // Arrange - 94 pessoas já cadastradas + 1 convidado + 5 acompanhantes = 100
@@ -513,7 +533,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.Received(1).AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 401 quando convidado sozinho excede o limite")]
+    [Trait("Categoria", "Limite")]
     public async Task DeveRetornar401_QuandoConvidadoSozinhoExcedeLimite()
     {
         // Arrange - 100 pessoas já cadastradas + 1 nova = 101
@@ -536,7 +557,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 401 quando convidado com acompanhantes excede o limite")]
+    [Trait("Categoria", "Limite")]
     public async Task DeveRetornar401_QuandoConvidadoComAcompanhantesExcedeLimite()
     {
         // Arrange - 98 pessoas já cadastradas + 1 convidado + 2 acompanhantes = 101
@@ -559,7 +581,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 401 quando acompanhantes ultrapassam o limite exato")]
+    [Trait("Categoria", "Limite")]
     public async Task DeveRetornar401_QuandoAcompanhantesUltrapassamLimiteExato()
     {
         // Arrange - 95 pessoas já cadastradas + 1 convidado + 5 acompanhantes = 101
@@ -585,7 +608,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve registrar convidado sozinho quando base está vazia")]
+    [Trait("Categoria", "Limite")]
     public async Task DeveRegistrarComSucesso_QuandoBaseVaziaEConvidadoSozinho()
     {
         // Arrange - base vazia + 1 pessoa = 1
@@ -607,7 +631,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.Received(1).AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve registrar convidado com acompanhantes quando base está vazia")]
+    [Trait("Categoria", "Limite")]
     public async Task DeveRegistrarComSucesso_QuandoBaseVaziaEConvidadoComAcompanhantes()
     {
         // Arrange - base vazia + 1 convidado + 5 acompanhantes = 6
@@ -632,7 +657,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.Received(1).AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Não deve persistir quando limite é excedido")]
+    [Trait("Categoria", "Limite")]
     public async Task NaoDevePersistir_QuandoLimiteExcedido()
     {
         // Arrange - 100 já cadastradas, qualquer adição excede
@@ -654,7 +680,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 401 quando limite excedido mesmo com presença não confirmada")]
+    [Trait("Categoria", "Limite")]
     public async Task DeveRetornar401_QuandoLimiteExcedidoMesmoComPresencaNaoConfirmada()
     {
         // Arrange - presença não confirmada ainda conta para o limite
@@ -681,7 +708,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
     #region Erro Interno
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 500 quando repositório lança exceção")]
+    [Trait("Categoria", "Erro Interno")]
     public async Task DeveRetornar500_QuandoRepositorioLancaExcecao()
     {
         // Arrange

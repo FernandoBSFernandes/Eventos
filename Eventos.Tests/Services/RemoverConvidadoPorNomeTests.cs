@@ -1,15 +1,12 @@
-using Xunit;
-using Eventos.Domain.Entities;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
-
 namespace Eventos.Tests.Services;
 
+[Trait("Serviço", "RemoverConvidado")]
 public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
 {
     #region Sucesso
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 200 quando convidado único é encontrado e removido")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornar200_QuandoConvidadoUnicoEncontradoERemovido()
     {
         // Arrange
@@ -25,7 +22,8 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
         await Repo.Received(1).RemoverConvidadoAsync(convidado);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 200 quando busca parcial retorna apenas um convidado")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornar200_QuandoBuscaParcialRetornaApenasUmConvidado()
     {
         // Arrange
@@ -45,7 +43,8 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
 
     #region Convidado Não Encontrado
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 404 quando nenhum convidado é encontrado")]
+    [Trait("Categoria", "Não Encontrado")]
     public async Task DeveRetornar404_QuandoNenhumConvidadoEncontrado()
     {
         // Arrange
@@ -60,7 +59,8 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().RemoverConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 404 quando convidado já foi apagado")]
+    [Trait("Categoria", "Não Encontrado")]
     public async Task DeveRetornar404_QuandoConvidadoJaFoiApagado()
     {
         // Arrange
@@ -80,7 +80,8 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
 
     #region Múltiplos Convidados Encontrados
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando múltiplos convidados são encontrados")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoMultiplosConvidadosEncontrados()
     {
         // Arrange
@@ -103,7 +104,8 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().RemoverConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando três convidados com nome semelhante são encontrados")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoTresConvidadosEncontradosComNomeSemelhante()
     {
         // Arrange
@@ -127,7 +129,8 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().RemoverConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Não deve remover quando múltiplos convidados são encontrados")]
+    [Trait("Categoria", "Validação")]
     public async Task NaoDeveRemover_QuandoMultiplosConvidadosEncontrados()
     {
         // Arrange
@@ -149,7 +152,8 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
 
     #region Validação de Nome
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando nome é nulo")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoNomeNulo()
     {
         // Act
@@ -161,7 +165,8 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().BuscarConvidadosPorNomeAsync(Arg.Any<string>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando nome é vazio")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoNomeVazio()
     {
         // Act
@@ -173,7 +178,8 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().BuscarConvidadosPorNomeAsync(Arg.Any<string>());
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 400 quando nome é espaço em branco")]
+    [Trait("Categoria", "Validação")]
     public async Task DeveRetornar400_QuandoNomeEspacoEmBranco()
     {
         // Act
@@ -189,7 +195,8 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
 
     #region Erro Interno
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 500 quando repositório lança exceção")]
+    [Trait("Categoria", "Erro Interno")]
     public async Task DeveRetornar500_QuandoRepositorioLancaExcecao()
     {
         // Arrange

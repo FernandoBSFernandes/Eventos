@@ -1,13 +1,12 @@
-using Xunit;
-using NSubstitute;
-
 namespace Eventos.Tests.Services;
 
+[Trait("Serviço", "RemoverDuplicatas")]
 public class RemoverDuplicatasTests : AdministracaoServiceTestBase
 {
     #region Sucesso
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 200 quando não há duplicatas")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornar200_QuandoNaoHaDuplicatas()
     {
         // Arrange
@@ -23,7 +22,8 @@ public class RemoverDuplicatasTests : AdministracaoServiceTestBase
         await Repo.Received(1).RemoverDuplicatasAsync();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 200 quando há duplicatas de convidados")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornar200_QuandoHaDuplicatasDeConvidados()
     {
         // Arrange
@@ -39,7 +39,8 @@ public class RemoverDuplicatasTests : AdministracaoServiceTestBase
         await Repo.Received(1).RemoverDuplicatasAsync();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 200 quando há duplicatas de acompanhantes")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornar200_QuandoHaDuplicatasDeAcompanhantes()
     {
         // Arrange
@@ -55,7 +56,8 @@ public class RemoverDuplicatasTests : AdministracaoServiceTestBase
         await Repo.Received(1).RemoverDuplicatasAsync();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 200 quando há duplicatas de convidados e acompanhantes")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornar200_QuandoHaDuplicatasDeConvidadosEAcompanhantes()
     {
         // Arrange
@@ -71,7 +73,8 @@ public class RemoverDuplicatasTests : AdministracaoServiceTestBase
         await Repo.Received(1).RemoverDuplicatasAsync();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve acionar repositório exatamente uma vez")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveAcionarRepositorioUmaVez_QuandoChamado()
     {
         // Arrange
@@ -84,7 +87,8 @@ public class RemoverDuplicatasTests : AdministracaoServiceTestBase
         await Repo.Received(1).RemoverDuplicatasAsync();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Mensagem deve conter 'sucesso' quando operação conclui")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveMensagemConterSucesso_QuandoOperacaoConclui()
     {
         // Arrange
@@ -102,7 +106,8 @@ public class RemoverDuplicatasTests : AdministracaoServiceTestBase
 
     #region Erro Interno
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 500 quando repositório lança exceção")]
+    [Trait("Categoria", "Erro Interno")]
     public async Task DeveRetornar500_QuandoRepositorioLancaExcecao()
     {
         // Arrange
@@ -118,7 +123,8 @@ public class RemoverDuplicatasTests : AdministracaoServiceTestBase
         await Repo.Received(1).RemoverDuplicatasAsync();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Não deve lançar exceção quando repositório falha")]
+    [Trait("Categoria", "Erro Interno")]
     public async Task DeveNaoLancarExcecao_QuandoRepositorioFalha()
     {
         // Arrange

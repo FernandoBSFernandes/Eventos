@@ -1,14 +1,12 @@
-using Xunit;
-using NSubstitute;
-using NSubstitute.ExceptionExtensions;
-
 namespace Eventos.Tests.Services;
 
+[Trait("Serviço", "ObterVagasRestantes")]
 public class ObterVagasRestantesTests : ConvidadoServiceTestBase
 {
     #region Sucesso
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 100 vagas quando nenhuma pessoa está confirmada")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornar100Vagas_QuandoNenhumaPessoaConfirmada()
     {
         // Arrange
@@ -23,7 +21,8 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
         Assert.Equal(0, response.PessoasConfirmadas);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar vagas corretas quando há pessoas confirmadas")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornarVagasCorretas_QuandoHaPessoasConfirmadas()
     {
         // Arrange
@@ -38,7 +37,8 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
         Assert.Equal(63, response.PessoasConfirmadas);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar zero vagas quando limite é atingido")]
+    [Trait("Categoria", "Limite")]
     public async Task DeveRetornarZeroVagas_QuandoLimiteAtingido()
     {
         // Arrange
@@ -53,7 +53,8 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
         Assert.Equal(100, response.PessoasConfirmadas);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar zero vagas quando limite é ultrapassado")]
+    [Trait("Categoria", "Limite")]
     public async Task DeveRetornarZeroVagas_QuandoUltrapassaLimite()
     {
         // Arrange — cenário de dados legados com mais de 100 pessoas
@@ -68,7 +69,8 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
         Assert.Equal(105, response.PessoasConfirmadas);
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 1 vaga quando falta 1 pessoa para o limite")]
+    [Trait("Categoria", "Limite")]
     public async Task DeveRetornar1Vaga_QuandoFalta1PessoaParaOLimite()
     {
         // Arrange
@@ -87,7 +89,8 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
 
     #region Erro Interno
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 500 quando repositório lança exceção")]
+    [Trait("Categoria", "Erro Interno")]
     public async Task DeveRetornar500_QuandoRepositorioLancaExcecao()
     {
         // Arrange

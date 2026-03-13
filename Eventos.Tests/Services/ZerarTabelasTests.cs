@@ -1,13 +1,12 @@
-using Xunit;
-using NSubstitute;
-
 namespace Eventos.Tests.Services;
 
+[Trait("Serviço", "ZerarTabelas")]
 public class ZerarTabelasTests : AdministracaoServiceTestBase
 {
     #region Sucesso
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 200 quando repositório zera com sucesso")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornar200_QuandoRepositorioZeraComSucesso()
     {
         // Arrange
@@ -23,7 +22,8 @@ public class ZerarTabelasTests : AdministracaoServiceTestBase
         await Repo.Received(1).ZerarTabelasAsync();
     }
 
-    [Fact]
+    [Fact(DisplayName = "Deve acionar repositório exatamente uma vez")]
+    [Trait("Categoria", "Sucesso")]
     public async Task DeveAcionarRepositorioUmaVez_QuandoChamado()
     {
         // Arrange
@@ -40,7 +40,8 @@ public class ZerarTabelasTests : AdministracaoServiceTestBase
 
     #region Erro Interno
 
-    [Fact]
+    [Fact(DisplayName = "Deve retornar 500 quando repositório lança exceção")]
+    [Trait("Categoria", "Erro Interno")]
     public async Task DeveRetornar500_QuandoRepositorioLancaExcecao()
     {
         // Arrange
