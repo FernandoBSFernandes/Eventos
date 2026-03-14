@@ -21,4 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Eventos.Domain\Eventos.Domain.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Settings\" />
+  </ItemGroup>
 </Project>

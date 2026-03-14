@@ -1,11 +1,10 @@
 using Eventos.Application.Configuration;
 using Eventos.Application.Interfaces;
 using Eventos.Application.Services;
-using Eventos.Application.Settings;
 using Eventos.Domain.Repositories;
 using Eventos.Infrastructure.Data;
 using Eventos.Infrastructure.Repositories;
-using EventosAPI.Infrastructure;
+using EventosAPI.Services;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
@@ -99,12 +98,11 @@ namespace EventosAPI
             builder.Services.Configure<EventoConfiguration>(
                 builder.Configuration.GetSection(EventoConfiguration.SectionName));
             builder.Services.Configure<EmailSettings>(
-                builder.Configuration.GetSection("Email"));
+                builder.Configuration.GetSection(EmailSettings.SectionName));
             builder.Services.AddScoped<IConvidadoService, ConvidadoService>();
             builder.Services.AddScoped<IAdministracaoService, AdministracaoService>();
             builder.Services.AddScoped<IRelatorioService, RelatorioService>();
             builder.Services.AddScoped<IRelatorioEmailService, RelatorioEmailService>();
-            builder.Services.AddScoped<ISmtpClientWrapper, SmtpClientWrapper>();
             builder.Services.AddScoped<IEventoRepository, EventoRepository>();
 
             var app = builder.Build();

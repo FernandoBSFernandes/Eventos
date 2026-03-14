@@ -52,9 +52,9 @@ namespace EventosAPI.Controllers
         }
 
         /// <summary>
-        /// Envia por e-mail o relatório de convidados confirmados em PDF e Excel para o organizador
+        /// Envia o relatório de convidados confirmados por e-mail em PDF e Excel
         /// </summary>
-        /// <returns>Confirmação de envio</returns>
+        /// <returns>Confirmação de envio do e-mail</returns>
         /// <response code="200">E-mail enviado com sucesso</response>
         /// <response code="500">Erro interno ao processar a requisição</response>
         [HttpPost("enviar")]
@@ -65,12 +65,13 @@ namespace EventosAPI.Controllers
         {
             try
             {
-                await _relatorioEmailService.EnviarRelatorioConvidadosConfirmadosAsync();
-                return Ok(new BaseResponse(200, "Relatório enviado por e-mail com sucesso."));
+                await _relatorioEmailService.EnviarRelatorioAsync();
+                return Ok(new BaseResponse(200, "Relatório enviado com sucesso."));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return StatusCode(500, new BaseResponse(500, $"Erro ao enviar o relatório: {ex.Message}"));
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new BaseResponse(500, "Ocorreu um erro ao enviar o relatório por e-mail. Tente novamente mais tarde."));
             }
         }
     }
