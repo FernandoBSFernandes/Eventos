@@ -9,24 +9,20 @@ namespace Eventos.IntegrationTests.Controllers;
 public class RelatorioEmailIntegrationTests : IntegrationTestBase
 {
     private readonly IRelatorioEmailService _mockEmailService;
-    private readonly HttpClient _clientWithMock;
 
     public RelatorioEmailIntegrationTests(EventosWebApplicationFactory factory) : base(factory)
     {
         _mockEmailService = Substitute.For<IRelatorioEmailService>();
 
-        _clientWithMock = factory.WithWebHostBuilder(builder =>
+        factory.AddServiceOverride(services =>
         {
-            builder.ConfigureServices(services =>
-            {
-                var descriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(IRelatorioEmailService));
-                if (descriptor != null)
-                    services.Remove(descriptor);
+            var descriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(IRelatorioEmailService));
+            if (descriptor != null)
+                services.Remove(descriptor);
 
-                services.AddScoped(_ => _mockEmailService);
-            });
-        }).CreateClient();
+            services.AddScoped(_ => _mockEmailService);
+        });
     }
 
     [Fact(DisplayName = "Deve retornar 200 quando endpoint enviar relatório for chamado")]
@@ -37,7 +33,7 @@ public class RelatorioEmailIntegrationTests : IntegrationTestBase
         _mockEmailService.EnviarRelatorioAsync().Returns(Task.CompletedTask);
 
         // Act
-        var response = await _clientWithMock.PostAsync("/api/relatorio/enviar", null);
+        var response = await Client.PostAsync("/api/relatorio/enviar", null);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -51,7 +47,7 @@ public class RelatorioEmailIntegrationTests : IntegrationTestBase
         _mockEmailService.EnviarRelatorioAsync().Returns(Task.CompletedTask);
 
         // Act
-        var response = await _clientWithMock.PostAsync("/api/relatorio/enviar", null);
+        var response = await Client.PostAsync("/api/relatorio/enviar", null);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -65,11 +61,26 @@ public class RelatorioEmailIntegrationTests : IntegrationTestBase
         _mockEmailService.EnviarRelatorioAsync().Returns(Task.CompletedTask);
 
         // Act
-        var response = await _clientWithMock.PostAsync("/api/relatorio/enviar", null);
+        var response = await Client.PostAsync("/api/relatorio/enviar", null);
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotNull(response.Content.Headers.ContentType);
         Assert.Contains("application/json", response.Content.Headers.ContentType.MediaType);
+    }
+
+    [Fact(DisplayName = "Deve retornar 500 quando o serviço de e-mail lança exceção")]
+    [Trait("Categoria", "Erro Interno")]
+    public async Task DeveRetornar500_QuandoServicoEmailLancaExcecao()
+    {
+        // Arrange
+        _mockEmailService.EnviarRelatorioAsync()
+            .Returns(Task.FromException(new InvalidOperationException("Falha no SMTP")));
+
+        // Act
+        var response = await Client.PostAsync("/api/relatorio/enviar", null);
+
+        // Assert
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
     }
 }

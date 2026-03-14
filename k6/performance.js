@@ -1,6 +1,8 @@
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { Trend, Rate, Counter } from 'k6/metrics';
+import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
 // ─── Métricas customizadas ────────────────────────────────────────────────────
 const duracao_adicionar      = new Trend('duracao_adicionar',      true);
@@ -211,5 +213,12 @@ export function teardown(data) {
     }
 
     console.log(`[teardown] ${removidos} convidado(s) de teste removido(s). Base limpa.`);
+}
+
+export function handleSummary(data) {
+  return {
+    'k6/relatorio.html': htmlReport(data),
+    stdout: textSummary(data, { indent: '  ', enableColors: true }),
+  };
 }
 
