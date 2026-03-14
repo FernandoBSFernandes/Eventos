@@ -14,23 +14,31 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
     private readonly string? _ciConnectionString =
         Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 
-    private readonly PostgreSqlContainer? _postgres;
-
-    public EventosWebApplicationFactory()
-    {
-        if (string.IsNullOrWhiteSpace(_ciConnectionString))
-            _postgres = new PostgreSqlBuilder()
-                .WithImage("postgres:16-alpine")
-                .Build();
-    }
+    // Criado apenas no InitializeAsync, evitando validação do Docker no construtor
+    private PostgreSqlContainer? _postgres;
 
     private string ConnectionString =>
         _ciConnectionString ?? _postgres!.GetConnectionString();
 
+    // Ações de configuração de serviços extras registradas pelos testes
+    private readonly List<Action<IServiceCollection>> _serviceOverrides = new();
+
+    public void AddServiceOverride(Action<IServiceCollection> configure)
+        => _serviceOverrides.Add(configure);
+
+    public void ClearServiceOverrides()
+        => _serviceOverrides.Clear();
+
     public async Task InitializeAsync()
     {
-        if (_postgres is not null)
-            await _postgres.StartAsync();
+        if (!string.IsNullOrWhiteSpace(_ciConnectionString))
+            return;
+
+        _postgres = new PostgreSqlBuilder()
+            .WithImage("postgres:16-alpine")
+            .Build();
+
+        await _postgres.StartAsync();
     }
 
     public new async Task DisposeAsync()
@@ -53,6 +61,9 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
 
             services.AddDbContext<EventosDbContext>(options =>
                 options.UseNpgsql(ConnectionString));
+
+            foreach (var configure in _serviceOverrides)
+                configure(services);
         });
 
         builder.UseEnvironment("Development");

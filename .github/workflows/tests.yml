@@ -142,14 +142,16 @@ jobs:
       - name: Executar testes k6
         uses: grafana/k6-action@v0.3.1
         with:
-          filename: k6/load-test.js
+          filename: k6/performance.js
         env:
           BASE_URL: http://localhost:8080
 
-      - name: Publicar relatório HTML do k6
+      - name: Publicar relatórios HTML do k6
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: relatorio-performance-k6
-          path: k6/relatorio.html
+          path: |
+            k6/relatorio.html
+            k6/relatorio-email-report.html
           retention-days: 30
