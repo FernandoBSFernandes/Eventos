@@ -98,6 +98,7 @@ jobs:
     name: Testes de Performance (k6)
     runs-on: ubuntu-latest
     needs: integration-tests
+    timeout-minutes: 20
 
     services:
       postgres:
@@ -146,12 +147,21 @@ jobs:
         env:
           BASE_URL: http://localhost:8080
 
-      - name: Publicar relatórios HTML do k6
+      - name: Publicar relatório de thresholds no Summary
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Relatório — Thresholds k6
+          path: k6/relatorio-junit.xml
+          reporter: java-junit
+
+      - name: Publicar artefatos de performance
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: relatorio-performance-k6
           path: |
             k6/relatorio.html
-            k6/relatorio-email-report.html
+            k6/relatorio.json
+            k6/relatorio-junit.xml
           retention-days: 30

@@ -1,224 +1,426 @@
 import http from 'k6/http';
-import { check, sleep } from 'k6';
+import { check, sleep, group } from 'k6';
 import { Trend, Rate, Counter } from 'k6/metrics';
 import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
-// ─── Métricas customizadas ────────────────────────────────────────────────────
-const duracao_adicionar      = new Trend('duracao_adicionar',      true);
-const duracao_verificar      = new Trend('duracao_verificar',      true);
-const duracao_listar         = new Trend('duracao_listar',         true);
-const duracao_relatorio      = new Trend('duracao_relatorio',      true);
-const duracao_vagas_restantes = new Trend('duracao_vagas_restantes', true);
+// -----------------------------------------------------------------------------
+// Métricas customizadas por endpoint
+// -----------------------------------------------------------------------------
+const m = {
+    adicionar:      new Trend('dur_adicionar',       true),
+    verificar:      new Trend('dur_verificar',       true),
+    listar:         new Trend('dur_listar',          true),
+    vagas:          new Trend('dur_vagas_restantes', true),
+    relatorioExcel: new Trend('dur_relatorio_excel', true),
+    relatorioPdf:   new Trend('dur_relatorio_pdf',   true),
+    taxaErro:       new Rate('taxa_erro'),
+    totalReqs:      new Counter('total_requisicoes'),
+};
 
-const taxa_erro          = new Rate('taxa_erro');
-const total_requisicoes  = new Counter('total_requisicoes');
-
-// ─── Configuração do teste ────────────────────────────────────────────────────
+// -----------------------------------------------------------------------------
+// Cenários de carga
+//
+//  [0s–30s]    smoke  — 1 VU, verifica se a API responde corretamente
+//  [40s–130s]  load   — sobe até 20 VUs, simula uso normal sustentado
+//  [150s–210s] stress — sobe até 50 VUs, encontra o ponto de pressão
+//  [220s–250s] spike  — salta para 100 VUs instantaneamente
+//  [260s–560s] soak   — 10 VUs por 5 min, detecta vazamentos de memória
+// -----------------------------------------------------------------------------
 export const options = {
-    stages: [
-        { duration: '15s', target: 5  },  // rampa de subida
-        { duration: '30s', target: 10 },  // carga sustentada
-        { duration: '15s', target: 0  },  // rampa de descida
-    ],
+    scenarios: {
+
+        smoke: {
+            executor:  'constant-vus',
+            vus:       1,
+            duration:  '30s',
+            startTime: '0s',
+            tags:      { cenario: 'smoke' },
+            exec:      'fluxoPadrao',
+        },
+
+        load: {
+            executor: 'ramping-vus',
+            startVUs: 0,
+            stages: [
+                { duration: '20s', target: 20 },
+                { duration: '50s', target: 20 },
+                { duration: '20s', target: 0  },
+            ],
+            startTime:        '40s',
+            gracefulRampDown: '5s',
+            tags:             { cenario: 'load' },
+            exec:             'fluxoPadrao',
+        },
+
+        stress: {
+            executor: 'ramping-vus',
+            startVUs: 0,
+            stages: [
+                { duration: '15s', target: 50 },
+                { duration: '30s', target: 50 },
+                { duration: '15s', target: 0  },
+            ],
+            startTime:        '150s',
+            gracefulRampDown: '5s',
+            tags:             { cenario: 'stress' },
+            exec:             'fluxoPadrao',
+        },
+
+        spike: {
+            executor: 'ramping-vus',
+            startVUs: 0,
+            stages: [
+                { duration: '5s',  target: 100 },
+                { duration: '20s', target: 100 },
+                { duration: '5s',  target: 0   },
+            ],
+            startTime:        '220s',
+            gracefulRampDown: '5s',
+            tags:             { cenario: 'spike' },
+            exec:             'fluxoLeitura',
+        },
+
+        soak: {
+            executor:  'constant-vus',
+            vus:       10,
+            duration:  '5m',
+            startTime: '260s',
+            tags:      { cenario: 'soak' },
+            exec:      'fluxoPadrao',
+        },
+    },
+
     thresholds: {
-        // 95% das requisições devem responder em menos de 2s
-        'duracao_adicionar':       ['p(95)<2000'],
-        'duracao_verificar':       ['p(95)<500'],
-        'duracao_listar':          ['p(95)<1000'],
-        'duracao_relatorio':       ['p(95)<3000'],
-        'duracao_vagas_restantes': ['p(95)<500'],
-        // Taxa de erro abaixo de 5%
-        'taxa_erro':               ['rate<0.05'],
-        // Tempo de resposta geral
-        'http_req_duration':       ['p(95)<2000'],
+        // --- Gerais ---
+        'http_req_failed':   ['rate<0.01'],
+        'http_req_duration': ['p(95)<2000'],
+        'taxa_erro':         ['rate<0.02'],
+
+        // --- Por endpoint ---
+        'dur_adicionar':       ['p(95)<800',  'p(99)<1500'],
+        'dur_verificar':       ['p(95)<300',  'p(99)<600' ],
+        'dur_listar':          ['p(95)<600',  'p(99)<1200'],
+        'dur_vagas_restantes': ['p(95)<300',  'p(99)<600' ],
+        'dur_relatorio_excel': ['p(95)<3000', 'p(99)<5000'],
+        'dur_relatorio_pdf':   ['p(95)<3000', 'p(99)<5000'],
+
+        // --- Por cenário ---
+        'http_req_duration{cenario:smoke}':  ['p(95)<500' ],
+        'http_req_duration{cenario:load}':   ['p(95)<1500'],
+        'http_req_duration{cenario:stress}': ['p(95)<2500'],
+        'http_req_duration{cenario:spike}':  ['p(95)<3000'],
+        'http_req_duration{cenario:soak}':   ['p(95)<2000'],
     },
 };
 
-const BASE_URL = __ENV.BASE_URL || 'http://localhost:5000';
-const HEADERS  = { 'Content-Type': 'application/json' };
+// -----------------------------------------------------------------------------
+// Constantes
+// -----------------------------------------------------------------------------
+const BASE_URL   = __ENV.BASE_URL || 'http://localhost:8080';
+const HEADERS    = { 'Content-Type': 'application/json' };
+const PREFIXO_K6 = '[K6] ';
 
-// Prefixo que identifica dados de teste — nunca usados em produção real
-const PREFIXO_TESTE = '[K6] ';
-
-// Pool de nomes fictícios usados nos testes
-const NOMES_TESTE = [
-    'Alfredo Teste',
-    'Beatriz Teste',
-    'Caetano Teste',
-    'Daniela Teste',
-    'Eduardo Teste',
-    'Fabiana Teste',
-    'Gustavo Teste',
-    'Helena Teste',
-    'Igor Teste',
-    'Juliana Teste',
+const NOMES_FIXOS = [
+    'Alfredo Teste',  'Beatriz Teste',  'Caetano Teste',
+    'Daniela Teste',  'Eduardo Teste',  'Fabiana Teste',
+    'Gustavo Teste',  'Helena Teste',   'Igor Teste',
+    'Juliana Teste',  'Kleber Teste',   'Larissa Teste',
+    'Marcelo Teste',  'Natalia Teste',  'Osvaldo Teste',
 ];
 
-// ─── Setup: insere convidados de teste antes do teste iniciar ─────────────────
+// -----------------------------------------------------------------------------
+// Helpers
+// -----------------------------------------------------------------------------
+function nomeAleatorio(lista) {
+    return lista[Math.floor(Math.random() * lista.length)];
+}
+
+function adicionarConvidado(nome, acompanhantes = []) {
+    const payload = JSON.stringify({
+        nome,
+        iraAoRodizio:            true,
+        participacao:            acompanhantes.length > 0 ? 'Acompanhado' : 'Sozinho',
+        quantidadeAcompanhantes: acompanhantes.length,
+        nomesAcompanhantes:      acompanhantes,
+    });
+    const res = http.post(`${BASE_URL}/api/convidado/adicionar`, payload, { headers: HEADERS });
+    m.adicionar.add(res.timings.duration);
+    m.totalReqs.add(1);
+    return res;
+}
+
+function verificarConvidado(nome) {
+    const res = http.get(
+        `${BASE_URL}/api/convidado/verificar?nome=${encodeURIComponent(nome)}`,
+        { headers: HEADERS }
+    );
+    m.verificar.add(res.timings.duration);
+    m.totalReqs.add(1);
+    return res;
+}
+
+function listarConvidados() {
+    const res = http.get(`${BASE_URL}/api/convidado/listar`, { headers: HEADERS });
+    m.listar.add(res.timings.duration);
+    m.totalReqs.add(1);
+    return res;
+}
+
+function obterVagasRestantes() {
+    const res = http.get(`${BASE_URL}/api/convidado/vagas-restantes`, { headers: HEADERS });
+    m.vagas.add(res.timings.duration);
+    m.totalReqs.add(1);
+    return res;
+}
+
+function obterRelatorioExcel() {
+    const res = http.get(`${BASE_URL}/api/relatorio/excel`, { headers: HEADERS });
+    m.relatorioExcel.add(res.timings.duration);
+    m.totalReqs.add(1);
+    return res;
+}
+
+function obterRelatorioPdf() {
+    const res = http.get(`${BASE_URL}/api/relatorio/pdf`, { headers: HEADERS });
+    m.relatorioPdf.add(res.timings.duration);
+    m.totalReqs.add(1);
+    return res;
+}
+
+// -----------------------------------------------------------------------------
+// Setup: insere convidados fixos antes de qualquer cenário rodar
+// -----------------------------------------------------------------------------
 export function setup() {
     const inseridos = [];
 
-    for (const nome of NOMES_TESTE) {
-        const nomeCompleto = `${PREFIXO_TESTE}${nome}`;
-        const payload = JSON.stringify({
-            nome:                  nomeCompleto,
-            iraAoRodizio:          true,
-            participacao:          'Sozinho',
-            quantidadeAcompanhantes: 0,
-            nomesAcompanhantes:    [],
-        });
+    for (const nome of NOMES_FIXOS) {
+        const nomeCompleto = `${PREFIXO_K6}${nome}`;
+        const res = adicionarConvidado(nomeCompleto);
 
-        const res = http.post(`${BASE_URL}/api/convidado/adicionar`, payload, { headers: HEADERS });
-
-        // Aceita 201 (criado) ou 401 (limite atingido — encerra o setup)
         if (res.status === 201) {
             inseridos.push(nomeCompleto);
         } else if (res.status === 401) {
-            console.warn(`[setup] Limite de 100 pessoas atingido após ${inseridos.length} inserções.`);
+            console.warn(`[setup] Limite atingido após ${inseridos.length} inserções.`);
             break;
-        } else {
-            console.error(`[setup] Falha ao inserir "${nomeCompleto}": HTTP ${res.status} — ${res.body}`);
         }
     }
 
-    console.log(`[setup] ${inseridos.length} convidado(s) de teste inserido(s).`);
-    return { nomesInseridos: inseridos };
+    console.log(`[setup] ${inseridos.length} convidado(s) inserido(s).`);
+    return { nomesFixos: inseridos };
 }
 
-// ─── Cenário principal ────────────────────────────────────────────────────────
-export default function (data) {
-    const nomeAleatorio = data.nomesInseridos[Math.floor(Math.random() * data.nomesInseridos.length)];
+// -----------------------------------------------------------------------------
+// Cenário: fluxoPadrao
+// Representa o comportamento completo de um usuário real.
+// Usado por: smoke, load, stress, soak
+// -----------------------------------------------------------------------------
+export function fluxoPadrao(data) {
+    const nomeFixo     = nomeAleatorio(data.nomesFixos);
+    const nomeDinamico = `${PREFIXO_K6}VU-${__VU}-${__ITER}`;
 
-    // 1. Adicionar convidado com acompanhante
-    {
-        const payload = JSON.stringify({
-            nome:                    `${PREFIXO_TESTE}Convidado VU-${__VU}-${__ITER}`,
-            iraAoRodizio:            true,
-            participacao:            'Acompanhado',
-            quantidadeAcompanhantes: 1,
-            nomesAcompanhantes:      [`${PREFIXO_TESTE}Acomp VU-${__VU}-${__ITER}`],
-        });
-
-        const res = http.post(`${BASE_URL}/api/convidado/adicionar`, payload, { headers: HEADERS });
-        duracao_adicionar.add(res.timings.duration);
-        total_requisicoes.add(1);
-
+    group('Escrita — adicionar convidado', () => {
+        const res = adicionarConvidado(nomeDinamico);
         const ok = check(res, {
-            'adicionar: status 201 ou 401 (limite)': (r) => r.status === 201 || r.status === 401,
+            'adicionar: 201 ou 401': (r) => r.status === 201 || r.status === 401,
         });
-        taxa_erro.add(!ok);
-    }
+        m.taxaErro.add(!ok);
+    });
+
+    sleep(0.3);
+
+    group('Leitura — verificar convidado', () => {
+        const res = verificarConvidado(nomeFixo);
+        const ok = check(res, {
+            'verificar: status 200':            (r) => r.status === 200,
+            'verificar: campo existe presente':  (r) => r.json('existe') !== undefined,
+        });
+        m.taxaErro.add(!ok);
+    });
+
+    sleep(0.3);
+
+    group('Leitura — listar convidados', () => {
+        const res = listarConvidados();
+        const ok = check(res, {
+            'listar: status 200':    (r) => r.status === 200,
+            'listar: retorna array': (r) => Array.isArray(r.json()),
+        });
+        m.taxaErro.add(!ok);
+    });
+
+    sleep(0.3);
+
+    group('Leitura — vagas restantes', () => {
+        const res = obterVagasRestantes();
+        const ok = check(res, {
+            'vagas: status 200':              (r) => r.status === 200,
+            'vagas: vagasRestantes >= 0':     (r) => r.json('vagasRestantes') >= 0,
+            'vagas: pessoasConfirmadas >= 0': (r) => r.json('pessoasConfirmadas') >= 0,
+        });
+        m.taxaErro.add(!ok);
+    });
 
     sleep(0.5);
 
-    // 2. Verificar convidado existente
-    {
-        const res = http.get(
-            `${BASE_URL}/api/convidado/verificar?nome=${encodeURIComponent(nomeAleatorio)}`,
-            { headers: HEADERS }
-        );
-        duracao_verificar.add(res.timings.duration);
-        total_requisicoes.add(1);
-
-        const ok = check(res, {
-            'verificar: status 200': (r) => r.status === 200,
-            'verificar: campo existe presente': (r) => JSON.parse(r.body).existe !== undefined,
+    // Relatórios são pesados — executados 1 a cada 5 iterações
+    if (__ITER % 5 === 0) {
+        group('Relatório — Excel', () => {
+            const res = obterRelatorioExcel();
+            const ok = check(res, {
+                'excel: status 200':           (r) => r.status === 200,
+                'excel: content-type correto': (r) =>
+                    (r.headers['Content-Type'] || '').includes('spreadsheetml'),
+                'excel: body não vazio':       (r) => r.body.length > 0,
+            });
+            m.taxaErro.add(!ok);
         });
-        taxa_erro.add(!ok);
-    }
 
-    sleep(0.3);
+        sleep(0.5);
 
-    // 3. Listar convidados
-    {
-        const res = http.get(`${BASE_URL}/api/convidado/listar`, { headers: HEADERS });
-        duracao_listar.add(res.timings.duration);
-        total_requisicoes.add(1);
-
-        const ok = check(res, {
-            'listar: status 200': (r) => r.status === 200,
-            'listar: retorna array': (r) => Array.isArray(JSON.parse(r.body)),
+        group('Relatório — PDF', () => {
+            const res = obterRelatorioPdf();
+            const ok = check(res, {
+                'pdf: status 200':           (r) => r.status === 200,
+                'pdf: content-type correto': (r) =>
+                    (r.headers['Content-Type'] || '').includes('application/pdf'),
+                'pdf: body não vazio':       (r) => r.body.length > 0,
+            });
+            m.taxaErro.add(!ok);
         });
-        taxa_erro.add(!ok);
-    }
 
-    sleep(0.3);
-
-    // 4. Relatório Excel
-    {
-        const res = http.get(`${BASE_URL}/api/relatorio/excel`, { headers: HEADERS });
-        duracao_relatorio.add(res.timings.duration);
-        total_requisicoes.add(1);
-
-        const ok = check(res, {
-            'relatorio/excel: status 200': (r) => r.status === 200,
-            'relatorio/excel: content-type xlsx': (r) =>
-                r.headers['Content-Type'].includes('spreadsheetml'),
-        });
-        taxa_erro.add(!ok);
-    }
-
-    sleep(0.3);
-
-    // 5. Vagas restantes
-    {
-        const res = http.get(`${BASE_URL}/api/convidado/vagas-restantes`, { headers: HEADERS });
-        duracao_vagas_restantes.add(res.timings.duration);
-        total_requisicoes.add(1);
-
-        const ok = check(res, {
-            'vagas-restantes: status 200': (r) => r.status === 200,
-            'vagas-restantes: campo vagasRestantes presente': (r) => JSON.parse(r.body).vagasRestantes !== undefined,
-            'vagas-restantes: vagasRestantes nao negativo': (r) => JSON.parse(r.body).vagasRestantes >= 0,
-        });
-        taxa_erro.add(!ok);
+        sleep(0.5);
     }
 
     sleep(1);
 }
 
-// ─── Teardown: remove todos os convidados de teste inseridos ──────────────────
+// -----------------------------------------------------------------------------
+// Cenário: fluxoLeitura
+// Somente endpoints de leitura — usado no spike para não comprometer
+// a integridade dos dados durante o pico súbito de usuários.
+// Usado por: spike
+// -----------------------------------------------------------------------------
+export function fluxoLeitura(data) {
+    const nomeFixo = nomeAleatorio(data.nomesFixos);
+
+    group('Spike — verificar', () => {
+        const res = verificarConvidado(nomeFixo);
+        const ok = check(res, {
+            'spike verificar: status 200': (r) => r.status === 200,
+        });
+        m.taxaErro.add(!ok);
+    });
+
+    sleep(0.2);
+
+    group('Spike — listar', () => {
+        const res = listarConvidados();
+        const ok = check(res, {
+            'spike listar: status 200': (r) => r.status === 200,
+        });
+        m.taxaErro.add(!ok);
+    });
+
+    sleep(0.2);
+
+    group('Spike — vagas', () => {
+        const res = obterVagasRestantes();
+        const ok = check(res, {
+            'spike vagas: status 200': (r) => r.status === 200,
+        });
+        m.taxaErro.add(!ok);
+    });
+
+    sleep(0.5);
+}
+
+// -----------------------------------------------------------------------------
+// Teardown: remove todos os dados inseridos pelo k6
+// -----------------------------------------------------------------------------
 export function teardown(data) {
     let removidos = 0;
 
-    for (const nome of data.nomesInseridos) {
+    for (const nome of data.nomesFixos) {
         const res = http.del(
             `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(nome)}`,
-            null,
-            { headers: HEADERS }
+            null, { headers: HEADERS }
         );
-
-        if (res.status === 200) {
-            removidos++;
-        } else {
-            console.warn(`[teardown] Não foi possível remover "${nome}": HTTP ${res.status}`);
-        }
+        if (res.status === 200) removidos++;
     }
 
-    // Remove também os convidados criados dinamicamente durante o teste
-    const listaRes = http.get(`${BASE_URL}/api/convidado/listar`, { headers: HEADERS });
-    if (listaRes.status === 200) {
-        const todos = JSON.parse(listaRes.body);
-        const deTeste = todos.filter((c) => c.nome.startsWith(PREFIXO_TESTE));
-
-        for (const convidado of deTeste) {
+    const lista = http.get(`${BASE_URL}/api/convidado/listar`, { headers: HEADERS });
+    if (lista.status === 200) {
+        for (const c of lista.json()) {
+            if (!c.nome.startsWith(PREFIXO_K6)) continue;
             const res = http.del(
-                `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(convidado.nome)}`,
-                null,
-                { headers: HEADERS }
+                `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(c.nome)}`,
+                null, { headers: HEADERS }
             );
             if (res.status === 200) removidos++;
         }
     }
 
-    console.log(`[teardown] ${removidos} convidado(s) de teste removido(s). Base limpa.`);
+    console.log(`[teardown] ${removidos} convidado(s) removido(s). Base limpa.`);
 }
 
+// -----------------------------------------------------------------------------
+// Relatórios gerados ao final da execução
+//
+//  relatorio.html  — visual, gráficos de latência, throughput e erros
+//  relatorio.json  — dados brutos, útil para comparação entre execuções
+//  relatorio-junit.xml — formato JUnit lido pelo GitHub Actions como checks
+// -----------------------------------------------------------------------------
 export function handleSummary(data) {
-  return {
-    'k6/relatorio.html': htmlReport(data),
-    stdout: textSummary(data, { indent: '  ', enableColors: true }),
-  };
+    return {
+        'k6/relatorio.html':       htmlReport(data),
+        'k6/relatorio.json':       JSON.stringify(data, null, 2),
+        'k6/relatorio-junit.xml':  buildJUnit(data),
+        stdout: textSummary(data, { indent: '  ', enableColors: true }),
+    };
+}
+
+// -----------------------------------------------------------------------------
+// Gerador de JUnit XML
+// Converte os thresholds do k6 em test cases no formato JUnit,
+// permitindo que o GitHub Actions exiba cada threshold como um check
+// com ✅ passou / ❌ falhou diretamente na aba Summary do workflow.
+// -----------------------------------------------------------------------------
+function buildJUnit(data) {
+    const thresholds = data.metrics
+        ? Object.entries(data.metrics).filter(([, v]) => v.thresholds)
+        : [];
+
+    let totalTests  = 0;
+    let totalFailed = 0;
+    let testCases   = '';
+
+    for (const [metricName, metricData] of thresholds) {
+        for (const [condition, result] of Object.entries(metricData.thresholds)) {
+            totalTests++;
+            const passed = result.ok;
+            if (!passed) totalFailed++;
+
+            const value = metricData.values
+                ? (metricData.values['p(95)'] ?? metricData.values['rate'] ?? metricData.values['value'] ?? 0).toFixed(2)
+                : '0';
+
+            testCases += passed
+                ? `    <testcase classname="${metricName}" name="${condition}" />\n`
+                : `    <testcase classname="${metricName}" name="${condition}">\n` +
+                  `      <failure message="Threshold falhou: ${metricName} ${condition} (valor: ${value})">\n` +
+                  `        Métrica: ${metricName}\n        Condição: ${condition}\n        Valor medido: ${value}\n` +
+                  `      </failure>\n    </testcase>\n`;
+        }
+    }
+
+    return (
+        `<?xml version="1.0" encoding="UTF-8"?>\n` +
+        `<testsuites>\n` +
+        `  <testsuite name="k6 Thresholds" tests="${totalTests}" failures="${totalFailed}">\n` +
+        testCases +
+        `  </testsuite>\n` +
+        `</testsuites>\n`
+    );
 }
 
