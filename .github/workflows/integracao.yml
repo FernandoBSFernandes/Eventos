@@ -1,0 +1,67 @@
+name: Integração
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: ["main"]
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  integracao:
+    name: Testes de Integração
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push'
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: eventos_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restaurar dependências
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Executar testes de integração
+        run: |
+          dotnet test Eventos.IntegrationTests/Eventos.IntegrationTests.csproj \
+            --no-build \
+            --configuration Release \
+            --logger "trx;LogFileName=integration-tests.trx" \
+            --results-directory ./test-results
+        env:
+          ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=eventos_test;Username=postgres;Password=postgres"
+
+      - name: Publicar resultados dos testes
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Relatório — Testes de Integração
+          path: ./test-results/integration-tests.trx
+          reporter: dotnet-trx

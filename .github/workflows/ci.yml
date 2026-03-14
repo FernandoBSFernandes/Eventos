@@ -1,4 +1,4 @@
-name: Qualidade
+name: CI
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
       - "**.md"
       - ".gitignore"
   pull_request:
-    branches: ["**"]
+    branches: ["main"]
     paths-ignore:
       - "**.md"
       - ".gitignore"
@@ -17,10 +17,8 @@ permissions:
   checks: write
 
 jobs:
-
-  # ─── Build + Cobertura de código ────────────────────────────────────────────
-  qualidade:
-    name: Build, Testes e Cobertura (.NET 8)
+  ci:
+    name: Build, Testes Unitários e Cobertura
     runs-on: ubuntu-latest
 
     steps:
@@ -38,11 +36,13 @@ jobs:
       - name: Build
         run: dotnet build --no-restore --configuration Release
 
-      - name: Executar testes com cobertura
+      - name: Executar testes unitários com cobertura
         run: |
           dotnet test Eventos.Tests/Eventos.Tests.csproj \
+            --no-build \
             --configuration Release \
             --logger "trx;LogFileName=TestResults.trx" \
+            --results-directory ./test-results \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
             /p:CoverletOutput=./coverage.opencover.xml \
@@ -51,16 +51,17 @@ jobs:
             /p:ThresholdStat=total
 
       - name: Publicar resultados dos testes
-        uses: EnricoMi/publish-unit-test-result-action@v2
+        uses: dorny/test-reporter@v1
         if: always()
         with:
-          files: "**/TestResults.trx"
-          check_name: Resultados dos Testes
+          name: Relatório — Testes Unitários
+          path: ./test-results/TestResults.trx
+          reporter: dotnet-trx
 
-      - name: Upload do artefato de cobertura
+      - name: Publicar artefato de cobertura
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: coverage-report
+          name: cobertura-de-codigo
           path: "**/coverage.opencover.xml"
           retention-days: 30
