@@ -1,4 +1,5 @@
 global using Xunit;
+global using NSubstitute;
 global using System.Net;
 global using System.Net.Http.Json;
 global using Eventos.Application.DTOs.Response;
