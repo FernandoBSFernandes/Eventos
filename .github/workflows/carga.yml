@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   checks: write
+  actions: read
 
 jobs:
   carga:
@@ -17,6 +18,7 @@ jobs:
     if: >
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push'
+    timeout-minutes: 20
 
     services:
       postgres:
@@ -34,8 +36,10 @@ jobs:
           --health-retries 10
 
     steps:
-      - name: Checkout
+      - name: Checkout do SHA que disparou o CI
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4

@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   checks: write
+  actions: read
 
 jobs:
   integracao:
@@ -34,8 +35,10 @@ jobs:
           --health-retries 10
 
     steps:
-      - name: Checkout
+      - name: Checkout do SHA que disparou o CI
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Setup .NET 8
         uses: actions/setup-dotnet@v4
