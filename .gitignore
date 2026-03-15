@@ -365,3 +365,5 @@ FodyWeavers.xsd
 
 # Arquivos de configuração com segredos locais
 appsettings.Development.json
+
+test-results/
