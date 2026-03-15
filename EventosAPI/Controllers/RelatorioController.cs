@@ -5,9 +5,14 @@ using EventosAPI.Reports;
 
 namespace EventosAPI.Controllers
 {
+    /// <summary>
+    /// Geração e envio de relatórios do evento.
+    /// Permite exportar a lista de convidados confirmados em PDF ou Excel e enviá-la por e-mail.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Consumes("application/json")]
+    [Tags("Relatórios")]
     public class RelatorioController : ControllerBase
     {
         private readonly IRelatorioService _relatorioService;

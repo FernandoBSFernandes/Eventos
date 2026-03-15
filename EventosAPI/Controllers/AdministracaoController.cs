@@ -5,10 +5,15 @@ using Eventos.Application.DTOs.Response;
 
 namespace EventosAPI.Controllers
 {
+    /// <summary>
+    /// Operações administrativas do evento.
+    /// Permite zerar todas as tabelas e remover registros duplicados.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Consumes("application/json")]
     [Produces("application/json")]
+    [Tags("Administração")]
     public class AdministracaoController : ControllerBase
     {
         private readonly IAdministracaoService _administracaoService;

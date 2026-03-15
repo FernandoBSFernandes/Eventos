@@ -62,6 +62,13 @@ namespace EventosAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
+                options.SwaggerDoc("v1", new()
+                {
+                    Title = "Eventos API",
+                    Version = "v1",
+                    Description = "API para gerenciamento de convidados, relatórios e administração do evento."
+                });
+
                 options.UseInlineDefinitionsForEnums();
 
                 var assemblies = new[]

@@ -6,10 +6,15 @@ using Eventos.Application.DTOs.Response;
 
 namespace EventosAPI.Controllers
 {
+    /// <summary>
+    /// Gerenciamento de convidados do evento.
+    /// Permite adicionar, listar, verificar, remover convidados e consultar vagas restantes.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Consumes("application/json")]
     [Produces("application/json")]
+    [Tags("Convidados")]
     public class ConvidadoController : ControllerBase
     {
         private readonly IConvidadoService _convidadoService;
