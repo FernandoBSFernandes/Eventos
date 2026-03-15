@@ -42,6 +42,7 @@ jobs:
             --no-build \
             --configuration Release \
             --logger "trx;LogFileName=TestResults.trx" \
+            --logger "html;LogFileName=relatorio-unitarios.html" \
             --results-directory ./test-results \
             /p:CollectCoverage=true \
             /p:CoverletOutputFormat=opencover \
@@ -50,7 +51,7 @@ jobs:
             /p:ThresholdType=line \
             /p:ThresholdStat=total
 
-      - name: Publicar resultados dos testes
+      - name: Publicar resultados dos testes no Summary
         uses: dorny/test-reporter@v1
         if: always()
         with:
@@ -58,10 +59,12 @@ jobs:
           path: ./test-results/TestResults.trx
           reporter: dotnet-trx
 
-      - name: Publicar artefato de cobertura
+      - name: Publicar artefatos
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cobertura-de-codigo
-          path: "**/coverage.opencover.xml"
+          name: relatorio-testes-unitarios
+          path: |
+            ./test-results/relatorio-unitarios.html
+            "**/coverage.opencover.xml"
           retention-days: 30

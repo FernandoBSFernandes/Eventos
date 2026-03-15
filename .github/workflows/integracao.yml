@@ -57,14 +57,23 @@ jobs:
             --no-build \
             --configuration Release \
             --logger "trx;LogFileName=integration-tests.trx" \
+            --logger "html;LogFileName=relatorio-integracao.html" \
             --results-directory ./test-results
         env:
           ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=eventos_test;Username=postgres;Password=postgres"
 
-      - name: Publicar resultados dos testes
+      - name: Publicar resultados dos testes no Summary
         uses: dorny/test-reporter@v1
         if: always()
         with:
           name: Relatório — Testes de Integração
           path: ./test-results/integration-tests.trx
           reporter: dotnet-trx
+
+      - name: Publicar artefato HTML
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: relatorio-testes-integracao
+          path: ./test-results/relatorio-integracao.html
+          retention-days: 30
