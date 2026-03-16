@@ -14,11 +14,10 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
     private readonly string? _ciConnectionString =
         Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 
-    // Criado apenas no InitializeAsync, evitando validação do Docker no construtor
     private PostgreSqlContainer? _postgres;
 
-    private string ConnectionString =>
-        _ciConnectionString ?? _postgres!.GetConnectionString();
+    private string? ConnectionString =>
+        _ciConnectionString ?? _postgres?.GetConnectionString();
 
     // Ações de configuração de serviços extras registradas pelos testes
     private readonly List<Action<IServiceCollection>> _serviceOverrides = new();
@@ -34,11 +33,32 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
         if (!string.IsNullOrWhiteSpace(_ciConnectionString))
             return;
 
+        if (!IsDockerAvailable())
+            throw new InvalidOperationException(
+                "Docker não está disponível ou não está em execução. " +
+                "Os testes de integração requerem Docker para subir o PostgreSQL via Testcontainers. " +
+                "Inicie o Docker Desktop e execute os testes novamente.");
+
         _postgres = new PostgreSqlBuilder()
             .WithImage("postgres:16-alpine")
             .Build();
 
         await _postgres.StartAsync();
+    }
+
+    private static bool IsDockerAvailable()
+    {
+        try
+        {
+            new PostgreSqlBuilder()
+                .WithImage("postgres:16-alpine")
+                .Build();
+            return true;
+        }
+        catch (ArgumentException)
+        {
+            return false;
+        }
     }
 
     public new async Task DisposeAsync()
@@ -73,7 +93,12 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
     {
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<EventosDbContext>();
-        await db.Database.EnsureDeletedAsync();
+
+        // Garante que o schema existe antes de limpar
         await db.Database.MigrateAsync();
+
+        // Limpa os dados sem dropar o banco, evitando conflito de conexões abertas
+        await db.Database.ExecuteSqlRawAsync(
+            "TRUNCATE TABLE \"Acompanhante\", \"Convidado\" RESTART IDENTITY CASCADE");
     }
 }
