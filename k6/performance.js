@@ -133,6 +133,7 @@ const NOMES_FIXOS = [
 // Helpers
 // -----------------------------------------------------------------------------
 function nomeAleatorio(lista) {
+    if (!lista || lista.length === 0) return null;
     return lista[Math.floor(Math.random() * lista.length)];
 }
 
@@ -216,8 +217,9 @@ export function setup() {
 // Usado por: smoke, load, stress, soak
 // -----------------------------------------------------------------------------
 export function fluxoPadrao(data) {
-    const nomeFixo     = nomeAleatorio(data.nomesFixos);
-    const nomeDinamico = `${PREFIXO_K6}VU-${__VU}-${__ITER}`;
+const nomeFixo     = nomeAleatorio(data.nomesFixos);
+const nomeDinamico = `${PREFIXO_K6}VU-${__VU}-${__ITER}`;
+if (!nomeFixo) { sleep(1); return; }
 
     group('Escrita — adicionar convidado', () => {
         const res = adicionarConvidado(nomeDinamico);
@@ -233,7 +235,7 @@ export function fluxoPadrao(data) {
         const res = verificarConvidado(nomeFixo);
         const ok = check(res, {
             'verificar: status 200':            (r) => r.status === 200,
-            'verificar: campo existe presente':  (r) => r.json('existe') !== undefined,
+            'verificar: campo existe presente':  (r) => r.json('Existe') !== undefined,
         });
         m.taxaErro.add(!ok);
     });
@@ -255,8 +257,8 @@ export function fluxoPadrao(data) {
         const res = obterVagasRestantes();
         const ok = check(res, {
             'vagas: status 200':              (r) => r.status === 200,
-            'vagas: vagasRestantes >= 0':     (r) => r.json('vagasRestantes') >= 0,
-            'vagas: pessoasConfirmadas >= 0': (r) => r.json('pessoasConfirmadas') >= 0,
+            'vagas: VagasRestantes >= 0':     (r) => r.json('VagasRestantes') >= 0,
+            'vagas: PessoasConfirmadas >= 0': (r) => r.json('PessoasConfirmadas') >= 0,
         });
         m.taxaErro.add(!ok);
     });
@@ -302,7 +304,8 @@ export function fluxoPadrao(data) {
 // Usado por: spike
 // -----------------------------------------------------------------------------
 export function fluxoLeitura(data) {
-    const nomeFixo = nomeAleatorio(data.nomesFixos);
+const nomeFixo = nomeAleatorio(data.nomesFixos);
+if (!nomeFixo) { sleep(1); return; }
 
     group('Spike — verificar', () => {
         const res = verificarConvidado(nomeFixo);
@@ -327,7 +330,8 @@ export function fluxoLeitura(data) {
     group('Spike — vagas', () => {
         const res = obterVagasRestantes();
         const ok = check(res, {
-            'spike vagas: status 200': (r) => r.status === 200,
+            'spike vagas: status 200':          (r) => r.status === 200,
+            'spike vagas: VagasRestantes >= 0': (r) => r.json('VagasRestantes') >= 0,
         });
         m.taxaErro.add(!ok);
     });
@@ -352,9 +356,9 @@ export function teardown(data) {
     const lista = http.get(`${BASE_URL}/api/convidado/listar`, { headers: HEADERS });
     if (lista.status === 200) {
         for (const c of lista.json()) {
-            if (!c.nome.startsWith(PREFIXO_K6)) continue;
+            if (!c.Nome.startsWith(PREFIXO_K6)) continue;
             const res = http.del(
-                `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(c.nome)}`,
+                `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(c.Nome)}`,
                 null, { headers: HEADERS }
             );
             if (res.status === 200) removidos++;

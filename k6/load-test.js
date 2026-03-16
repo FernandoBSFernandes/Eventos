@@ -105,7 +105,7 @@ export default function () {
   const resVerificar = verificarConvidado(nome);
   check(resVerificar, {
     '[verificar] status 200': (r) => r.status === 200,
-    '[verificar] campo existe presente': (r) => r.json('existe') !== undefined,
+    '[verificar] campo existe presente': (r) => r.json('Existe') !== undefined,
   });
 
   sleep(0.3);
@@ -122,7 +122,7 @@ export default function () {
   const resVagas = obterVagasRestantes();
   check(resVagas, {
     '[vagas] status 200': (r) => r.status === 200,
-    '[vagas] vagasRestantes >= 0': (r) => r.json('vagasRestantes') >= 0,
+    '[vagas] VagasRestantes >= 0': (r) => r.json('VagasRestantes') >= 0,
   });
 
   sleep(0.5);
