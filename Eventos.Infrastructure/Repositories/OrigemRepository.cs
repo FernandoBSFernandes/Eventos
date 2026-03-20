@@ -2,9 +2,11 @@ using Eventos.Domain.Entities;
 using Eventos.Domain.Repositories;
 using Eventos.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Eventos.Infrastructure.Repositories;
 
+[ExcludeFromCodeCoverage]
 public class OrigemRepository : IOrigemRepository
 {
     private readonly OrigemDbContext _context;

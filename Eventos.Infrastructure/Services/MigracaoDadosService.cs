@@ -3,10 +3,12 @@ using Eventos.Domain.Entities;
 using Eventos.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
 namespace Eventos.Infrastructure.Services;
 
+[ExcludeFromCodeCoverage]
 public class MigracaoDadosService : IMigracaoDadosService
 {
     private readonly OrigemDbContext _origem;

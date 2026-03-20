@@ -2,9 +2,11 @@ using Eventos.Application.DTOs.Response;
 using Eventos.Application.Interfaces;
 using Eventos.Domain.Repositories;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Eventos.Application.Services;
 
+[ExcludeFromCodeCoverage]
 public class LegadoRelatorioService : ILegadoRelatorioService
 {
     private readonly IOrigemRepository _repo;

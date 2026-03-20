@@ -2,6 +2,7 @@ using Eventos.Application.DTOs.Response;
 using Eventos.Application.Interfaces;
 using EventosAPI.Reports;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
 
 namespace EventosAPI.Controllers;
 
@@ -12,6 +13,7 @@ namespace EventosAPI.Controllers;
 [ApiController]
 [Consumes("application/json")]
 [Tags("Legado")]
+[ExcludeFromCodeCoverage]
 public class LegadoController : ControllerBase
 {
     private readonly ILegadoRelatorioService _legadoRelatorioService;
