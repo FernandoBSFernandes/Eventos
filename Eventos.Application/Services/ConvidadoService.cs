@@ -85,7 +85,8 @@ public class ConvidadoService : IConvidadoService
             if (string.IsNullOrWhiteSpace(nome))
                 return new VerificarConvidadoResponse(400, "O nome do convidado é obrigatório.", false);
 
-            var existe = await _repo.ConvidadoExisteAsync(nome);
+            var existe = await _repo.ConvidadoExisteAsync(nome)
+                         || await _repo.AcompanhanteExisteAsync(nome);
 
             return new VerificarConvidadoResponse(200, "Consulta realizada com sucesso.", existe);
         }

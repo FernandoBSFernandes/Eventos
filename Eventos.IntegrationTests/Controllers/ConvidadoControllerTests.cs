@@ -179,6 +179,30 @@ public class ConvidadoControllerTests : IntegrationTestBase
         Assert.False(body.Existe);
     }
 
+    [Fact(DisplayName = "Deve retornar existe=true quando nome é encontrado como acompanhante")]
+    [Trait("Categoria", "Sucesso")]
+    public async Task VerificarConvidado_DeveRetornarExisteTrue_QuandoEncontradoComoAcompanhante()
+    {
+        // Arrange — adiciona convidado com acompanhante, mas busca pelo nome do acompanhante
+        var request = new AdicionarConvidadoRequest(
+            nome: "Titular Souza",
+            presencaConfirmada: true,
+            participacao: Participacao.Acompanhado,
+            quantidadeAcompanhantes: 1,
+            nomesAcompanhantes: new List<string> { "Acompanhante Souza" });
+
+        await Client.PostAsJsonAsync("/api/convidado/adicionar", request);
+
+        // Act
+        var response = await Client.GetAsync("/api/convidado/verificar?nome=Acompanhante");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<VerificarConvidadoResponse>();
+        Assert.NotNull(body);
+        Assert.True(body.Existe);
+    }
+
     [Fact(DisplayName = "Deve retornar 400 quando nome não é informado")]
     [Trait("Categoria", "Validação")]
     public async Task VerificarConvidado_DeveRetornar400_QuandoNomeNaoInformado()

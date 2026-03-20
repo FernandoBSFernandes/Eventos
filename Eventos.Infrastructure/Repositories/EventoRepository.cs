@@ -36,6 +36,13 @@ public class EventoRepository : IEventoRepository
             .AnyAsync(c => EF.Functions.ILike(c.Nome, $"%{nome}%"));
     }
 
+    public async Task<bool> AcompanhanteExisteAsync(string nome)
+    {
+        return await _context.Set<Acompanhante>()
+            .AsNoTracking()
+            .AnyAsync(a => EF.Functions.ILike(a.Nome, $"%{nome}%"));
+    }
+
     public async Task ZerarTabelasAsync()
     {
         await _context.Convidado.ExecuteDeleteAsync();

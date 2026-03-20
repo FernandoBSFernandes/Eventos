@@ -21,14 +21,16 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
         Assert.Equal("Consulta realizada com sucesso.", response.Mensagem);
         Assert.True(response.Existe);
         await Repo.Received(1).ConvidadoExisteAsync("João Silva");
+        await Repo.DidNotReceive().AcompanhanteExisteAsync(Arg.Any<string>());
     }
 
-    [Fact(DisplayName = "Deve retornar existe=false quando convidado não está cadastrado")]
+    [Fact(DisplayName = "Deve retornar existe=false quando convidado não está cadastrado nem como acompanhante")]
     [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornarExisteFalse_QuandoConvidadoNaoCadastrado()
     {
         // Arrange
         Repo.ConvidadoExisteAsync("Maria Souza").Returns(false);
+        Repo.AcompanhanteExisteAsync("Maria Souza").Returns(false);
 
         // Act
         var response = await Service.VerificarConvidadoExisteAsync("Maria Souza");
@@ -38,6 +40,40 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
         Assert.Equal("Consulta realizada com sucesso.", response.Mensagem);
         Assert.False(response.Existe);
         await Repo.Received(1).ConvidadoExisteAsync("Maria Souza");
+        await Repo.Received(1).AcompanhanteExisteAsync("Maria Souza");
+    }
+
+    [Fact(DisplayName = "Deve retornar existe=true quando nome é encontrado na tabela de acompanhantes")]
+    [Trait("Categoria", "Sucesso")]
+    public async Task DeveRetornarExisteTrue_QuandoNomeEncontradoComoAcompanhante()
+    {
+        // Arrange
+        Repo.ConvidadoExisteAsync("Ana Silva").Returns(false);
+        Repo.AcompanhanteExisteAsync("Ana Silva").Returns(true);
+
+        // Act
+        var response = await Service.VerificarConvidadoExisteAsync("Ana Silva");
+
+        // Assert
+        Assert.Equal(200, response.CodigoStatus);
+        Assert.True(response.Existe);
+        await Repo.Received(1).ConvidadoExisteAsync("Ana Silva");
+        await Repo.Received(1).AcompanhanteExisteAsync("Ana Silva");
+    }
+
+    [Fact(DisplayName = "Deve não consultar acompanhantes quando convidado já foi encontrado")]
+    [Trait("Categoria", "Sucesso")]
+    public async Task DeveNaoConsultarAcompanhantes_QuandoConvidadoJaEncontrado()
+    {
+        // Arrange
+        Repo.ConvidadoExisteAsync("Carlos Lima").Returns(true);
+
+        // Act
+        await Service.VerificarConvidadoExisteAsync("Carlos Lima");
+
+        // Assert
+        await Repo.Received(1).ConvidadoExisteAsync("Carlos Lima");
+        await Repo.DidNotReceive().AcompanhanteExisteAsync(Arg.Any<string>());
     }
 
     [Fact(DisplayName = "Deve passar o nome exato ao repositório")]

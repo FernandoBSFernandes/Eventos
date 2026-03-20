@@ -21,15 +21,20 @@ COPY ["Eventos.Domain/Eventos.Domain.csproj", "Eventos.Domain/"]
 COPY ["Eventos.Infrastructure/Eventos.Infrastructure.csproj", "Eventos.Infrastructure/"]
 RUN dotnet restore "EventosAPI/EventosAPI.csproj"
 
-# 2. Copiar o restante do código-fonte e publicar.
-# --no-restore reusa os pacotes já baixados na etapa anterior.
-# --no-build não foi usado porque publish precisa compilar,
-# mas evitamos o dotnet build separado que existia antes.
+# 2. Copiar o restante do código-fonte e compilar.
+# Essa camada é invalidada quando qualquer fonte muda,
+# mas reutiliza o cache do restore acima.
 COPY . .
+RUN dotnet build "EventosAPI/EventosAPI.csproj" \
+        -c $BUILD_CONFIGURATION \
+        --no-restore
+
+# 3. Publicar reutilizando os artefatos do build anterior.
+# --no-build evita recompilar o que já foi compilado na camada acima.
 RUN dotnet publish "EventosAPI/EventosAPI.csproj" \
         -c $BUILD_CONFIGURATION \
         -o /app/publish \
-        --no-restore \
+        --no-build \
         /p:UseAppHost=false
 
 # Esta fase é usada na produção ou quando executada no VS no modo normal (padrão quando não está usando a configuração de Depuração)
