@@ -23,6 +23,8 @@ namespace EventosAPI
 
         public static WebApplication CreateApp(string[] args)
         {
+            AppContext.SetSwitch("System.Net.DisableIPv6", true);
+
             QuestPDF.Settings.License = LicenseType.Community;
 
             var builder = WebApplication.CreateBuilder(args);
@@ -40,8 +42,6 @@ namespace EventosAPI
                 });
             });
 
-            // Garante que os controllers do assembly EventosAPI
-            // são sempre carregados, mesmo quando invocado por testhost
             builder.Services
                 .AddControllers(options =>
                 {
@@ -86,7 +86,6 @@ namespace EventosAPI
                 }
             });
 
-            // Register DbContext
             builder.Services.AddDbContext<EventosDbContext>((serviceProvider, options) =>
             {
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
