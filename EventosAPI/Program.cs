@@ -132,7 +132,6 @@ namespace EventosAPI
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "[Startup] Falha ao aplicar migrations do EventosDbContext.");
-                    throw;
                 }
 
                 try
@@ -144,7 +143,6 @@ namespace EventosAPI
                 catch (Exception ex)
                 {
                     logger.LogError(ex, "[Startup] Falha ao aplicar migrations do OrigemDbContext.");
-                    throw;
                 }
             }
 
