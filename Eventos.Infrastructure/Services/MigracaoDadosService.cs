@@ -3,6 +3,7 @@ using Eventos.Domain.Entities;
 using Eventos.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
 
 namespace Eventos.Infrastructure.Services;
 
@@ -54,20 +55,22 @@ public class MigracaoDadosService : IMigracaoDadosService
 
             foreach (var convidado in convidadosOrigem)
             {
-                if (nomesJaExistentes.Contains(convidado.Nome.ToLower()))
+                var nomeConvidadoNormalizado = NormalizarNome(convidado.Nome);
+
+                if (nomesJaExistentes.Contains(nomeConvidadoNormalizado.ToLower()))
                 {
-                    _logger.LogDebug("[MigracaoDados] Convidado '{Nome}' já existe no destino, ignorando.", convidado.Nome);
+                    _logger.LogDebug("[MigracaoDados] Convidado '{Nome}' já existe no destino, ignorando.", nomeConvidadoNormalizado);
                     continue;
                 }
 
                 novosConvidados.Add(new Convidado
                 {
-                    Nome = convidado.Nome,
+                    Nome = nomeConvidadoNormalizado,
                     PresencaConfirmada = convidado.PresencaConfirmada,
                     Participacao = convidado.Participacao,
                     QuantidadeAcompanhantes = convidado.QuantidadeAcompanhantes,
                     Acompanhantes = convidado.Acompanhantes
-                        .Select(a => new Acompanhante { Nome = a.Nome })
+                        .Select(a => new Acompanhante { Nome = NormalizarNome(a.Nome) })
                         .ToList()
                 });
             }
@@ -96,5 +99,13 @@ public class MigracaoDadosService : IMigracaoDadosService
             _logger.LogError(ex, "[MigracaoDados] Falha ao gravar dados na base de destino. Rollback efetuado. Migração abortada.");
             throw;
         }
+    }
+
+    private static string NormalizarNome(string nome)
+    {
+        if (string.IsNullOrWhiteSpace(nome))
+            return nome;
+
+        return Regex.Replace(nome, @" {2,}", " ").TrimEnd();
     }
 }
