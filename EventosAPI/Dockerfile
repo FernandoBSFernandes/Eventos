@@ -7,24 +7,30 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-
 # Esta fase é usada para compilar o projeto de serviço
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS publish
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
+# 1. Copiar apenas os .csproj e restaurar dependências.
+# Essa camada só é invalidada quando um .csproj muda,
+# reutilizando o cache do NuGet nas demais builds.
 COPY ["EventosAPI/EventosAPI.csproj", "EventosAPI/"]
 COPY ["Eventos.Application/Eventos.Application.csproj", "Eventos.Application/"]
 COPY ["Eventos.Domain/Eventos.Domain.csproj", "Eventos.Domain/"]
 COPY ["Eventos.Infrastructure/Eventos.Infrastructure.csproj", "Eventos.Infrastructure/"]
-RUN dotnet restore "./EventosAPI/EventosAPI.csproj"
-COPY . .
-WORKDIR "/src/EventosAPI"
-RUN dotnet build "./EventosAPI.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet restore "EventosAPI/EventosAPI.csproj"
 
-# Esta fase é usada para publicar o projeto de serviço a ser copiado para a fase final
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./EventosAPI.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+# 2. Copiar o restante do código-fonte e publicar.
+# --no-restore reusa os pacotes já baixados na etapa anterior.
+# --no-build não foi usado porque publish precisa compilar,
+# mas evitamos o dotnet build separado que existia antes.
+COPY . .
+RUN dotnet publish "EventosAPI/EventosAPI.csproj" \
+        -c $BUILD_CONFIGURATION \
+        -o /app/publish \
+        --no-restore \
+        /p:UseAppHost=false
 
 # Esta fase é usada na produção ou quando executada no VS no modo normal (padrão quando não está usando a configuração de Depuração)
 FROM base AS final

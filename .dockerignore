@@ -23,6 +23,22 @@
 **/values.dev.yaml
 LICENSE
 README.md
+
+# Projetos de teste — não entrando na imagem de produção
+**/Eventos.Tests/**
+**/Eventos.IntegrationTests/**
+
+# Arquivos de k6 e CI
+**/k6/**
+**/.github/**
+
+# Relatórios e artefatos locais
+**/test-results/**
+**/coverage*/
+**/*.trx
+**/*.html
+**/*.xml
+
 !**/.gitignore
 !.git/HEAD
 !.git/config
