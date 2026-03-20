@@ -4,6 +4,7 @@ using Eventos.Application.Services;
 using Eventos.Domain.Repositories;
 using Eventos.Infrastructure.Data;
 using Eventos.Infrastructure.Repositories;
+using Eventos.Infrastructure.Services;
 using EventosAPI.Services;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
@@ -100,6 +101,11 @@ namespace EventosAPI
                 }
             });
 
+            builder.Services.AddDbContext<OrigemDbContext>((serviceProvider, options) =>
+            {
+                options.UseNpgsql(builder.Configuration.GetConnectionString("OrigemConnection"));
+            });
+
             // Register DDD projects services
             builder.Services.Configure<EventoConfiguration>(
                 builder.Configuration.GetSection(EventoConfiguration.SectionName));
@@ -110,16 +116,36 @@ namespace EventosAPI
             builder.Services.AddScoped<IRelatorioService, RelatorioService>();
             builder.Services.AddScoped<IRelatorioEmailService, RelatorioEmailService>();
             builder.Services.AddScoped<IEventoRepository, EventoRepository>();
+            builder.Services.AddScoped<IMigracaoDadosService, MigracaoDadosService>();
 
             var app = builder.Build();
 
-            if (!app.Environment.IsDevelopment())
+            using (var scope = app.Services.CreateScope())
             {
-                using (var scope = app.Services.CreateScope())
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                try
                 {
-                    var db = scope.ServiceProvider.GetRequiredService<EventosDbContext>();
-                    db.Database.Migrate();
-                } 
+                    var destino = scope.ServiceProvider.GetRequiredService<EventosDbContext>();
+                    destino.Database.Migrate();
+                    logger.LogInformation("[Startup] Migrations do EventosDbContext aplicadas com sucesso.");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "[Startup] Falha ao aplicar migrations do EventosDbContext.");
+                    throw;
+                }
+
+                try
+                {
+                    var origem = scope.ServiceProvider.GetRequiredService<OrigemDbContext>();
+                    origem.Database.Migrate();
+                    logger.LogInformation("[Startup] Migrations do OrigemDbContext aplicadas com sucesso.");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "[Startup] Falha ao aplicar migrations do OrigemDbContext.");
+                    throw;
+                }
             }
 
             // Configure the HTTP request pipeline.

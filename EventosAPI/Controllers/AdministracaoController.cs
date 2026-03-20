@@ -17,10 +17,14 @@ namespace EventosAPI.Controllers
     public class AdministracaoController : ControllerBase
     {
         private readonly IAdministracaoService _administracaoService;
+        private readonly IMigracaoDadosService _migracaoDadosService;
 
-        public AdministracaoController(IAdministracaoService administracaoService)
+        public AdministracaoController(
+            IAdministracaoService administracaoService,
+            IMigracaoDadosService migracaoDadosService)
         {
             _administracaoService = administracaoService;
+            _migracaoDadosService = migracaoDadosService;
         }
 
         /// <summary>
@@ -53,6 +57,31 @@ namespace EventosAPI.Controllers
             var response = await _administracaoService.ZerarTabelasAsync();
 
             return StatusCode(response.CodigoStatus, response);
+        }
+
+        /// <summary>
+        /// Migra convidados e acompanhantes da base de origem para a base de destino.
+        /// Registros com o mesmo nome já existentes no destino são ignorados.
+        /// </summary>
+        /// <returns>Quantidade de convidados e acompanhantes migrados</returns>
+        /// <response code="200">Migração concluída com sucesso</response>
+        /// <response code="500">Erro interno ao processar a requisição</response>
+        [HttpPost("migrar-dados")]
+        [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> MigrarDados()
+        {
+            try
+            {
+                var (convidados, acompanhantes) = await _migracaoDadosService.MigrarDadosAsync();
+
+                return Ok(new BaseResponse(200,
+                    $"Migração concluída. Convidados migrados: {convidados}. Acompanhantes migrados: {acompanhantes}."));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new BaseResponse(500, "Ocorreu um erro interno durante a migração."));
+            }
         }
     }
 }
