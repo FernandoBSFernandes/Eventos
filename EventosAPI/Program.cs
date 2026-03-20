@@ -19,10 +19,10 @@ namespace EventosAPI
 
         public static void Main(string[] args)
         {
-            CreateApp(args).Run();
+            CreateAppAsync(args).GetAwaiter().GetResult().Run();
         }
 
-        public static WebApplication CreateApp(string[] args)
+        public static async Task<WebApplication> CreateAppAsync(string[] args)
         {
             AppContext.SetSwitch("System.Net.DisableIPv6", true);
 
@@ -126,12 +126,28 @@ namespace EventosAPI
                 try
                 {
                     var destino = scope.ServiceProvider.GetRequiredService<EventosDbContext>();
-                    destino.Database.Migrate();
-                    logger.LogInformation("[Startup] Migrations do EventosDbContext aplicadas com sucesso.");
+
+                    var tentativas = 5;
+                    var espera = TimeSpan.FromSeconds(5);
+                    for (var i = 1; i <= tentativas; i++)
+                    {
+                        try
+                        {
+                            destino.Database.Migrate();
+                            logger.LogInformation("[Startup] Migrations do EventosDbContext aplicadas com sucesso.");
+                            break;
+                        }
+                        catch (Exception ex) when (i < tentativas)
+                        {
+                            logger.LogWarning(ex, "[Startup] Tentativa {Tentativa}/{Total} falhou para EventosDbContext. Aguardando {Espera}s antes de tentar novamente.", i, tentativas, espera.TotalSeconds);
+                            await Task.Delay(espera);
+                            espera *= 2;
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "[Startup] Falha ao aplicar migrations do EventosDbContext.");
+                    logger.LogError(ex, "[Startup] Falha ao aplicar migrations do EventosDbContext após todas as tentativas.");
                 }
 
                 try
