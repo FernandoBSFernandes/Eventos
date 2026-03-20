@@ -82,6 +82,15 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
             services.AddDbContext<EventosDbContext>(options =>
                 options.UseNpgsql(ConnectionString));
 
+            var origemDescriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(DbContextOptions<OrigemDbContext>));
+
+            if (origemDescriptor != null)
+                services.Remove(origemDescriptor);
+
+            services.AddDbContext<OrigemDbContext>(options =>
+                options.UseInMemoryDatabase("OrigemTestDb"));
+
             foreach (var configure in _serviceOverrides)
                 configure(services);
         });

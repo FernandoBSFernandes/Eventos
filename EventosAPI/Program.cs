@@ -116,7 +116,9 @@ namespace EventosAPI
             builder.Services.AddScoped<IRelatorioService, RelatorioService>();
             builder.Services.AddScoped<IRelatorioEmailService, RelatorioEmailService>();
             builder.Services.AddScoped<IEventoRepository, EventoRepository>();
+            builder.Services.AddScoped<IOrigemRepository, OrigemRepository>();
             builder.Services.AddScoped<IMigracaoDadosService, MigracaoDadosService>();
+            builder.Services.AddScoped<ILegadoRelatorioService, LegadoRelatorioService>();
 
             var app = builder.Build();
 

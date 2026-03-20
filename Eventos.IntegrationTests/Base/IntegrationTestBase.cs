@@ -21,7 +21,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         Client = factory.CreateClient();
     }
 
-    public async Task InitializeAsync()
+    public virtual async Task InitializeAsync()
     {
         Factory.AddServiceOverride(_ => { }); // garante lista inicializada
         await Factory.ResetDatabaseAsync();
