@@ -122,7 +122,7 @@ export default function () {
   const resVagas = obterVagasRestantes();
   check(resVagas, {
     '[vagas] status 200': (r) => r.status === 200,
-    '[vagas] VagasRestantes >= 0': (r) => r.json('VagasRestantes') >= 0,
+    '[vagas] vagasRestantes >= 0': (r) => r.json('vagasRestantes') >= 0,
   });
 
   sleep(0.5);

@@ -256,9 +256,9 @@ if (!nomeFixo) { sleep(1); return; }
     group('Leitura — vagas restantes', () => {
         const res = obterVagasRestantes();
         const ok = check(res, {
-            'vagas: status 200':              (r) => r.status === 200,
-            'vagas: VagasRestantes >= 0':     (r) => r.json('VagasRestantes') >= 0,
-            'vagas: PessoasConfirmadas >= 0': (r) => r.json('PessoasConfirmadas') >= 0,
+            'vagas: status 200':                (r) => r.status === 200,
+            'vagas: vagasRestantes >= 0':       (r) => r.json('vagasRestantes') >= 0,
+            'vagas: pessoasConfirmadas >= 0':   (r) => r.json('pessoasConfirmadas') >= 0,
         });
         m.taxaErro.add(!ok);
     });
@@ -330,8 +330,8 @@ if (!nomeFixo) { sleep(1); return; }
     group('Spike — vagas', () => {
         const res = obterVagasRestantes();
         const ok = check(res, {
-            'spike vagas: status 200':          (r) => r.status === 200,
-            'spike vagas: VagasRestantes >= 0': (r) => r.json('VagasRestantes') >= 0,
+            'spike vagas: status 200':              (r) => r.status === 200,
+            'spike vagas: vagasRestantes >= 0':     (r) => r.json('vagasRestantes') >= 0,
         });
         m.taxaErro.add(!ok);
     });
@@ -356,9 +356,9 @@ export function teardown(data) {
     const lista = http.get(`${BASE_URL}/api/convidado/listar`, { headers: HEADERS });
     if (lista.status === 200) {
         for (const c of lista.json()) {
-            if (!c.Nome || !c.Nome.startsWith(PREFIXO_K6)) continue;
+            if (!c.nome || !c.nome.startsWith(PREFIXO_K6)) continue;
             const res = http.del(
-                `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(c.Nome)}`,
+                `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(c.nome)}`,
                 null, { headers: HEADERS }
             );
             if (res.status === 200) removidos++;
