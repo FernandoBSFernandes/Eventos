@@ -356,7 +356,7 @@ export function teardown(data) {
     const lista = http.get(`${BASE_URL}/api/convidado/listar`, { headers: HEADERS });
     if (lista.status === 200) {
         for (const c of lista.json()) {
-            if (!c.Nome.startsWith(PREFIXO_K6)) continue;
+            if (!c.Nome || !c.Nome.startsWith(PREFIXO_K6)) continue;
             const res = http.del(
                 `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(c.Nome)}`,
                 null, { headers: HEADERS }
@@ -390,6 +390,15 @@ export function handleSummary(data) {
 // permitindo que o GitHub Actions exiba cada threshold como um check
 // com ✅ passou / ❌ falhou diretamente na aba Summary do workflow.
 // -----------------------------------------------------------------------------
+function escapeXml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
+
 function buildJUnit(data) {
     const thresholds = data.metrics
         ? Object.entries(data.metrics).filter(([, v]) => v.thresholds)
@@ -410,10 +419,10 @@ function buildJUnit(data) {
                 : '0';
 
             testCases += passed
-                ? `    <testcase classname="${metricName}" name="${condition}" />\n`
-                : `    <testcase classname="${metricName}" name="${condition}">\n` +
-                  `      <failure message="Threshold falhou: ${metricName} ${condition} (valor: ${value})">\n` +
-                  `        Métrica: ${metricName}\n        Condição: ${condition}\n        Valor medido: ${value}\n` +
+                ? `    <testcase classname="${escapeXml(metricName)}" name="${escapeXml(condition)}" />\n`
+                : `    <testcase classname="${escapeXml(metricName)}" name="${escapeXml(condition)}">\n` +
+                  `      <failure message="Threshold falhou: ${escapeXml(metricName)} ${escapeXml(condition)} (valor: ${escapeXml(value)})">\n` +
+                  `        Métrica: ${escapeXml(metricName)}\n        Condição: ${escapeXml(condition)}\n        Valor medido: ${escapeXml(value)}\n` +
                   `      </failure>\n    </testcase>\n`;
         }
     }
