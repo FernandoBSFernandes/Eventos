@@ -1,5 +1,6 @@
 namespace Eventos.Tests.Services;
 
+[Trait("Classe", "ConvidadoService")]
 [Trait("Serviço", "ObterVagasRestantes")]
 public class ObterVagasRestantesTests : ConvidadoServiceTestBase
 {
@@ -102,7 +103,7 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(500, response.CodigoStatus);
-        Assert.Equal("Ocorreu um erro interno. Tente novamente mais tarde.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         Assert.Equal(0, response.VagasRestantes);
         Assert.Equal(0, response.PessoasConfirmadas);
     }

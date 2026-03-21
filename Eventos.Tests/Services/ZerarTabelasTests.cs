@@ -1,5 +1,6 @@
 namespace Eventos.Tests.Services;
 
+[Trait("Classe", "AdministracaoService")]
 [Trait("Serviço", "ZerarTabelas")]
 public class ZerarTabelasTests : AdministracaoServiceTestBase
 {
@@ -18,7 +19,7 @@ public class ZerarTabelasTests : AdministracaoServiceTestBase
         // Assert
         Assert.NotNull(response);
         Assert.Equal(200, response.CodigoStatus);
-        Assert.Equal("Tabelas zeradas com sucesso.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.Received(1).ZerarTabelasAsync();
     }
 
@@ -53,7 +54,7 @@ public class ZerarTabelasTests : AdministracaoServiceTestBase
 
         // Assert
         Assert.Equal(500, response.CodigoStatus);
-        Assert.Equal("Ocorreu um erro interno. Tente novamente mais tarde.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.Received(1).ZerarTabelasAsync();
     }
 

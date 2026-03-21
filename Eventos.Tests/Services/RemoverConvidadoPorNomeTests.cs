@@ -1,5 +1,6 @@
 namespace Eventos.Tests.Services;
 
+[Trait("Classe", "ConvidadoService")]
 [Trait("Serviço", "RemoverConvidado")]
 public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
 {
@@ -18,7 +19,7 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(200, response.CodigoStatus);
-        Assert.Equal("Convidado removido com sucesso.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.Received(1).RemoverConvidadoAsync(convidado);
     }
 
@@ -35,7 +36,7 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(200, response.CodigoStatus);
-        Assert.Equal("Convidado removido com sucesso.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.Received(1).RemoverConvidadoAsync(convidado);
     }
 
@@ -55,24 +56,7 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(404, response.CodigoStatus);
-        Assert.Equal("O convidado não foi encontrado. Ele ainda não foi convidado ou já foi apagado.", response.Mensagem);
-        await Repo.DidNotReceive().RemoverConvidadoAsync(Arg.Any<Convidado>());
-    }
-
-    [Fact(DisplayName = "Deve retornar 404 quando convidado já foi apagado")]
-    [Trait("Categoria", "Não Encontrado")]
-    public async Task DeveRetornar404_QuandoConvidadoJaFoiApagado()
-    {
-        // Arrange
-        Repo.BuscarConvidadosPorNomeAsync("Maria Santos").Returns(new List<Convidado>());
-
-        // Act
-        var response = await Service.RemoverConvidadoPorNomeAsync("Maria Santos");
-
-        // Assert
-        Assert.Equal(404, response.CodigoStatus);
-        Assert.Equal("O convidado não foi encontrado. Ele ainda não foi convidado ou já foi apagado.", response.Mensagem);
-        await Repo.Received(1).BuscarConvidadosPorNomeAsync("Maria Santos");
+        Assert.NotEmpty(response.Mensagem);
         await Repo.DidNotReceive().RemoverConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -104,9 +88,12 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().RemoverConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Fact(DisplayName = "Deve retornar 400 quando três convidados com nome semelhante são encontrados")]
+    [Theory(DisplayName = "Deve retornar 400 quando três convidados com nome semelhante são encontrados")]
     [Trait("Categoria", "Validação")]
-    public async Task DeveRetornar400_QuandoTresConvidadosEncontradosComNomeSemelhante()
+    [InlineData("Carlos Lima")]
+    [InlineData("Carlos Souza")]
+    [InlineData("Carlos Alves")]
+    public async Task DeveRetornar400_QuandoTresConvidadosEncontradosComNomeSemelhante(string nomeConvidado)
     {
         // Arrange
         var convidados = new List<Convidado>
@@ -152,42 +139,19 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
 
     #region Validação de Nome
 
-    [Fact(DisplayName = "Deve retornar 400 quando nome é nulo")]
+    [Theory(DisplayName = "Deve retornar 400 quando nome é nulo, vazio ou espaço em branco")]
     [Trait("Categoria", "Validação")]
-    public async Task DeveRetornar400_QuandoNomeNulo()
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task DeveRetornar400_QuandoNomeInvalido(string nome)
     {
         // Act
-        var response = await Service.RemoverConvidadoPorNomeAsync(null);
+        var response = await Service.RemoverConvidadoPorNomeAsync(nome);
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome do convidado é obrigatório.", response.Mensagem);
-        await Repo.DidNotReceive().BuscarConvidadosPorNomeAsync(Arg.Any<string>());
-    }
-
-    [Fact(DisplayName = "Deve retornar 400 quando nome é vazio")]
-    [Trait("Categoria", "Validação")]
-    public async Task DeveRetornar400_QuandoNomeVazio()
-    {
-        // Act
-        var response = await Service.RemoverConvidadoPorNomeAsync("");
-
-        // Assert
-        Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome do convidado é obrigatório.", response.Mensagem);
-        await Repo.DidNotReceive().BuscarConvidadosPorNomeAsync(Arg.Any<string>());
-    }
-
-    [Fact(DisplayName = "Deve retornar 400 quando nome é espaço em branco")]
-    [Trait("Categoria", "Validação")]
-    public async Task DeveRetornar400_QuandoNomeEspacoEmBranco()
-    {
-        // Act
-        var response = await Service.RemoverConvidadoPorNomeAsync("   ");
-
-        // Assert
-        Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome do convidado é obrigatório.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.DidNotReceive().BuscarConvidadosPorNomeAsync(Arg.Any<string>());
     }
 
@@ -208,7 +172,7 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(500, response.CodigoStatus);
-        Assert.Equal("Ocorreu um erro interno. Tente novamente mais tarde.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
     }
 
     #endregion

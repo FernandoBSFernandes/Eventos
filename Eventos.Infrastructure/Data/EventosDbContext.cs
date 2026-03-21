@@ -1,4 +1,4 @@
-﻿using Eventos.Domain.Entities;
+using Eventos.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Eventos.Infrastructure.Data;

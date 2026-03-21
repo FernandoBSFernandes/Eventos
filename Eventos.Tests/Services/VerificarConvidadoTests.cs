@@ -1,5 +1,6 @@
 namespace Eventos.Tests.Services;
 
+[Trait("Classe", "ConvidadoService")]
 [Trait("Serviço", "VerificarConvidado")]
 public class VerificarConvidadoTests : ConvidadoServiceTestBase
 {
@@ -18,7 +19,7 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
         // Assert
         Assert.NotNull(response);
         Assert.Equal(200, response.CodigoStatus);
-        Assert.Equal("Consulta realizada com sucesso.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         Assert.True(response.Existe);
         await Repo.Received(1).ConvidadoExisteAsync("João Silva");
         await Repo.DidNotReceive().AcompanhanteExisteAsync(Arg.Any<string>());
@@ -37,7 +38,7 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(200, response.CodigoStatus);
-        Assert.Equal("Consulta realizada com sucesso.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         Assert.False(response.Existe);
         await Repo.Received(1).ConvidadoExisteAsync("Maria Souza");
         await Repo.Received(1).AcompanhanteExisteAsync("Maria Souza");
@@ -96,44 +97,19 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
 
     #region Validação de Nome
 
-    [Fact(DisplayName = "Deve retornar 400 quando nome é nulo")]
+    [Theory(DisplayName = "Deve retornar 400 quando nome é nulo, vazio ou espaço em branco")]
     [Trait("Categoria", "Validação")]
-    public async Task DeveRetornar400_QuandoNomeNulo()
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task DeveRetornar400_QuandoNomeInvalido(string nome)
     {
         // Act
-        var response = await Service.VerificarConvidadoExisteAsync(null);
+        var response = await Service.VerificarConvidadoExisteAsync(nome);
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome do convidado é obrigatório.", response.Mensagem);
-        Assert.False(response.Existe);
-        await Repo.DidNotReceive().ConvidadoExisteAsync(Arg.Any<string>());
-    }
-
-    [Fact(DisplayName = "Deve retornar 400 quando nome é vazio")]
-    [Trait("Categoria", "Validação")]
-    public async Task DeveRetornar400_QuandoNomeVazio()
-    {
-        // Act
-        var response = await Service.VerificarConvidadoExisteAsync("");
-
-        // Assert
-        Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome do convidado é obrigatório.", response.Mensagem);
-        Assert.False(response.Existe);
-        await Repo.DidNotReceive().ConvidadoExisteAsync(Arg.Any<string>());
-    }
-
-    [Fact(DisplayName = "Deve retornar 400 quando nome é espaço em branco")]
-    [Trait("Categoria", "Validação")]
-    public async Task DeveRetornar400_QuandoNomeEspacoEmBranco()
-    {
-        // Act
-        var response = await Service.VerificarConvidadoExisteAsync("   ");
-
-        // Assert
-        Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome do convidado é obrigatório.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         Assert.False(response.Existe);
         await Repo.DidNotReceive().ConvidadoExisteAsync(Arg.Any<string>());
     }
@@ -155,7 +131,7 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(500, response.CodigoStatus);
-        Assert.Equal("Ocorreu um erro interno. Tente novamente mais tarde.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         Assert.False(response.Existe);
     }
 

@@ -1,5 +1,6 @@
 namespace Eventos.Tests.Services;
 
+[Trait("Classe", "ConvidadoService")]
 [Trait("Serviço", "ListarConvidados")]
 public class ListarConvidadosTests : ConvidadoServiceTestBase
 {

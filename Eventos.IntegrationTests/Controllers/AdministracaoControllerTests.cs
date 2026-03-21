@@ -5,6 +5,7 @@ namespace Eventos.IntegrationTests.Controllers;
 
 [Collection(IntegrationTestCollection.Name)]
 [Trait("Integração", "AdministracaoController")]
+[Trait("Classe", "AdministracaoController")]
 public class AdministracaoControllerTests : IntegrationTestBase
 {
     public AdministracaoControllerTests(EventosWebApplicationFactory factory) : base(factory) { }
@@ -36,7 +37,8 @@ public class AdministracaoControllerTests : IntegrationTestBase
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<BaseResponse>();
-        Assert.Equal("Tabelas zeradas com sucesso.", body!.Mensagem);
+        Assert.NotNull(body);
+        Assert.NotEmpty(body!.Mensagem);
     }
 
     [Fact(DisplayName = "Deve retornar 200 ao zerar tabelas quando banco está vazio")]

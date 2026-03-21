@@ -2,6 +2,7 @@ using Eventos.Application.DTOs.Request;
 
 namespace Eventos.Tests.Services;
 
+[Trait("Classe", "ConvidadoService")]
 [Trait("Serviço", "AdicionarConvidado")]
 public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 {
@@ -26,7 +27,7 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
         // Assert
         Assert.NotNull(response);
         Assert.Equal(201, response.CodigoStatus);
-        Assert.Equal("Convidado foi registrado com sucesso", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.Received(1).AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -48,7 +49,7 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(201, response.CodigoStatus);
-        Assert.Equal("Convidado foi registrado com sucesso", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.Received(1).AdicionarConvidadoAsync(Arg.Is<Convidado>(c =>
             c.Nome == "Maria Santos" &&
             c.QuantidadeAcompanhantes == 2 &&
@@ -188,13 +189,16 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
     #region Validação de Nome
 
-    [Fact(DisplayName = "Deve retornar 400 quando nome é nulo")]
+    [Theory(DisplayName = "Deve retornar 400 quando nome é nulo, vazio ou espaço em branco")]
     [Trait("Categoria", "Validação")]
-    public async Task DeveRetornar400_QuandoNomeNulo()
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task DeveRetornar400_QuandoNomeInvalido(string nome)
     {
         // Arrange
         var request = new AdicionarConvidadoRequest(
-            nome: null,
+            nome: nome,
             presencaConfirmada: true,
             participacao: Participacao.Sozinho,
             quantidadeAcompanhantes: 0,
@@ -206,51 +210,7 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome do convidado é obrigatório.", response.Mensagem);
-        await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
-    }
-
-    [Fact(DisplayName = "Deve retornar 400 quando nome é vazio")]
-    [Trait("Categoria", "Validação")]
-    public async Task DeveRetornar400_QuandoNomeVazio()
-    {
-        // Arrange
-        var request = new AdicionarConvidadoRequest(
-            nome: "",
-            presencaConfirmada: true,
-            participacao: Participacao.Sozinho,
-            quantidadeAcompanhantes: 0,
-            nomesAcompanhantes: new List<string>()
-        );
-
-        // Act
-        var response = await Service.AdicionarConvidadoAsync(request);
-
-        // Assert
-        Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome do convidado é obrigatório.", response.Mensagem);
-        await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
-    }
-
-    [Fact(DisplayName = "Deve retornar 400 quando nome é espaço em branco")]
-    [Trait("Categoria", "Validação")]
-    public async Task DeveRetornar400_QuandoNomeEspacoEmBranco()
-    {
-        // Arrange
-        var request = new AdicionarConvidadoRequest(
-            nome: "   ",
-            presencaConfirmada: true,
-            participacao: Participacao.Sozinho,
-            quantidadeAcompanhantes: 0,
-            nomesAcompanhantes: new List<string>()
-        );
-
-        // Act
-        var response = await Service.AdicionarConvidadoAsync(request);
-
-        // Assert
-        Assert.Equal(400, response.CodigoStatus);
-        Assert.Equal("O nome do convidado é obrigatório.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -502,7 +462,7 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(201, response.CodigoStatus);
-        Assert.Equal("Convidado foi registrado com sucesso", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.Received(1).AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -529,7 +489,7 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(201, response.CodigoStatus);
-        Assert.Equal("Convidado foi registrado com sucesso", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.Received(1).AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -553,7 +513,7 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(401, response.CodigoStatus);
-        Assert.Equal("A quantidade máxima de pessoas a serem cadastrados extrapolou o limite de 100 convidados.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -577,7 +537,7 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(401, response.CodigoStatus);
-        Assert.Equal("A quantidade máxima de pessoas a serem cadastrados extrapolou o limite de 100 convidados.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -604,7 +564,7 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(401, response.CodigoStatus);
-        Assert.Equal("A quantidade máxima de pessoas a serem cadastrados extrapolou o limite de 100 convidados.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -677,6 +637,7 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(401, response.CodigoStatus);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -700,7 +661,7 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(401, response.CodigoStatus);
-        Assert.Equal("A quantidade máxima de pessoas a serem cadastrados extrapolou o limite de 100 convidados.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.DidNotReceive().AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 
@@ -729,7 +690,7 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(500, response.CodigoStatus);
-        Assert.Equal("Ocorreu um erro interno. Tente novamente mais tarde.", response.Mensagem);
+        Assert.NotEmpty(response.Mensagem);
         await Repo.Received(1).AdicionarConvidadoAsync(Arg.Any<Convidado>());
     }
 

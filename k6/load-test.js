@@ -56,7 +56,7 @@ const headers = { 'Content-Type': 'application/json' };
 function adicionarConvidado(nome) {
   const payload = JSON.stringify({
     nome,
-    iraAoRodizio: true,
+    presencaConfirmada: true,
     participacao: 'Sozinho',
     quantidadeAcompanhantes: 0,
     nomesAcompanhantes: [],
@@ -105,7 +105,7 @@ export default function () {
   const resVerificar = verificarConvidado(nome);
   check(resVerificar, {
     '[verificar] status 200': (r) => r.status === 200,
-    '[verificar] campo existe presente': (r) => r.json('Existe') !== undefined,
+    '[verificar] campo existe presente': (r) => r.json('existe') !== undefined,
   });
 
   sleep(0.3);
@@ -126,6 +126,26 @@ export default function () {
   });
 
   sleep(0.5);
+}
+
+// ---------------------------------------------------------------------------
+// Teardown: remove todos os dados inseridos pelo k6
+// ---------------------------------------------------------------------------
+export function teardown() {
+  const lista = http.get(`${BASE_URL}/api/convidado/listar`);
+  if (lista.status !== 200) return;
+
+  let removidos = 0;
+  for (const c of lista.json()) {
+    if (!c.nome.startsWith('Convidado K6')) continue;
+    const res = http.del(
+      `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(c.nome)}`,
+      null, { headers }
+    );
+    if (res.status === 200) removidos++;
+  }
+
+  console.log(`[teardown] ${removidos} convidado(s) removido(s). Base limpa.`);
 }
 
 // ---------------------------------------------------------------------------

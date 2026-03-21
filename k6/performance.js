@@ -140,7 +140,7 @@ function nomeAleatorio(lista) {
 function adicionarConvidado(nome, acompanhantes = []) {
     const payload = JSON.stringify({
         nome,
-        iraAoRodizio:            true,
+        presencaConfirmada:      true,
         participacao:            acompanhantes.length > 0 ? 'Acompanhado' : 'Sozinho',
         quantidadeAcompanhantes: acompanhantes.length,
         nomesAcompanhantes:      acompanhantes,
@@ -235,7 +235,7 @@ if (!nomeFixo) { sleep(1); return; }
         const res = verificarConvidado(nomeFixo);
         const ok = check(res, {
             'verificar: status 200':            (r) => r.status === 200,
-            'verificar: campo existe presente':  (r) => r.json('Existe') !== undefined,
+            'verificar: campo existe presente':  (r) => r.json('existe') !== undefined,
         });
         m.taxaErro.add(!ok);
     });

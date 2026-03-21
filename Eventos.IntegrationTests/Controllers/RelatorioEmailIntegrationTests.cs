@@ -6,6 +6,7 @@ namespace Eventos.IntegrationTests.Controllers;
 
 [Collection(IntegrationTestCollection.Name)]
 [Trait("Integração", "RelatorioEmailController")]
+[Trait("Classe", "RelatorioController")]
 public class RelatorioEmailIntegrationTests : IntegrationTestBase
 {
     private readonly IRelatorioEmailService _mockEmailService;
