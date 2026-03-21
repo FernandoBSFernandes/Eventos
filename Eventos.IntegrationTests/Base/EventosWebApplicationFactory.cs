@@ -19,19 +19,13 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
     private string? ConnectionString =>
         _ciConnectionString ?? _postgres?.GetConnectionString();
 
-    // Ações de configuração de serviços extras registradas pelos testes
-    private readonly List<Action<IServiceCollection>> _serviceOverrides = new();
-
-    public void AddServiceOverride(Action<IServiceCollection> configure)
-        => _serviceOverrides.Add(configure);
-
-    public void ClearServiceOverrides()
-        => _serviceOverrides.Clear();
-
     public async Task InitializeAsync()
     {
         if (!string.IsNullOrWhiteSpace(_ciConnectionString))
+        {
+            await ApplyMigrationsAsync();
             return;
+        }
 
         if (!IsDockerAvailable())
             throw new InvalidOperationException(
@@ -44,6 +38,14 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
             .Build();
 
         await _postgres.StartAsync();
+        await ApplyMigrationsAsync();
+    }
+
+    private async Task ApplyMigrationsAsync()
+    {
+        using var scope = Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<EventosDbContext>();
+        await db.Database.MigrateAsync();
     }
 
     private static bool IsDockerAvailable()
@@ -81,9 +83,6 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
 
             services.AddDbContext<EventosDbContext>(options =>
                 options.UseNpgsql(ConnectionString));
-
-            foreach (var configure in _serviceOverrides)
-                configure(services);
         });
 
         builder.UseEnvironment("Development");
@@ -94,10 +93,6 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<EventosDbContext>();
 
-        // Garante que o schema existe antes de limpar
-        await db.Database.MigrateAsync();
-
-        // Limpa os dados sem dropar o banco, evitando conflito de conexões abertas
         await db.Database.ExecuteSqlRawAsync(
             "TRUNCATE TABLE \"Acompanhante\", \"Convidado\" RESTART IDENTITY CASCADE");
     }

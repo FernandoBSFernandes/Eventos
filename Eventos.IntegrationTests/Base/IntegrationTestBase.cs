@@ -23,13 +23,11 @@ public abstract class IntegrationTestBase : IAsyncLifetime
 
     public virtual async Task InitializeAsync()
     {
-        Factory.AddServiceOverride(_ => { }); // garante lista inicializada
         await Factory.ResetDatabaseAsync();
     }
 
     public Task DisposeAsync()
     {
-        Factory.ClearServiceOverrides();
         return Task.CompletedTask;
     }
 }
