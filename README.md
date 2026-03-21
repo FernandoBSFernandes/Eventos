@@ -1,97 +1,70 @@
-# ?? Eventos API
+# Eventos API
 
-API REST para gerenciamento de convidados de eventos, desenvolvida em **.NET 8** seguindo os princípios de **Domain-Driven Design (DDD)**.
-
----
-
-## ?? Sobre o projeto
-
-A API permite registrar convidados para um evento, informando se irão sozinhos ou acompanhados, a quantidade de acompanhantes e os respectivos nomes. Também é possível listar todos os convidados, verificar se um convidado já está cadastrado, remover registros duplicados, gerar relatórios de confirmados e zerar os dados do evento.
+API REST para gerenciamento de convidados de eventos, desenvolvida em **.NET 8** seguindo os princÃ­pios de **Domain-Driven Design (DDD)**.
 
 ---
 
-## ??? Arquitetura
+## Sobre o projeto
 
-O projeto segue a arquitetura em camadas com separação clara de responsabilidades:
+A API permite registrar convidados para um evento, informando se irÃ£o sozinhos ou acompanhados, a quantidade de acompanhantes e os respectivos nomes. TambÃ©m Ã© possÃ­vel listar todos os convidados, verificar se um convidado jÃ¡ estÃ¡ cadastrado, remover registros duplicados, exportar relatÃ³rios de confirmados em PDF ou Excel, enviar os relatÃ³rios por e-mail e zerar os dados do evento.
+
+---
+
+## Arquitetura
+
+O projeto segue a arquitetura em camadas com separaÃ§Ã£o clara de responsabilidades:
 
 ```
 Eventos/
-??? EventosAPI/              # Camada de apresentação — Controllers e configuração da API
-??? Eventos.Application/     # Camada de aplicação — Services, DTOs e interfaces
-??? Eventos.Domain/          # Camada de domínio — Entidades e contratos de repositório
-??? Eventos.Infrastructure/  # Camada de infraestrutura — EF Core, DbContext e repositórios
-??? Eventos.Tests/           # Testes de unidade
+â”œâ”€â”€ EventosAPI/              # Camada de apresentaÃ§Ã£o â€” Controllers, Reports e configuraÃ§Ã£o da API
+â”œâ”€â”€ Eventos.Application/     # Camada de aplicaÃ§Ã£o â€” Services, DTOs e interfaces
+â”œâ”€â”€ Eventos.Domain/          # Camada de domÃ­nio â€” Entidades e contratos de repositÃ³rio
+â”œâ”€â”€ Eventos.Infrastructure/  # Camada de infraestrutura â€” EF Core, DbContext e repositÃ³rios
+â”œâ”€â”€ Eventos.Tests/           # Testes de unidade
+â”œâ”€â”€ Eventos.IntegrationTests/# Testes de integraÃ§Ã£o
+â””â”€â”€ k6/                      # Scripts de teste de carga
 ```
 
 ---
 
-## ?? Endpoints
+## Endpoints
 
-### `POST /api/convidado/adicionar`
+### Convidados â€” `api/convidado`
+
+#### `POST /api/convidado/adicionar`
 
 Registra um novo convidado no evento.
 
 **Body:**
 ```json
 {
-  "nome": "João Silva",
-  "iraAoRodizio": true,
+  "nome": "JoÃ£o Silva",
+  "presencaConfirmada": true,
   "participacao": "Sozinho",
   "quantidadeAcompanhantes": 0,
   "nomesAcompanhantes": []
 }
 ```
 
-| Campo | Tipo | Obrigatório | Descrição |
+| Campo | Tipo | ObrigatÃ³rio | DescriÃ§Ã£o |
 |---|---|---|---|
-| `nome` | `string` | ? | Nome do convidado (3–50 caracteres) |
-| `iraAoRodizio` | `boolean` | ? | Confirmação de presença |
-| `participacao` | `string` | ? | `"Sozinho"` ou `"Acompanhado"` |
-| `quantidadeAcompanhantes` | `integer` | ? | Quantidade de acompanhantes (0–5) |
-| `nomesAcompanhantes` | `string[]` | ? | Nomes dos acompanhantes (deve bater com a quantidade) |
+| `nome` | `string` | âœ” | Nome do convidado (3â€“50 caracteres) |
+| `presencaConfirmada` | `boolean` | âœ” | ConfirmaÃ§Ã£o de presenÃ§a |
+| `participacao` | `string` | âœ” | `"Sozinho"` ou `"Acompanhado"` |
+| `quantidadeAcompanhantes` | `integer` | âœ” | Quantidade de acompanhantes (0â€“5) |
+| `nomesAcompanhantes` | `string[]` | âœ” | Nomes dos acompanhantes (deve bater com a quantidade) |
 
-**Respostas:**
-
-| Código | Descrição |
+| CÃ³digo | DescriÃ§Ã£o |
 |---|---|
 | `201` | Convidado registrado com sucesso |
-| `400` | Dados inválidos |
+| `400` | Dados invÃ¡lidos ou limite de convidados excedido |
 | `500` | Erro interno do servidor |
 
 ---
 
-### `GET /api/convidado/listar`
+#### `GET /api/convidado/verificar?nome={nome}`
 
-Lista todos os convidados cadastrados, confirmados ou não, com seus respectivos acompanhantes.
-
-**Resposta `200`:**
-```json
-[
-  {
-    "nome": "João Silva",
-    "presencaConfirmada": true,
-    "participacao": "Acompanhado",
-    "quantidadeAcompanhantes": 1,
-    "nomesAcompanhantes": ["Maria Silva"]
-  }
-]
-```
-
-| Código | Descrição |
-|---|---|
-| `200` | Lista retornada com sucesso |
-| `500` | Erro interno do servidor |
-
----
-
-### `GET /api/convidado/verificar?nome={nome}`
-
-Verifica se um convidado já está cadastrado pelo nome (sem distinção de maiúsculas/minúsculas).
-
-**Exemplo:**
-```
-GET /api/convidado/verificar?nome=João Silva
-```
+Verifica se um convidado jÃ¡ estÃ¡ cadastrado pelo nome (sem distinÃ§Ã£o de maiÃºsculas/minÃºsculas).
 
 **Resposta `200`:**
 ```json
@@ -102,43 +75,102 @@ GET /api/convidado/verificar?nome=João Silva
 }
 ```
 
-| Código | Descrição |
+| CÃ³digo | DescriÃ§Ã£o |
 |---|---|
-| `200` | Consulta realizada — `existe` indica se o convidado está cadastrado |
-| `400` | Nome não informado |
+| `200` | Consulta realizada â€” `existe` indica se o convidado estÃ¡ cadastrado |
+| `400` | Nome nÃ£o informado |
 | `500` | Erro interno do servidor |
 
 ---
 
-### `GET /api/convidado/relatorio/excel`
+#### `GET /api/convidado/listar`
 
-Exporta o relatório de convidados confirmados em formato **Excel** (`.xlsx`).
+Lista todos os convidados cadastrados com seus respectivos acompanhantes.
 
-O arquivo gerado é nomeado `Relação de Participantes do Rodizio.xlsx`.
+**Resposta `200`:**
+```json
+[
+  {
+    "nome": "JoÃ£o Silva",
+    "presencaConfirmada": true,
+    "participacao": "Acompanhado",
+    "quantidadeAcompanhantes": 1,
+    "nomesAcompanhantes": ["Maria Silva"]
+  }
+]
+```
 
-| Código | Descrição |
+| CÃ³digo | DescriÃ§Ã£o |
+|---|---|
+| `200` | Lista retornada com sucesso |
+| `500` | Erro interno do servidor |
+
+---
+
+#### `DELETE /api/convidado/remover?nome={nome}`
+
+Remove um convidado pelo nome.
+
+| CÃ³digo | DescriÃ§Ã£o |
+|---|---|
+| `200` | Convidado removido com sucesso |
+| `400` | Nome nÃ£o informado ou mÃºltiplos convidados encontrados |
+| `404` | Convidado nÃ£o encontrado |
+| `500` | Erro interno do servidor |
+
+---
+
+#### `GET /api/convidado/vagas-restantes`
+
+Retorna o nÃºmero de vagas disponÃ­veis com base no limite configurado.
+
+| CÃ³digo | DescriÃ§Ã£o |
+|---|---|
+| `200` | Consulta realizada com sucesso |
+| `500` | Erro interno do servidor |
+
+---
+
+### RelatÃ³rios â€” `api/relatorio`
+
+#### `GET /api/relatorio/excel`
+
+Exporta o relatÃ³rio de convidados confirmados em formato **Excel** (`.xlsx`).
+
+| CÃ³digo | DescriÃ§Ã£o |
 |---|---|
 | `200` | Arquivo gerado e retornado |
 | `500` | Erro interno do servidor |
 
 ---
 
-### `GET /api/convidado/relatorio/pdf`
+#### `GET /api/relatorio/pdf`
 
-Exporta o relatório de convidados confirmados em formato **PDF**.
+Exporta o relatÃ³rio de convidados confirmados em formato **PDF**.
 
-O arquivo gerado é nomeado `Relação de Participantes do Rodizio.pdf`.
-
-| Código | Descrição |
+| CÃ³digo | DescriÃ§Ã£o |
 |---|---|
 | `200` | Arquivo gerado e retornado |
 | `500` | Erro interno do servidor |
 
 ---
 
-### `DELETE /api/convidado/remover-duplicatas`
+#### `POST /api/relatorio/enviar-email`
 
-Remove registros duplicados de convidados e seus acompanhantes. O critério de duplicidade é o nome idêntico após normalização (sem distinção de maiúsculas/minúsculas e sem espaços nas bordas). O **primeiro** registro de cada grupo é sempre preservado.
+Envia o relatÃ³rio de convidados confirmados por e-mail com os arquivos PDF e Excel em anexo.
+
+| CÃ³digo | DescriÃ§Ã£o |
+|---|---|
+| `200` | E-mail enviado com sucesso |
+| `500` | Erro interno do servidor |
+
+---
+
+### AdministraÃ§Ã£o â€” `api/administracao`
+
+#### `DELETE /api/administracao/remover-duplicatas`
+
+Remove registros duplicados de convidados e acompanhantes. O critÃ©rio de duplicidade Ã© o nome idÃªntico apÃ³s normalizaÃ§Ã£o (sem distinÃ§Ã£o de maiÃºsculas/minÃºsculas). O **primeiro** registro de cada grupo Ã© preservado.
 
 **Resposta `200`:**
 ```json
@@ -148,58 +180,63 @@ Remove registros duplicados de convidados e seus acompanhantes. O critério de du
 }
 ```
 
-| Código | Descrição |
+| CÃ³digo | DescriÃ§Ã£o |
 |---|---|
 | `200` | Duplicatas removidas com sucesso |
 | `500` | Erro interno do servidor |
 
 ---
 
-### `DELETE /api/convidado/zerar-tabelas`
+#### `DELETE /api/administracao/zerar-tabelas`
 
-Zera todos os registros de convidados e seus acompanhantes do banco de dados.
+Zera todos os registros de convidados e acompanhantes do banco de dados.
 
-| Código | Descrição |
+| CÃ³digo | DescriÃ§Ã£o |
 |---|---|
 | `200` | Dados removidos com sucesso |
 | `500` | Erro interno do servidor |
 
 ---
 
-## ? Regras de negócio
+## Regras de negÃ³cio
 
 - O nome do convidado deve ter entre **3 e 50 caracteres**
-- Convidados com participação `"Sozinho"` **não podem** ter acompanhantes
-- A `quantidadeAcompanhantes` deve ser **igual** ao número de nomes em `nomesAcompanhantes`
+- Convidados com participaÃ§Ã£o `"Sozinho"` **nÃ£o podem** ter acompanhantes
+- A `quantidadeAcompanhantes` deve ser **igual** ao nÃºmero de nomes em `nomesAcompanhantes`
 - Cada nome de acompanhante deve ter entre **3 e 50 caracteres**
-- A quantidade de acompanhantes não pode ser **negativa** nem **superior a 5**
+- A quantidade de acompanhantes nÃ£o pode ser **negativa** nem **superior a 5**
+- O total de pessoas no evento (convidados + acompanhantes) nÃ£o pode ultrapassar o **limite configurado** (padrÃ£o: 100)
 
 ---
 
-## ??? Tecnologias
+## Tecnologias
 
 | Tecnologia | Uso |
 |---|---|
 | .NET 8 | Framework principal |
 | ASP.NET Core | Web API |
 | Entity Framework Core | ORM |
-| PostgreSQL | Banco de dados |
-| ClosedXML | Geração de Excel |
-| QuestPDF | Geração de PDF |
+| PostgreSQL (Npgsql) | Banco de dados |
+| ClosedXML | GeraÃ§Ã£o de Excel |
+| QuestPDF | GeraÃ§Ã£o de PDF |
 | xUnit | Testes de unidade |
 | NSubstitute | Mocking nos testes |
-| Swagger / OpenAPI | Documentação interativa |
+| Swagger / OpenAPI | DocumentaÃ§Ã£o interativa |
+| k6 | Testes de carga |
+| Docker | ContainerizaÃ§Ã£o |
 
 ---
 
-## ?? Configuração
+## ConfiguraÃ§Ã£o
 
-### Pré-requisitos
+### PrÃ©-requisitos
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- PostgreSQL
+- [PostgreSQL](https://www.postgresql.org/)
+- [Docker](https://www.docker.com/) *(opcional)*
+- [k6](https://k6.io/docs/get-started/installation/) *(opcional, para testes de carga)*
 
-### String de conexão
+### String de conexÃ£o
 
 Configure a connection string no `appsettings.json` do projeto `EventosAPI`:
 
@@ -207,6 +244,19 @@ Configure a connection string no `appsettings.json` do projeto `EventosAPI`:
 {
   "ConnectionStrings": {
     "DefaultConnection": "Host=SEU_HOST;Database=EventosDb;Username=SEU_USUARIO;Password=SUA_SENHA"
+  },
+  "Evento": {
+    "LimiteMaximoPessoas": 100
+  },
+  "Email": {
+    "SmtpHost": "smtp.office365.com",
+    "SmtpPort": 587,
+    "Remetente": "seu@email.com",
+    "Senha": "<senha>",
+    "Destinatario": "destino@email.com"
+  },
+  "Swagger": {
+    "Enabled": true
   }
 }
 ```
@@ -223,28 +273,91 @@ dotnet ef database update --project Eventos.Infrastructure --startup-project Eve
 dotnet run --project EventosAPI
 ```
 
-A documentação interativa estará disponível em:
+A documentaÃ§Ã£o interativa estarÃ¡ disponÃ­vel em:
 ```
-http://localhost:{porta}/swagger
+http://localhost:8080/swagger
 ```
 
 ---
 
-## ?? Testes
+## Testes
 
-Os testes de unidade estão no projeto `Eventos.Tests` e utilizam mocks para isolar completamente as dependências externas. Os arquivos são organizados por funcionalidade:
+### UnitÃ¡rios
+
+Os testes de unidade estÃ£o no projeto `Eventos.Tests` e utilizam mocks para isolar completamente as dependÃªncias externas:
 
 ```
 Eventos.Tests/
-??? Services/
-    ??? EventoServiceTestBase.cs       # Setup compartilhado
-    ??? AdicionarConvidadoTests.cs     # 18 testes
-    ??? VerificarConvidadoTests.cs     #  7 testes
-    ??? ZerarTabelasTests.cs           #  3 testes
-    ??? ObterRelatorioTests.cs         #  8 testes
-    ??? ListarConvidadosTests.cs       # 11 testes
-    ??? RemoverDuplicatasTests.cs      #  8 testes
+â””â”€â”€ Services/
+    â”œâ”€â”€ AdicionarConvidadoTests.cs
+    â”œâ”€â”€ VerificarConvidadoTests.cs
+    â”œâ”€â”€ ListarConvidadosTests.cs
+    â”œâ”€â”€ RemoverConvidadoPorNomeTests.cs
+    â”œâ”€â”€ ObterVagasRestantesTests.cs
+    â”œâ”€â”€ RemoverDuplicatasTests.cs
+    â”œâ”€â”€ ZerarTabelasTests.cs
+    â””â”€â”€ ObterRelatorioTests.cs
 ```
 
 ```bash
 dotnet test Eventos.Tests
+```
+
+### IntegraÃ§Ã£o
+
+Os testes de integraÃ§Ã£o estÃ£o no projeto `Eventos.IntegrationTests` e utilizam `WebApplicationFactory` para testar os controllers de ponta a ponta:
+
+```
+Eventos.IntegrationTests/
+â””â”€â”€ Controllers/
+    â”œâ”€â”€ ConvidadoControllerTests.cs
+    â”œâ”€â”€ AdministracaoControllerTests.cs
+    â””â”€â”€ RelatorioEmailIntegrationTests.cs
+```
+
+```bash
+dotnet test Eventos.IntegrationTests
+```
+
+### Executar todos os testes
+
+```bash
+dotnet test
+```
+
+---
+
+## Testes de Carga (k6)
+
+Os scripts estÃ£o na pasta `k6/`:
+
+```bash
+# Teste de carga com cenÃ¡rios de aquecimento e pico
+k6 run k6/load-test.js -e BASE_URL=http://localhost:8080
+
+# Teste de performance individual
+k6 run k6/performance.js -e BASE_URL=http://localhost:8080
+```
+
+**Thresholds configurados:**
+
+| MÃ©trica | Limite |
+|---|---|
+| Taxa de erros | < 1% |
+| LatÃªncia p(95) geral | < 500 ms |
+| LatÃªncia p(95) â€” listar | < 400 ms |
+| LatÃªncia p(95) â€” verificar | < 300 ms |
+| LatÃªncia p(95) â€” adicionar | < 600 ms |
+
+---
+
+## Docker
+
+```bash
+# Build da imagem
+docker build -f EventosAPI/Dockerfile -t eventos-api .
+
+# Executar o container
+docker run -p 8080:8080 \
+  -e ConnectionStrings__DefaultConnection="Host=SEU_HOST;Database=EventosDb;Username=SEU_USUARIO;Password=SUA_SENHA" \
+  eventos-api
