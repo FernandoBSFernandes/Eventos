@@ -6,9 +6,9 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
 {
     #region Sucesso
 
-    [Fact(DisplayName = "Deve retornar existe=true quando convidado está cadastrado")]
+    [Fact(DisplayName = "Deve retornar ExisteComoConvidado=true quando nome está na tabela de convidados")]
     [Trait("Categoria", "Sucesso")]
-    public async Task DeveRetornarExisteTrue_QuandoConvidadoCadastrado()
+    public async Task DeveRetornarExisteComoConvidadoTrue_QuandoConvidadoCadastrado()
     {
         // Arrange
         Repo.ConvidadoExisteAsync("João Silva").Returns(true);
@@ -19,34 +19,15 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
         // Assert
         Assert.NotNull(response);
         Assert.Equal(200, response.CodigoStatus);
-        Assert.NotEmpty(response.Mensagem);
-        Assert.True(response.Existe);
+        Assert.True(response.ExisteComoConvidado);
+        Assert.False(response.ExisteComoAcompanhante);
         await Repo.Received(1).ConvidadoExisteAsync("João Silva");
         await Repo.DidNotReceive().AcompanhanteExisteAsync(Arg.Any<string>());
     }
 
-    [Fact(DisplayName = "Deve retornar existe=false quando convidado não está cadastrado nem como acompanhante")]
+    [Fact(DisplayName = "Deve retornar ExisteComoAcompanhante=true quando nome está na tabela de acompanhantes")]
     [Trait("Categoria", "Sucesso")]
-    public async Task DeveRetornarExisteFalse_QuandoConvidadoNaoCadastrado()
-    {
-        // Arrange
-        Repo.ConvidadoExisteAsync("Maria Souza").Returns(false);
-        Repo.AcompanhanteExisteAsync("Maria Souza").Returns(false);
-
-        // Act
-        var response = await Service.VerificarConvidadoExisteAsync("Maria Souza");
-
-        // Assert
-        Assert.Equal(200, response.CodigoStatus);
-        Assert.NotEmpty(response.Mensagem);
-        Assert.False(response.Existe);
-        await Repo.Received(1).ConvidadoExisteAsync("Maria Souza");
-        await Repo.Received(1).AcompanhanteExisteAsync("Maria Souza");
-    }
-
-    [Fact(DisplayName = "Deve retornar existe=true quando nome é encontrado na tabela de acompanhantes")]
-    [Trait("Categoria", "Sucesso")]
-    public async Task DeveRetornarExisteTrue_QuandoNomeEncontradoComoAcompanhante()
+    public async Task DeveRetornarExisteComoAcompanhanteTrue_QuandoNomeEncontradoComoAcompanhante()
     {
         // Arrange
         Repo.ConvidadoExisteAsync("Ana Silva").Returns(false);
@@ -57,9 +38,29 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(200, response.CodigoStatus);
-        Assert.True(response.Existe);
+        Assert.False(response.ExisteComoConvidado);
+        Assert.True(response.ExisteComoAcompanhante);
         await Repo.Received(1).ConvidadoExisteAsync("Ana Silva");
         await Repo.Received(1).AcompanhanteExisteAsync("Ana Silva");
+    }
+
+    [Fact(DisplayName = "Deve retornar ambas as flags false quando nome não está em nenhuma tabela")]
+    [Trait("Categoria", "Sucesso")]
+    public async Task DeveRetornarAmbasFlagsFalse_QuandoNomeNaoEncontrado()
+    {
+        // Arrange
+        Repo.ConvidadoExisteAsync("Maria Souza").Returns(false);
+        Repo.AcompanhanteExisteAsync("Maria Souza").Returns(false);
+
+        // Act
+        var response = await Service.VerificarConvidadoExisteAsync("Maria Souza");
+
+        // Assert
+        Assert.Equal(200, response.CodigoStatus);
+        Assert.False(response.ExisteComoConvidado);
+        Assert.False(response.ExisteComoAcompanhante);
+        await Repo.Received(1).ConvidadoExisteAsync("Maria Souza");
+        await Repo.Received(1).AcompanhanteExisteAsync("Maria Souza");
     }
 
     [Fact(DisplayName = "Deve não consultar acompanhantes quando convidado já foi encontrado")]
@@ -110,7 +111,8 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
         // Assert
         Assert.Equal(400, response.CodigoStatus);
         Assert.NotEmpty(response.Mensagem);
-        Assert.False(response.Existe);
+        Assert.False(response.ExisteComoConvidado);
+        Assert.False(response.ExisteComoAcompanhante);
         await Repo.DidNotReceive().ConvidadoExisteAsync(Arg.Any<string>());
     }
 
@@ -132,7 +134,8 @@ public class VerificarConvidadoTests : ConvidadoServiceTestBase
         // Assert
         Assert.Equal(500, response.CodigoStatus);
         Assert.NotEmpty(response.Mensagem);
-        Assert.False(response.Existe);
+        Assert.False(response.ExisteComoConvidado);
+        Assert.False(response.ExisteComoAcompanhante);
     }
 
     #endregion

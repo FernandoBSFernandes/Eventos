@@ -83,17 +83,17 @@ public class ConvidadoService : IConvidadoService
         try
         {
             if (string.IsNullOrWhiteSpace(nome))
-                return new VerificarConvidadoResponse(400, "O nome do convidado é obrigatório.", false);
+                return new VerificarConvidadoResponse(400, "O nome do convidado é obrigatório.", false, false);
 
-            var existe = await _repo.ConvidadoExisteAsync(nome)
-                         || await _repo.AcompanhanteExisteAsync(nome);
+            var existeComoConvidado = await _repo.ConvidadoExisteAsync(nome);
+            var existeComoAcompanhante = !existeComoConvidado && await _repo.AcompanhanteExisteAsync(nome);
 
-            return new VerificarConvidadoResponse(200, "Consulta realizada com sucesso.", existe);
+            return new VerificarConvidadoResponse(200, string.Empty, existeComoConvidado, existeComoAcompanhante);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "[VerificarConvidado] Erro inesperado ao verificar convidado.");
-            return new VerificarConvidadoResponse(500, "Ocorreu um erro interno. Tente novamente mais tarde.", false);
+            return new VerificarConvidadoResponse(500, "Ocorreu um erro interno. Tente novamente mais tarde.", false, false);
         }
     }
 

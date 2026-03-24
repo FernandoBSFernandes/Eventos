@@ -6,9 +6,9 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
 {
     #region Sucesso
 
-    [Fact(DisplayName = "Deve retornar 100 vagas quando nenhuma pessoa está confirmada")]
+    [Fact(DisplayName = "Deve retornar 105 vagas quando nenhuma pessoa está confirmada")]
     [Trait("Categoria", "Sucesso")]
-    public async Task DeveRetornar100Vagas_QuandoNenhumaPessoaConfirmada()
+    public async Task DeveRetornar105Vagas_QuandoNenhumaPessoaConfirmada()
     {
         // Arrange
         Repo.ObterTotalPessoasAsync().Returns(0);
@@ -18,7 +18,7 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(200, response.CodigoStatus);
-        Assert.Equal(100, response.VagasRestantes);
+        Assert.Equal(105, response.VagasRestantes);
         Assert.Equal(0, response.PessoasConfirmadas);
     }
 
@@ -34,7 +34,7 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(200, response.CodigoStatus);
-        Assert.Equal(37, response.VagasRestantes);
+        Assert.Equal(42, response.VagasRestantes);
         Assert.Equal(63, response.PessoasConfirmadas);
     }
 
@@ -43,22 +43,6 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
     public async Task DeveRetornarZeroVagas_QuandoLimiteAtingido()
     {
         // Arrange
-        Repo.ObterTotalPessoasAsync().Returns(100);
-
-        // Act
-        var response = await Service.ObterVagasRestantesAsync();
-
-        // Assert
-        Assert.Equal(200, response.CodigoStatus);
-        Assert.Equal(0, response.VagasRestantes);
-        Assert.Equal(100, response.PessoasConfirmadas);
-    }
-
-    [Fact(DisplayName = "Deve retornar zero vagas quando limite é ultrapassado")]
-    [Trait("Categoria", "Limite")]
-    public async Task DeveRetornarZeroVagas_QuandoUltrapassaLimite()
-    {
-        // Arrange — cenário de dados legados com mais de 100 pessoas
         Repo.ObterTotalPessoasAsync().Returns(105);
 
         // Act
@@ -70,12 +54,28 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
         Assert.Equal(105, response.PessoasConfirmadas);
     }
 
+    [Fact(DisplayName = "Deve retornar zero vagas quando limite é ultrapassado")]
+    [Trait("Categoria", "Limite")]
+    public async Task DeveRetornarZeroVagas_QuandoUltrapassaLimite()
+    {
+        // Arrange — cenário de dados legados com mais de 105 pessoas
+        Repo.ObterTotalPessoasAsync().Returns(110);
+
+        // Act
+        var response = await Service.ObterVagasRestantesAsync();
+
+        // Assert
+        Assert.Equal(200, response.CodigoStatus);
+        Assert.Equal(0, response.VagasRestantes);
+        Assert.Equal(110, response.PessoasConfirmadas);
+    }
+
     [Fact(DisplayName = "Deve retornar 1 vaga quando falta 1 pessoa para o limite")]
     [Trait("Categoria", "Limite")]
     public async Task DeveRetornar1Vaga_QuandoFalta1PessoaParaOLimite()
     {
         // Arrange
-        Repo.ObterTotalPessoasAsync().Returns(99);
+        Repo.ObterTotalPessoasAsync().Returns(104);
 
         // Act
         var response = await Service.ObterVagasRestantesAsync();
@@ -83,7 +83,7 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
         // Assert
         Assert.Equal(200, response.CodigoStatus);
         Assert.Equal(1, response.VagasRestantes);
-        Assert.Equal(99, response.PessoasConfirmadas);
+        Assert.Equal(104, response.PessoasConfirmadas);
     }
 
     #endregion

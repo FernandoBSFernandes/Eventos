@@ -105,7 +105,8 @@ export default function () {
   const resVerificar = verificarConvidado(nome);
   check(resVerificar, {
     '[verificar] status 200': (r) => r.status === 200,
-    '[verificar] campo existe presente': (r) => r.json('existe') !== undefined,
+    '[verificar] campo existeComoConvidado presente': (r) => r.json('existeComoConvidado') !== undefined,
+    '[verificar] campo existeComoAcompanhante presente': (r) => r.json('existeComoAcompanhante') !== undefined,
   });
 
   sleep(0.3);

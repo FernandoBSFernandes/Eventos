@@ -142,7 +142,7 @@ public class ConvidadoControllerTests : IntegrationTestBase
 
     #region GET /api/convidado/verificar
 
-    [Fact(DisplayName = "Deve retornar existe=true quando convidado está cadastrado")]
+    [Fact(DisplayName = "Deve retornar existeComoConvidado=true quando convidado está cadastrado")]
     [Trait("Categoria", "Sucesso")]
     public async Task VerificarConvidado_DeveRetornarExisteTrue_QuandoCadastrado()
     {
@@ -163,10 +163,11 @@ public class ConvidadoControllerTests : IntegrationTestBase
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<VerificarConvidadoResponse>();
         Assert.NotNull(body);
-        Assert.True(body.Existe);
+        Assert.True(body.ExisteComoConvidado);
+        Assert.False(body.ExisteComoAcompanhante);
     }
 
-    [Fact(DisplayName = "Deve retornar existe=false quando convidado não está cadastrado")]
+    [Fact(DisplayName = "Deve retornar ambas as flags false quando convidado não está cadastrado")]
     [Trait("Categoria", "Sucesso")]
     public async Task VerificarConvidado_DeveRetornarExisteFalse_QuandoNaoCadastrado()
     {
@@ -177,10 +178,11 @@ public class ConvidadoControllerTests : IntegrationTestBase
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<VerificarConvidadoResponse>();
         Assert.NotNull(body);
-        Assert.False(body.Existe);
+        Assert.False(body.ExisteComoConvidado);
+        Assert.False(body.ExisteComoAcompanhante);
     }
 
-    [Fact(DisplayName = "Deve retornar existe=true quando nome é encontrado como acompanhante")]
+    [Fact(DisplayName = "Deve retornar existeComoAcompanhante=true quando nome é encontrado como acompanhante")]
     [Trait("Categoria", "Sucesso")]
     public async Task VerificarConvidado_DeveRetornarExisteTrue_QuandoEncontradoComoAcompanhante()
     {
@@ -201,7 +203,8 @@ public class ConvidadoControllerTests : IntegrationTestBase
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<VerificarConvidadoResponse>();
         Assert.NotNull(body);
-        Assert.True(body.Existe);
+        Assert.False(body.ExisteComoConvidado);
+        Assert.True(body.ExisteComoAcompanhante);
     }
 
     [Fact(DisplayName = "Deve retornar 400 quando nome não é informado")]
@@ -311,12 +314,12 @@ public class ConvidadoControllerTests : IntegrationTestBase
         var body = await response.Content.ReadFromJsonAsync<VagasRestantesResponse>();
         Assert.NotNull(body);
         Assert.Equal(3, body.PessoasConfirmadas);
-        Assert.Equal(97, body.VagasRestantes);
+        Assert.Equal(102, body.VagasRestantes);
     }
 
-    [Fact(DisplayName = "Deve retornar 100 vagas quando banco está vazio")]
+    [Fact(DisplayName = "Deve retornar 105 vagas quando banco está vazio")]
     [Trait("Categoria", "Sucesso")]
-    public async Task VagasRestantes_DeveRetornar100Vagas_QuandoBancoVazio()
+    public async Task VagasRestantes_DeveRetornar105Vagas_QuandoBancoVazio()
     {
         // Act
         var response = await Client.GetAsync("/api/convidado/vagas-restantes");
@@ -325,7 +328,7 @@ public class ConvidadoControllerTests : IntegrationTestBase
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<VagasRestantesResponse>();
         Assert.NotNull(body);
-        Assert.Equal(100, body.VagasRestantes);
+        Assert.Equal(105, body.VagasRestantes);
         Assert.Equal(0, body.PessoasConfirmadas);
     }
 

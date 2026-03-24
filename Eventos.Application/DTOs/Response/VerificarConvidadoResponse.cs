@@ -1,20 +1,26 @@
-namespace Eventos.Application.DTOs.Response
+namespace Eventos.Application.DTOs.Response;
+
+/// <summary>
+/// Resposta da consulta de existência de um convidado
+/// </summary>
+public class VerificarConvidadoResponse : BaseResponse
 {
     /// <summary>
-    /// Resposta da consulta de existência de um convidado
+    /// Indica se o nome foi encontrado como convidado principal
     /// </summary>
-    public class VerificarConvidadoResponse : BaseResponse
-    {
-        /// <summary>
-        /// Indica se o convidado foi encontrado na base de dados
-        /// </summary>
-        /// <example>true</example>
-        public bool Existe { get; set; }
+    /// <example>true</example>
+    public bool ExisteComoConvidado { get; set; }
 
-        public VerificarConvidadoResponse(int codigoStatus, string mensagem, bool existe)
-            : base(codigoStatus, mensagem)
-        {
-            Existe = existe;
-        }
+    /// <summary>
+    /// Indica se o nome foi encontrado como acompanhante
+    /// </summary>
+    /// <example>false</example>
+    public bool ExisteComoAcompanhante { get; set; }
+
+    public VerificarConvidadoResponse(int codigoStatus, string mensagem, bool existeComoConvidado, bool existeComoAcompanhante)
+        : base(codigoStatus, mensagem)
+    {
+        ExisteComoConvidado = existeComoConvidado;
+        ExisteComoAcompanhante = existeComoAcompanhante;
     }
 }

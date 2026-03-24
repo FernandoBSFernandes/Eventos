@@ -234,8 +234,9 @@ if (!nomeFixo) { sleep(1); return; }
     group('Leitura — verificar convidado', () => {
         const res = verificarConvidado(nomeFixo);
         const ok = check(res, {
-            'verificar: status 200':            (r) => r.status === 200,
-            'verificar: campo existe presente':  (r) => r.json('existe') !== undefined,
+            'verificar: status 200':                          (r) => r.status === 200,
+            'verificar: campo existeComoConvidado presente':  (r) => r.json('existeComoConvidado') !== undefined,
+            'verificar: campo existeComoAcompanhante presente': (r) => r.json('existeComoAcompanhante') !== undefined,
         });
         m.taxaErro.add(!ok);
     });

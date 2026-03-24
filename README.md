@@ -205,7 +205,7 @@ Zera todos os registros de convidados e acompanhantes do banco de dados.
 - A `quantidadeAcompanhantes` deve ser **igual** ao número de nomes em `nomesAcompanhantes`
 - Cada nome de acompanhante deve ter entre **3 e 50 caracteres**
 - A quantidade de acompanhantes não pode ser **negativa** nem **superior a 5**
-- O total de pessoas no evento (convidados + acompanhantes) não pode ultrapassar o **limite configurado** (padrão: 100)
+- O total de pessoas no evento (convidados + acompanhantes) não pode ultrapassar o **limite configurado** (padrão: 105)
 
 ---
 
@@ -246,7 +246,7 @@ Configure a connection string no `appsettings.json` do projeto `EventosAPI`:
     "DefaultConnection": "Host=SEU_HOST;Database=EventosDb;Username=SEU_USUARIO;Password=SUA_SENHA"
   },
   "Evento": {
-    "LimiteMaximoPessoas": 100
+    "LimiteMaximoPessoas": 105
   },
   "Email": {
     "SmtpHost": "smtp.office365.com",

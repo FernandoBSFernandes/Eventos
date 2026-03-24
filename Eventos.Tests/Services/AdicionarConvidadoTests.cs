@@ -497,8 +497,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
     [Trait("Categoria", "Limite")]
     public async Task DeveRetornar401_QuandoConvidadoSozinhoExcedeLimite()
     {
-        // Arrange - 100 pessoas já cadastradas + 1 nova = 101
-        Repo.ObterTotalPessoasAsync().Returns(100);
+        // Arrange - 105 pessoas já cadastradas + 1 nova = 106
+        Repo.ObterTotalPessoasAsync().Returns(105);
 
         var request = new AdicionarConvidadoRequest(
             nome: "João Silva",
@@ -521,8 +521,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
     [Trait("Categoria", "Limite")]
     public async Task DeveRetornar401_QuandoConvidadoComAcompanhantesExcedeLimite()
     {
-        // Arrange - 98 pessoas já cadastradas + 1 convidado + 2 acompanhantes = 101
-        Repo.ObterTotalPessoasAsync().Returns(98);
+        // Arrange - 103 pessoas já cadastradas + 1 convidado + 2 acompanhantes = 106
+        Repo.ObterTotalPessoasAsync().Returns(103);
 
         var request = new AdicionarConvidadoRequest(
             nome: "Maria Santos",
@@ -545,8 +545,8 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
     [Trait("Categoria", "Limite")]
     public async Task DeveRetornar401_QuandoAcompanhantesUltrapassamLimiteExato()
     {
-        // Arrange - 95 pessoas já cadastradas + 1 convidado + 5 acompanhantes = 101
-        Repo.ObterTotalPessoasAsync().Returns(95);
+        // Arrange - 100 pessoas já cadastradas + 1 convidado + 5 acompanhantes = 106
+        Repo.ObterTotalPessoasAsync().Returns(100);
 
         var request = new AdicionarConvidadoRequest(
             nome: "Fernanda Rocha",
@@ -622,7 +622,7 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
     public async Task NaoDevePersistir_QuandoLimiteExcedido()
     {
         // Arrange - 100 já cadastradas, qualquer adição excede
-        Repo.ObterTotalPessoasAsync().Returns(100);
+        Repo.ObterTotalPessoasAsync().Returns(105);
 
         var request = new AdicionarConvidadoRequest(
             nome: "Novo Convidado",
@@ -646,7 +646,7 @@ public class AdicionarConvidadoTests : ConvidadoServiceTestBase
     public async Task DeveRetornar401_QuandoLimiteExcedidoMesmoComPresencaNaoConfirmada()
     {
         // Arrange - presença não confirmada ainda conta para o limite
-        Repo.ObterTotalPessoasAsync().Returns(100);
+        Repo.ObterTotalPessoasAsync().Returns(105);
 
         var request = new AdicionarConvidadoRequest(
             nome: "Carlos Lima",

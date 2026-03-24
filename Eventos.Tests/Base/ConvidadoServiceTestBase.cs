@@ -14,7 +14,7 @@ public abstract class ConvidadoServiceTestBase
     protected ConvidadoServiceTestBase()
     {
         Repo = Substitute.For<IEventoRepository>();
-        var options = Options.Create(new EventoConfiguration { LimiteMaximoPessoas = 100 });
+        var options = Options.Create(new EventoConfiguration { LimiteMaximoPessoas = 105 });
         Service = new ConvidadoService(Repo, NullLogger<ConvidadoService>.Instance, options);
     }
 }
