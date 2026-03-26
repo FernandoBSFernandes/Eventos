@@ -1,3 +1,5 @@
+File: .github\workflows\carga.yml
+````````
 name: Carga
 
 on:
@@ -75,6 +77,7 @@ jobs:
           ASPNETCORE_URLS: http://localhost:5000
           ASPNETCORE_ENVIRONMENT: Production
           ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=eventos_perf;Username=postgres;Password=postgres"
+          ConnectionStrings__OrigemConnection: "Host=localhost;Port=5432;Database=eventos_perf;Username=postgres;Password=postgres"
           Evento__LimiteMaximoPessoas: "105"
           Swagger__Enabled: "false"
 
@@ -88,6 +91,28 @@ jobs:
         env:
           BASE_URL: http://localhost:5000
           K6_NO_COLOR: "true"
+
+      - name: Limpeza de fallback — remover dados residuais do k6
+        if: always()
+        run: |
+          LISTA=$(curl -sf http://localhost:5000/api/convidado/listar || echo "[]")
+          echo "$LISTA" | python3 -c "
+          import sys, json, urllib.request, urllib.parse
+          convidados = json.load(sys.stdin)
+          removidos = 0
+          for c in convidados:
+              nome = c.get('nome', '')
+              if not nome.startswith('[K6]'):
+                  continue
+              url = 'http://localhost:5000/api/convidado/remover?nome=' + urllib.parse.quote(nome)
+              req = urllib.request.Request(url, method='DELETE')
+              try:
+                  urllib.request.urlopen(req)
+                  removidos += 1
+              except Exception:
+                  pass
+          print(f'[fallback-cleanup] {removidos} convidado(s) residual(is) removido(s).')
+          " || true
 
       - name: Publicar thresholds no Summary
         uses: dorny/test-reporter@v1

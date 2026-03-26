@@ -1,3 +1,5 @@
+File: k6\load-test.js
+````````javascript
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
@@ -46,7 +48,7 @@ export const options = {
   },
 };
 
-const BASE_URL = __ENV.BASE_URL || 'http://localhost:8080';
+const BASE_URL = __ENV.BASE_URL || 'http://localhost:5000';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -133,7 +135,7 @@ export default function () {
 // Teardown: remove todos os dados inseridos pelo k6
 // ---------------------------------------------------------------------------
 export function teardown() {
-  const lista = http.get(`${BASE_URL}/api/convidado/listar`);
+  const lista = http.get(`${BASE_URL}/api/convidado/listar`, { headers });
   if (lista.status !== 200) return;
 
   let removidos = 0;

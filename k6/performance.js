@@ -93,7 +93,13 @@ export const options = {
 
     thresholds: {
         // --- Gerais ---
-        'http_req_failed':   ['rate<0.01'],
+        // 2% acomoda falhas de conexão TCP esperadas durante o spike de 100 VUs
+        'http_req_failed':                        ['rate<0.02'],
+        'http_req_failed{cenario:smoke}':         ['rate<0.01'],
+        'http_req_failed{cenario:load}':          ['rate<0.01'],
+        'http_req_failed{cenario:stress}':        ['rate<0.01'],
+        'http_req_failed{cenario:soak}':          ['rate<0.01'],
+        'http_req_failed{cenario:spike}':         ['rate<0.05'],
         'http_req_duration': ['p(95)<2000'],
         'taxa_erro':         ['rate<0.02'],
 
@@ -117,7 +123,7 @@ export const options = {
 // -----------------------------------------------------------------------------
 // Constantes
 // -----------------------------------------------------------------------------
-const BASE_URL   = __ENV.BASE_URL || 'http://localhost:8080';
+const BASE_URL   = __ENV.BASE_URL || 'http://localhost:5000';
 const HEADERS    = { 'Content-Type': 'application/json' };
 const PREFIXO_K6 = '[K6] ';
 
