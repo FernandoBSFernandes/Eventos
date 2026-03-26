@@ -19,10 +19,7 @@ namespace EventosAPI.Controllers
     {
         private readonly IConvidadoService _convidadoService;
 
-        public ConvidadoController(IConvidadoService convidadoService)
-        {
-            _convidadoService = convidadoService;
-        }
+        public ConvidadoController(IConvidadoService convidadoService) => _convidadoService = convidadoService;
 
         /// <summary>
         /// Adiciona um novo convidado ao evento

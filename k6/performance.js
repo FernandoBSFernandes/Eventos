@@ -305,7 +305,7 @@ if (!nomeFixo) { sleep(1); return; }
         const res = listarConvidados();
         const ok = check(res, {
             'listar: status 200':    (r) => r.status === 200,
-            'listar: retorna array': (r) => Array.isArray(r.json()),
+            'listar: convidados é array': (r) => Array.isArray(r.json('convidados')),
         });
         m.taxaErro.add(!ok);
     });

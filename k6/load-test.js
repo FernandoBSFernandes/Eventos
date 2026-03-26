@@ -1,4 +1,4 @@
-File: k6\load-test.js
+﻿File: k6\load-test.js
 ````````javascript
 import http from 'k6/http';
 import { check, sleep } from 'k6';
@@ -98,7 +98,7 @@ export default function () {
   const resListar = listarConvidados();
   check(resListar, {
     '[listar] status 200': (r) => r.status === 200,
-    '[listar] body é array': (r) => Array.isArray(r.json()),
+    '[listar] convidados é array': (r) => Array.isArray(r.json('convidados')),
   });
 
   sleep(0.3);
@@ -139,7 +139,7 @@ export function teardown() {
   if (lista.status !== 200) return;
 
   let removidos = 0;
-  for (const c of lista.json()) {
+  for (const c of (lista.json('convidados') ?? [])) {
     if (!c.nome.startsWith('Convidado K6')) continue;
     const res = http.del(
       `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(c.nome)}`,
