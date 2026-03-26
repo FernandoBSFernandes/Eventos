@@ -1,9 +1,4 @@
-﻿using Eventos.Application.Configuration;
-using Eventos.Application.Enums;
-using Eventos.Application.Enums;
 using Eventos.Application.Configuration;
-using Eventos.Application.Enums;
-using Eventos.Application.Enums;
 using Eventos.Application.Enums;
 using Eventos.Application.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -31,7 +26,7 @@ public class RelatorioEmailService : IRelatorioEmailService
 
     public async Task EnviarRelatorioAsync()
     {
-        _logger.LogInformation("[RelatorioEmail] Iniciando envio do relatÃ³rio por e-mail.");
+        _logger.LogInformation("[RelatorioEmail] Iniciando envio do relatório por e-mail.");
 
         var (pdfBytes, _, pdfNome) = await _relatorioService.ExportarAsync(FormatoRelatorio.Pdf);
         var (excelBytes, _, excelNome) = await _relatorioService.ExportarAsync(FormatoRelatorio.Excel);
@@ -47,7 +42,7 @@ public class RelatorioEmailService : IRelatorioEmailService
         using var mail = new MailMessage
         {
             From = new MailAddress(_emailSettings.Remetente),
-            Subject = "RelatÃ³rio de Convidados Confirmados",
+            Subject = "Relatório de Convidados Confirmados",
             Body = "Segue em anexo a lista de convidados confirmados em PDF e Excel.",
         };
 

@@ -176,7 +176,7 @@ public class ConvidadoService : IConvidadoService
     private static void ValidarConvidado(AdicionarConvidadoRequest request)
     {
         if (request == null)
-            throw new ArgumentException("Dados do convidado são obrigatórios.");
+            throw new ArgumentException("Dados do convidado São obrigatórios.");
 
         if (string.IsNullOrWhiteSpace(request.Nome))
             throw new ArgumentException("O nome do convidado é obrigatório.");

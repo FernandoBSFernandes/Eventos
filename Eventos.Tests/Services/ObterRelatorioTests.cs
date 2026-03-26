@@ -119,7 +119,7 @@ public class ExportarRelatorioTests : RelatorioServiceTestBase
         // Act
         var (bytes, _, _) = await Service.ExportarAsync(FormatoRelatorio.Pdf);
 
-        // Assert — ObterRelatorioAsync trata a exceção e retorna 500, ExportarAsync a usa
+        // Assert Ã¢Â€Â” ObterRelatorioAsync trata a exceção e retorna 500, ExportarAsync a usa
         await _strategy.Received(1).ExportarAsync(
             Arg.Is<RelatorioEventoResponse>(r => r.CodigoStatus == 500));
         _ = bytes; // garantir que bytes foi retornado sem exceção não tratada

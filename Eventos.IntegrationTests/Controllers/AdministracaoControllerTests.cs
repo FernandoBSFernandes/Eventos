@@ -95,7 +95,7 @@ public class AdministracaoControllerTests : IntegrationTestBase
     [Trait("Categoria", "Sucesso")]
     public async Task RemoverDuplicatas_DeveRetornar200EContarDuplicatas_QuandoHaDuplicatas()
     {
-        // Arrange — força inserção de duplicata diretamente no DB
+        // Arrange Ã¢Â€Â” força inserção de duplicata diretamente no DB
         using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<Eventos.Infrastructure.Data.EventosDbContext>();
 

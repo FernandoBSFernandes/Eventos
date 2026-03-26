@@ -88,7 +88,7 @@ public class RemoverConvidadoPorNomeTests : ConvidadoServiceTestBase
         await Repo.DidNotReceive().RemoverConvidadoAsync(Arg.Any<Convidado>());
     }
 
-    [Theory(DisplayName = "Deve retornar 400 quando três convidados com nome semelhante são encontrados")]
+    [Theory(DisplayName = "Deve retornar 400 quando trÃƒÂªs convidados com nome semelhante são encontrados")]
     [Trait("Categoria", "Validação")]
     [InlineData("Carlos Lima")]
     [InlineData("Carlos Souza")]

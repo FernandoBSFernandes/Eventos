@@ -48,7 +48,7 @@ public class RelatorioEmailIntegrationTests : IntegrationTestBase
     [Trait("Categoria", "Integração")]
     public async Task DeveRetornar200_QuandoNaoHaConvidadosConfirmados()
     {
-        // Arrange — banco está vazio (resetado pelo InitializeAsync da classe base)
+        // Arrange Ã¢Â€Â” banco está vazio (resetado pelo InitializeAsync da classe base)
         _mockEmailService.EnviarRelatorioAsync().Returns(Task.CompletedTask);
 
         // Act

@@ -1,4 +1,3 @@
-﻿using Eventos.Application.Configuration;
 using Eventos.Application.Configuration;
 using Eventos.Application.Interfaces;
 using Eventos.Application.Services;
@@ -69,7 +68,7 @@ namespace EventosAPI
                 {
                     Title = "Eventos API",
                     Version = "v1",
-                    Description = "API para gerenciamento de convidados, relatÃƒÂ³rios e administraÃƒÂ§ÃƒÂ£o do evento de casamento de Fernando e Suzana Fernandes."
+                    Description = "API para gerenciamento de convidados, relat�?�?�?³rios e administra�?�?�?§�?�?�?£o do evento de casamento de Fernando e Suzana Fernandes."
                 });
 
                 options.UseInlineDefinitionsForEnums();
@@ -155,7 +154,7 @@ namespace EventosAPI
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "[Startup] Falha ao aplicar migrations do EventosDbContext apÃƒÂ³s todas as tentativas.");
+                    logger.LogError(ex, "[Startup] Falha ao aplicar migrations do EventosDbContext ap�?�?�?³s todas as tentativas.");
                 }
 
                 try

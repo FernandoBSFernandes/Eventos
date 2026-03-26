@@ -39,7 +39,7 @@ public class RelatorioExcelStrategy : IRelatorioStrategy
                 sheet.Cell(linha, 1).Value = convidado.Nome;
                 sheet.Cell(linha, 2).Value = convidado.Acompanhantes.Count > 0
                     ? string.Join(", ", convidado.Acompanhantes)
-                    : "—";
+                    : "â";
                 sheet.Cell(linha, 3).Value = 1 + convidado.Acompanhantes.Count;
                 sheet.Cell(linha, 3).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 

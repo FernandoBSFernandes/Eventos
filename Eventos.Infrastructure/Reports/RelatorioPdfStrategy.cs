@@ -9,14 +9,14 @@ namespace Eventos.Infrastructure.Reports;
 public class RelatorioPdfStrategy : IRelatorioStrategy
 {
     public string ContentType => "application/pdf";
-    public string NomeArquivo => "Relação de Participantes do Rodizio.pdf";
+    public string NomeArquivo => "Relatório de Participantes do Rodizio.pdf";
 
-    public Task<byte[]> ExportarAsync(RelatorioEventoResponse relatorio)
+    public async Task<byte[]> ExportarAsync(RelatorioEventoResponse relatorio)
     {
         var fusoHorarioBrasilia = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
         var agora = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, fusoHorarioBrasilia);
 
-        return Task.Run(() => Document.Create(container =>
+        return await Task.Run(() => Document.Create(container =>
         {
             container.Page(page =>
             {
@@ -77,7 +77,7 @@ public class RelatorioPdfStrategy : IRelatorioStrategy
                     table.Cell().Background(cor).Padding(5).Text(
                         convidado.Acompanhantes.Count > 0
                             ? string.Join(", ", convidado.Acompanhantes)
-                            : "—"
+                            : "â"
                     ).FontColor(convidado.Acompanhantes.Count > 0 ? Colors.Black : Colors.Grey.Medium);
                     table.Cell().Background(cor).Padding(5).Text((1 + convidado.Acompanhantes.Count).ToString()).AlignCenter();
                 }

@@ -186,7 +186,7 @@ public class ConvidadoControllerTests : IntegrationTestBase
     [Trait("Categoria", "Sucesso")]
     public async Task VerificarConvidado_DeveRetornarExisteTrue_QuandoEncontradoComoAcompanhante()
     {
-        // Arrange — adiciona convidado com acompanhante, mas busca pelo nome do acompanhante
+        // Arrange Ã¢Â€Â” adiciona convidado com acompanhante, mas busca pelo nome do acompanhante
         var request = new AdicionarConvidadoRequest(
             nome: "Titular Souza",
             presencaConfirmada: true,
@@ -272,13 +272,13 @@ public class ConvidadoControllerTests : IntegrationTestBase
     [Trait("Categoria", "Validação")]
     public async Task RemoverConvidado_DeveRetornar400_QuandoMultiplosConvidadosEncontrados()
     {
-        // Arrange — adiciona dois convidados com nomes semelhantes
+        // Arrange Ã¢Â€Â” adiciona dois convidados com nomes semelhantes
         await Client.PostAsJsonAsync("/api/convidado/adicionar",
             new AdicionarConvidadoRequest("Ana Santos", true, Participacao.Sozinho, 0, new List<string>()));
         await Client.PostAsJsonAsync("/api/convidado/adicionar",
             new AdicionarConvidadoRequest("Ana Costa", true, Participacao.Sozinho, 0, new List<string>()));
 
-        // Act — busca parcial que retorna ambos
+        // Act Ã¢Â€Â” busca parcial que retorna ambos
         var response = await Client.DeleteAsync("/api/convidado/remover?nome=Ana");
 
         // Assert
@@ -296,7 +296,7 @@ public class ConvidadoControllerTests : IntegrationTestBase
     [Trait("Categoria", "Sucesso")]
     public async Task VagasRestantes_DeveRetornarVagasCorretas_QuandoHaConvidadosConfirmados()
     {
-        // Arrange — adiciona um convidado confirmado com 2 acompanhantes (3 pessoas)
+        // Arrange Ã¢Â€Â” adiciona um convidado confirmado com 2 acompanhantes (3 pessoas)
         var request = new AdicionarConvidadoRequest(
             nome: "Rafael Gomes",
             presencaConfirmada: true,

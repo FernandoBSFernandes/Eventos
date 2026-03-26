@@ -1,4 +1,3 @@
-﻿using Eventos.Application.DTOs.Response;
 using Eventos.Application.DTOs.Response;
 using Eventos.Application.Enums;
 using Eventos.Application.Interfaces;
@@ -24,7 +23,7 @@ public class RelatorioService : IRelatorioService
     {
         try
         {
-            _logger.LogInformation("[ObterRelatorio] RequisiÃ§Ã£o de relatÃ³rio recebida.");
+            _logger.LogInformation("[ObterRelatorio] Requisição de relatório recebida.");
 
             var convidados = await _repo.ObterConvidadosConfirmadosAsync();
 
@@ -41,14 +40,14 @@ public class RelatorioService : IRelatorioService
                 totalPessoas += 1 + c.Acompanhantes.Count;
             }
 
-            _logger.LogInformation("[ObterRelatorio] RelatÃ³rio gerado | Convidados confirmados: {TotalConvidados} | Total de pessoas: {TotalPessoas}",
+            _logger.LogInformation("[ObterRelatorio] Relatório gerado | Convidados confirmados: {TotalConvidados} | Total de pessoas: {TotalPessoas}",
                 itens.Count, totalPessoas);
 
-            return new RelatorioEventoResponse(200, "RelatÃ³rio gerado com sucesso.", itens, totalPessoas);
+            return new RelatorioEventoResponse(200, "Relatório gerado com sucesso.", itens, totalPessoas);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "[ObterRelatorio] Erro inesperado ao gerar o relatÃ³rio.");
+            _logger.LogError(ex, "[ObterRelatorio] Erro inesperado ao gerar o relatório.");
             return new RelatorioEventoResponse(500, "Ocorreu um erro interno. Tente novamente mais tarde.", [], 0);
         }
     }

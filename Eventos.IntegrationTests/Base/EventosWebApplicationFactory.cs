@@ -40,7 +40,7 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
         }
         catch
         {
-            // Falha ao iniciar Docker/Testcontainers — fallback para InMemory
+            // Falha ao iniciar Docker/Testcontainers â fallback para InMemory
             _resolvedConnectionString = null;
         }
     }

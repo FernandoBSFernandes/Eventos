@@ -1,4 +1,3 @@
-﻿using Eventos.Application.DTOs.Response;
 using Eventos.Application.DTOs.Response;
 using Eventos.Application.Enums;
 using Eventos.Application.Interfaces;
@@ -24,7 +23,7 @@ public class LegadoRelatorioService : ILegadoRelatorioService
 
     public async Task<(byte[] bytes, string contentType, string nomeArquivo)> ExportarPdfAsync()
     {
-        _logger.LogInformation("[LegadoRelatorio] RequisiÃ§Ã£o de relatÃ³rio da base de origem recebida.");
+        _logger.LogInformation("[LegadoRelatorio] Requisição de relatório da base de origem recebida.");
 
         var convidados = await _repo.ObterConvidadosConfirmadosAsync();
 
@@ -41,10 +40,10 @@ public class LegadoRelatorioService : ILegadoRelatorioService
             totalPessoas += 1 + c.Acompanhantes.Count;
         }
 
-        _logger.LogInformation("[LegadoRelatorio] RelatÃ³rio gerado | Convidados confirmados: {TotalConvidados} | Total de pessoas: {TotalPessoas}",
+        _logger.LogInformation("[LegadoRelatorio] Relatório gerado | Convidados confirmados: {TotalConvidados} | Total de pessoas: {TotalPessoas}",
             itens.Count, totalPessoas);
 
-        var relatorio = new RelatorioEventoResponse(200, "RelatÃ³rio gerado com sucesso.", itens, totalPessoas);
+        var relatorio = new RelatorioEventoResponse(200, "Relatório gerado com sucesso.", itens, totalPessoas);
         var strategy = _factory.Criar(FormatoRelatorio.Pdf);
         var bytes = await strategy.ExportarAsync(relatorio);
 

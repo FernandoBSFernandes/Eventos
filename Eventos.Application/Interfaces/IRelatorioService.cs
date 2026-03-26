@@ -1,5 +1,4 @@
-﻿using Eventos.Application.DTOs.Response;
-using Eventos.Application.Enums;
+using Eventos.Application.DTOs.Response;
 using Eventos.Application.Enums;
 
 namespace Eventos.Application.Interfaces;

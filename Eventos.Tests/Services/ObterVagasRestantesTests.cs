@@ -55,7 +55,7 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
     [Trait("Categoria", "Limite")]
     public async Task DeveRetornarZeroVagas_QuandoUltrapassaLimite()
     {
-        // Arrange — cenário de dados legados com mais de 105 pessoas
+        // Arrange Ã¢Â€Â” cenário de dados legados com mais de 105 pessoas
         Repo.ObterTotalPessoasAsync().Returns(110);
 
         // Act

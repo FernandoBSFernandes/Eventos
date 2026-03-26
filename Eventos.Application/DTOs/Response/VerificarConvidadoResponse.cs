@@ -1,7 +1,7 @@
 namespace Eventos.Application.DTOs.Response;
 
 /// <summary>
-/// Resposta da consulta de existência de um convidado
+/// Resposta da consulta de existÃƒÂªncia de um convidado
 /// </summary>
 public class VerificarConvidadoResponse : BaseResponse
 {

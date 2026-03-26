@@ -1,4 +1,3 @@
-﻿using Eventos.Application.DTOs.Response;
 using Eventos.Application.DTOs.Response;
 using Eventos.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace EventosAPI.Controllers;
 
 /// <summary>
-/// RelatÃ³rios gerados a partir da base de dados de origem (legado).
+/// Relatórios gerados a partir da base de dados de origem (legado).
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
@@ -24,11 +23,11 @@ public class LegadoController : ControllerBase
     }
 
     /// <summary>
-    /// Exporta o relatÃ³rio de convidados confirmados da base de origem em formato PDF
+    /// Exporta o relatório de convidados confirmados da base de origem em formato PDF
     /// </summary>
-    /// <returns>Arquivo PDF com a relaÃ§Ã£o de participantes e seus acompanhantes da base legada</returns>
+    /// <returns>Arquivo PDF com a relação de participantes e seus acompanhantes da base legada</returns>
     /// <response code="200">Arquivo gerado com sucesso</response>
-    /// <response code="500">Erro interno ao processar a requisiÃ§Ã£o</response>
+    /// <response code="500">Erro interno ao processar a requisição</response>
     [HttpGet("relatorio/pdf")]
     [Produces("application/pdf")]
     [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
@@ -42,7 +41,7 @@ public class LegadoController : ControllerBase
         }
         catch (Exception)
         {
-            return StatusCode(500, new BaseResponse(500, "Ocorreu um erro interno ao gerar o relatÃ³rio da base de origem."));
+            return StatusCode(500, new BaseResponse(500, "Ocorreu um erro interno ao gerar o relatório da base de origem."));
         }
     }
 }
