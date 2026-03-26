@@ -6,21 +6,14 @@ namespace Eventos.Application.DTOs.Response;
 public class VagasRestantesResponse : BaseResponse
 {
     /// <summary>
-    /// Quantidade de vagas restantes (limite de 100 menos pessoas confirmadas)
+    /// Quantidade de vagas restantes no evento
     /// </summary>
     /// <example>37</example>
     public int VagasRestantes { get; set; }
 
-    /// <summary>
-    /// Total de pessoas já confirmadas (convidados + acompanhantes)
-    /// </summary>
-    /// <example>63</example>
-    public int PessoasConfirmadas { get; set; }
-
-    public VagasRestantesResponse(int codigoStatus, string mensagem, int vagasRestantes, int pessoasConfirmadas)
-        : base(codigoStatus, mensagem)
+    public VagasRestantesResponse(int codigoStatus, int vagasRestantes)
+        : base(codigoStatus, string.Empty)
     {
         VagasRestantes = vagasRestantes;
-        PessoasConfirmadas = pessoasConfirmadas;
     }
 }

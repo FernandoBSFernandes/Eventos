@@ -257,9 +257,8 @@ if (!nomeFixo) { sleep(1); return; }
     group('Leitura — vagas restantes', () => {
         const res = obterVagasRestantes();
         const ok = check(res, {
-            'vagas: status 200':                (r) => r.status === 200,
-            'vagas: vagasRestantes >= 0':       (r) => r.json('vagasRestantes') >= 0,
-            'vagas: pessoasConfirmadas >= 0':   (r) => r.json('pessoasConfirmadas') >= 0,
+            'vagas: status 200':              (r) => r.status === 200,
+            'vagas: vagasRestantes >= 0':     (r) => r.json('vagasRestantes') >= 0,
         });
         m.taxaErro.add(!ok);
     });

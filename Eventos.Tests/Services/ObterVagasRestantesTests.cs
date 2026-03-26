@@ -19,7 +19,6 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
         // Assert
         Assert.Equal(200, response.CodigoStatus);
         Assert.Equal(105, response.VagasRestantes);
-        Assert.Equal(0, response.PessoasConfirmadas);
     }
 
     [Fact(DisplayName = "Deve retornar vagas corretas quando há pessoas confirmadas")]
@@ -35,7 +34,6 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
         // Assert
         Assert.Equal(200, response.CodigoStatus);
         Assert.Equal(42, response.VagasRestantes);
-        Assert.Equal(63, response.PessoasConfirmadas);
     }
 
     [Fact(DisplayName = "Deve retornar zero vagas quando limite é atingido")]
@@ -51,7 +49,6 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
         // Assert
         Assert.Equal(200, response.CodigoStatus);
         Assert.Equal(0, response.VagasRestantes);
-        Assert.Equal(105, response.PessoasConfirmadas);
     }
 
     [Fact(DisplayName = "Deve retornar zero vagas quando limite é ultrapassado")]
@@ -67,7 +64,6 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
         // Assert
         Assert.Equal(200, response.CodigoStatus);
         Assert.Equal(0, response.VagasRestantes);
-        Assert.Equal(110, response.PessoasConfirmadas);
     }
 
     [Fact(DisplayName = "Deve retornar 1 vaga quando falta 1 pessoa para o limite")]
@@ -83,7 +79,6 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
         // Assert
         Assert.Equal(200, response.CodigoStatus);
         Assert.Equal(1, response.VagasRestantes);
-        Assert.Equal(104, response.PessoasConfirmadas);
     }
 
     #endregion
@@ -103,9 +98,7 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(500, response.CodigoStatus);
-        Assert.NotEmpty(response.Mensagem);
         Assert.Equal(0, response.VagasRestantes);
-        Assert.Equal(0, response.PessoasConfirmadas);
     }
 
     #endregion

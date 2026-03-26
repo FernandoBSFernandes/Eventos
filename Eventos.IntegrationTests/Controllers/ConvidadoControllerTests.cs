@@ -313,7 +313,6 @@ public class ConvidadoControllerTests : IntegrationTestBase
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         var body = await response.Content.ReadFromJsonAsync<VagasRestantesResponse>();
         Assert.NotNull(body);
-        Assert.Equal(3, body.PessoasConfirmadas);
         Assert.Equal(102, body.VagasRestantes);
     }
 
@@ -329,7 +328,6 @@ public class ConvidadoControllerTests : IntegrationTestBase
         var body = await response.Content.ReadFromJsonAsync<VagasRestantesResponse>();
         Assert.NotNull(body);
         Assert.Equal(105, body.VagasRestantes);
-        Assert.Equal(0, body.PessoasConfirmadas);
     }
 
     #endregion
