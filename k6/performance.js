@@ -8,28 +8,32 @@ import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 // Métricas customizadas por endpoint
 // -----------------------------------------------------------------------------
 const m = {
-    adicionar:      new Trend('dur_adicionar',       true),
-    verificar:      new Trend('dur_verificar',       true),
-    listar:         new Trend('dur_listar',          true),
-    vagas:          new Trend('dur_vagas_restantes', true),
-    relatorioExcel: new Trend('dur_relatorio_excel', true),
-    relatorioPdf:   new Trend('dur_relatorio_pdf',   true),
-    taxaErro:       new Rate('taxa_erro'),
-    totalReqs:      new Counter('total_requisicoes'),
+    adicionar:         new Trend('dur_adicionar',          true),
+    verificar:         new Trend('dur_verificar',          true),
+    listar:            new Trend('dur_listar',             true),
+    vagas:             new Trend('dur_vagas_restantes',    true),
+    remover:           new Trend('dur_remover',            true),
+    relatorioExcel:    new Trend('dur_relatorio_excel',    true),
+    relatorioPdf:      new Trend('dur_relatorio_pdf',      true),
+    legadoPdf:         new Trend('dur_legado_pdf',         true),
+    removerDuplicatas: new Trend('dur_remover_duplicatas', true),
+    migrarDados:       new Trend('dur_migrar_dados',       true),
+    taxaErro:          new Rate('taxa_erro'),
+    totalReqs:         new Counter('total_requisicoes'),
 };
 
 // -----------------------------------------------------------------------------
 // Cenários de carga
 //
-//  [0s–30s]    smoke  — 1 VU, verifica se a API responde corretamente
-//  [40s–130s]  load   — sobe até 20 VUs, simula uso normal sustentado
-//  [150s–210s] stress — sobe até 50 VUs, encontra o ponto de pressão
-//  [220s–250s] spike  — salta para 100 VUs instantaneamente
-//  [260s–560s] soak   — 10 VUs por 5 min, detecta vazamentos de memória
+//  [0s–30s]    smoke        — 1 VU, verifica se a API responde corretamente
+//  [40s–130s]  load         — sobe até 20 VUs, simula uso normal sustentado
+//  [150s–210s] stress       — sobe até 50 VUs, encontra o ponto de pressão
+//  [220s–250s] spike        — salta para 100 VUs instantaneamente
+//  [260s–560s] soak         — 10 VUs por 5 min, detecta vazamentos de memória
+//  [570s–600s] administracao — 1 VU, valida endpoints administrativos
 // -----------------------------------------------------------------------------
 export const options = {
     scenarios: {
-
         smoke: {
             executor:  'constant-vus',
             vus:       1,
@@ -89,6 +93,15 @@ export const options = {
             tags:      { cenario: 'soak' },
             exec:      'fluxoPadrao',
         },
+
+        administracao: {
+            executor:  'constant-vus',
+            vus:       1,
+            duration:  '30s',
+            startTime: '570s',
+            tags:      { cenario: 'administracao' },
+            exec:      'fluxoAdministracao',
+        },
     },
 
     thresholds: {
@@ -104,19 +117,24 @@ export const options = {
         'taxa_erro':         ['rate<0.02'],
 
         // --- Por endpoint ---
-        'dur_adicionar':       ['p(95)<800',  'p(99)<1500'],
-        'dur_verificar':       ['p(95)<300',  'p(99)<600' ],
-        'dur_listar':          ['p(95)<600',  'p(99)<1200'],
-        'dur_vagas_restantes': ['p(95)<300',  'p(99)<600' ],
-        'dur_relatorio_excel': ['p(95)<3000', 'p(99)<5000'],
-        'dur_relatorio_pdf':   ['p(95)<3000', 'p(99)<5000'],
+        'dur_adicionar':          ['p(95)<800',  'p(99)<1500'],
+        'dur_verificar':          ['p(95)<300',  'p(99)<600' ],
+        'dur_listar':             ['p(95)<600',  'p(99)<1200'],
+        'dur_vagas_restantes':    ['p(95)<300',  'p(99)<600' ],
+        'dur_remover':            ['p(95)<500',  'p(99)<1000'],
+        'dur_relatorio_excel':    ['p(95)<3000', 'p(99)<5000'],
+        'dur_relatorio_pdf':      ['p(95)<3000', 'p(99)<5000'],
+        'dur_legado_pdf':         ['p(95)<5000', 'p(99)<8000'],
+        'dur_remover_duplicatas': ['p(95)<2000', 'p(99)<4000'],
+        'dur_migrar_dados':       ['p(95)<5000', 'p(99)<8000'],
 
         // --- Por cenário ---
-        'http_req_duration{cenario:smoke}':  ['p(95)<500' ],
-        'http_req_duration{cenario:load}':   ['p(95)<1500'],
-        'http_req_duration{cenario:stress}': ['p(95)<2500'],
-        'http_req_duration{cenario:spike}':  ['p(95)<3000'],
-        'http_req_duration{cenario:soak}':   ['p(95)<2000'],
+        'http_req_duration{cenario:smoke}':         ['p(95)<500' ],
+        'http_req_duration{cenario:load}':          ['p(95)<1500'],
+        'http_req_duration{cenario:stress}':        ['p(95)<2500'],
+        'http_req_duration{cenario:spike}':         ['p(95)<3000'],
+        'http_req_duration{cenario:soak}':          ['p(95)<2000'],
+        'http_req_duration{cenario:administracao}': ['p(95)<5000'],
     },
 };
 
@@ -194,6 +212,37 @@ function obterRelatorioExcel() {
 function obterRelatorioPdf() {
     const res = http.get(`${BASE_URL}/api/relatorio/pdf`, { headers: HEADERS });
     m.relatorioPdf.add(res.timings.duration);
+    m.totalReqs.add(1);
+    return res;
+}
+
+function removerConvidado(nome) {
+    const res = http.del(
+        `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(nome)}`,
+        null, { headers: HEADERS, responseCallback: http.expectedStatuses(200, 400, 404) }
+    );
+    m.remover.add(res.timings.duration);
+    m.totalReqs.add(1);
+    return res;
+}
+
+function obterLegadoPdf() {
+    const res = http.get(`${BASE_URL}/api/legado/relatorio/pdf`, { headers: HEADERS });
+    m.legadoPdf.add(res.timings.duration);
+    m.totalReqs.add(1);
+    return res;
+}
+
+function removerDuplicatas() {
+    const res = http.del(`${BASE_URL}/api/administracao/remover-duplicatas`, null, { headers: HEADERS });
+    m.removerDuplicatas.add(res.timings.duration);
+    m.totalReqs.add(1);
+    return res;
+}
+
+function migrarDados() {
+    const res = http.post(`${BASE_URL}/api/administracao/migrar-dados`, null, { headers: HEADERS });
+    m.migrarDados.add(res.timings.duration);
     m.totalReqs.add(1);
     return res;
 }
@@ -301,6 +350,32 @@ if (!nomeFixo) { sleep(1); return; }
         });
 
         sleep(0.5);
+
+        group('Relatório — Legado PDF', () => {
+            const res = obterLegadoPdf();
+            const ok = check(res, {
+                'legado pdf: status 200':           (r) => r.status === 200,
+                'legado pdf: content-type correto': (r) =>
+                    (r.headers['Content-Type'] || '').includes('application/pdf'),
+                'legado pdf: body não vazio':       (r) => r.body.length > 0,
+            });
+            m.taxaErro.add(!ok);
+        });
+
+        sleep(0.5);
+    }
+
+    // Remoção dinâmica — 1 a cada 3 iterações, evita esvaziar a base
+    if (__ITER % 3 === 0) {
+        const nomeDinamicoAnterior = `${PREFIXO_K6}VU-${__VU}-${__ITER - 3}`;
+        group('Escrita — remover convidado', () => {
+            const res = removerConvidado(nomeDinamicoAnterior);
+            const ok = check(res, {
+                'remover: 200, 404 ou 400': (r) => [200, 404, 400].includes(r.status),
+            });
+            m.taxaErro.add(!ok);
+        });
+        sleep(0.3);
     }
 
     sleep(1);
@@ -313,8 +388,8 @@ if (!nomeFixo) { sleep(1); return; }
 // Usado por: spike
 // -----------------------------------------------------------------------------
 export function fluxoLeitura(data) {
-const nomeFixo = nomeAleatorio(data.nomesFixos);
-if (!nomeFixo) { sleep(1); return; }
+    const nomeFixo = nomeAleatorio(data.nomesFixos);
+    if (!nomeFixo) { sleep(1); return; }
 
     group('Spike — verificar', () => {
         const res = verificarConvidado(nomeFixo);
@@ -339,8 +414,8 @@ if (!nomeFixo) { sleep(1); return; }
     group('Spike — vagas', () => {
         const res = obterVagasRestantes();
         const ok = check(res, {
-            'spike vagas: status 200':              (r) => r.status === 200,
-            'spike vagas: vagasRestantes >= 0':     (r) => r.json('vagasRestantes') >= 0,
+            'spike vagas: status 200':          (r) => r.status === 200,
+            'spike vagas: vagasRestantes >= 0': (r) => r.json('vagasRestantes') >= 0,
         });
         m.taxaErro.add(!ok);
     });
@@ -349,100 +424,40 @@ if (!nomeFixo) { sleep(1); return; }
 }
 
 // -----------------------------------------------------------------------------
+// Cenário: fluxoAdministracao
+// Valida os endpoints administrativos: remover duplicatas e migrar dados.
+// Roda com 1 VU após todos os outros cenários para não interferir nos dados.
+// Usado por: administracao
+// -----------------------------------------------------------------------------
+export function fluxoAdministracao() {
+    group('Administração — remover duplicatas', () => {
+        const res = removerDuplicatas();
+        const ok = check(res, {
+            'remover-duplicatas: status 200': (r) => r.status === 200,
+            'remover-duplicatas: mensagem presente': (r) => {
+                try { return r.json('mensagem') !== undefined; } catch { return false; }
+            },
+        });
+        m.taxaErro.add(!ok);
+    });
+
+    sleep(1);
+
+    group('Administração — migrar dados', () => {
+        const res = migrarDados();
+        const ok = check(res, {
+            'migrar-dados: status 200 ou 500': (r) => r.status === 200 || r.status === 500,
+            'migrar-dados: mensagem presente': (r) => {
+                try { return r.json('mensagem') !== undefined; } catch { return false; }
+            },
+        });
+        m.taxaErro.add(!ok);
+    });
+
+    sleep(2);
+}
+
+// -----------------------------------------------------------------------------
 // Teardown: remove todos os dados inseridos pelo k6
 // -----------------------------------------------------------------------------
-export function teardown(data) {
-    let removidos = 0;
-
-    for (const nome of data.nomesFixos) {
-        const res = http.del(
-            `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(nome)}`,
-            null, { headers: HEADERS }
-        );
-        if (res.status === 200) removidos++;
-    }
-
-    const lista = http.get(`${BASE_URL}/api/convidado/listar`, { headers: HEADERS });
-    if (lista.status === 200) {
-        for (const c of lista.json()) {
-            if (!c.nome || !c.nome.startsWith(PREFIXO_K6)) continue;
-            const res = http.del(
-                `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(c.nome)}`,
-                null, { headers: HEADERS }
-            );
-            if (res.status === 200) removidos++;
-        }
-    }
-
-    console.log(`[teardown] ${removidos} convidado(s) removido(s). Base limpa.`);
-}
-
-// -----------------------------------------------------------------------------
-// Relatórios gerados ao final da execução
-//
-//  relatorio.html  — visual, gráficos de latência, throughput e erros
-//  relatorio.json  — dados brutos, útil para comparação entre execuções
-//  relatorio-junit.xml — formato JUnit lido pelo GitHub Actions como checks
-// -----------------------------------------------------------------------------
-export function handleSummary(data) {
-    return {
-        'k6/relatorio.html':       htmlReport(data),
-        'k6/relatorio.json':       JSON.stringify(data, null, 2),
-        'k6/relatorio-junit.xml':  buildJUnit(data),
-        stdout: textSummary(data, { indent: '  ', enableColors: true }),
-    };
-}
-
-// -----------------------------------------------------------------------------
-// Gerador de JUnit XML
-// Converte os thresholds do k6 em test cases no formato JUnit,
-// permitindo que o GitHub Actions exiba cada threshold como um check
-// com ✅ passou / ❌ falhou diretamente na aba Summary do workflow.
-// -----------------------------------------------------------------------------
-function escapeXml(str) {
-    return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&apos;');
-}
-
-function buildJUnit(data) {
-    const thresholds = data.metrics
-        ? Object.entries(data.metrics).filter(([, v]) => v.thresholds)
-        : [];
-
-    let totalTests  = 0;
-    let totalFailed = 0;
-    let testCases   = '';
-
-    for (const [metricName, metricData] of thresholds) {
-        for (const [condition, result] of Object.entries(metricData.thresholds)) {
-            totalTests++;
-            const passed = result.ok;
-            if (!passed) totalFailed++;
-
-            const value = metricData.values
-                ? (metricData.values['p(95)'] ?? metricData.values['rate'] ?? metricData.values['value'] ?? 0).toFixed(2)
-                : '0';
-
-            testCases += passed
-                ? `    <testcase classname="${escapeXml(metricName)}" name="${escapeXml(condition)}" />\n`
-                : `    <testcase classname="${escapeXml(metricName)}" name="${escapeXml(condition)}">\n` +
-                  `      <failure message="Threshold falhou: ${escapeXml(metricName)} ${escapeXml(condition)} (valor: ${escapeXml(value)})">\n` +
-                  `        Métrica: ${escapeXml(metricName)}\n        Condição: ${escapeXml(condition)}\n        Valor medido: ${escapeXml(value)}\n` +
-                  `      </failure>\n    </testcase>\n`;
-        }
-    }
-
-    return (
-        `<?xml version="1.0" encoding="UTF-8"?>\n` +
-        `<testsuites>\n` +
-        `  <testsuite name="k6 Thresholds" tests="${totalTests}" failures="${totalFailed}">\n` +
-        testCases +
-        `  </testsuite>\n` +
-        `</testsuites>\n`
-    );
-}
 

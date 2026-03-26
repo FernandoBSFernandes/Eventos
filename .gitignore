@@ -367,3 +367,6 @@ FodyWeavers.xsd
 appsettings.Development.json
 
 test-results/
+/k6/relatorio-junit.xml
+/k6/relatorio.html
+/k6/relatorio.json
