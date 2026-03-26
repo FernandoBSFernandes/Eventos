@@ -145,7 +145,10 @@ function adicionarConvidado(nome, acompanhantes = []) {
         quantidadeAcompanhantes: acompanhantes.length,
         nomesAcompanhantes:      acompanhantes,
     });
-    const res = http.post(`${BASE_URL}/api/convidado/adicionar`, payload, { headers: HEADERS });
+    const res = http.post(`${BASE_URL}/api/convidado/adicionar`, payload, {
+        headers:          HEADERS,
+        responseCallback: http.expectedStatuses(201, 401),
+    });
     m.adicionar.add(res.timings.duration);
     m.totalReqs.add(1);
     return res;
