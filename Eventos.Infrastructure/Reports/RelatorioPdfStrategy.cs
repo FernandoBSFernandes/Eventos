@@ -21,7 +21,9 @@ public class RelatorioPdfStrategy : IRelatorioStrategy
             container.Page(page =>
             {
                 page.Size(PageSizes.A4);
-                page.Margin(2, Unit.Centimetre);
+                page.MarginHorizontal(1.2f, Unit.Centimetre);
+                page.MarginTop(1.5f, Unit.Centimetre);
+                page.MarginBottom(1f, Unit.Centimetre);
                 page.DefaultTextStyle(x => x.FontSize(11).FontFamily("Segoe UI"));
 
                 page.Header().Element(ComposeHeader);
@@ -55,7 +57,7 @@ public class RelatorioPdfStrategy : IRelatorioStrategy
                 table.ColumnsDefinition(columns =>
                 {
                     columns.RelativeColumn(3);
-                    columns.RelativeColumn(5);
+                    columns.RelativeColumn(6);
                     columns.RelativeColumn(2);
                 });
 
@@ -77,7 +79,7 @@ public class RelatorioPdfStrategy : IRelatorioStrategy
                     table.Cell().Background(cor).Padding(5).Text(
                         convidado.Acompanhantes.Count > 0
                             ? string.Join(", ", convidado.Acompanhantes)
-                            : "â"
+                            : "—"
                     ).FontColor(convidado.Acompanhantes.Count > 0 ? Colors.Black : Colors.Grey.Medium);
                     table.Cell().Background(cor).Padding(5).Text((1 + convidado.Acompanhantes.Count).ToString()).AlignCenter();
                 }
