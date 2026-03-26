@@ -1,13 +1,17 @@
+using Eventos.Application.DTOs.Response;
+using Eventos.Application.Interfaces;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using Eventos.Application.DTOs.Response;
 
-namespace EventosAPI.Reports;
+namespace Eventos.Infrastructure.Reports;
 
-public static class RelatorioPdfGenerator
+public class RelatorioPdfStrategy : IRelatorioStrategy
 {
-    public static Task<byte[]> GerarAsync(RelatorioEventoResponse relatorio)
+    public string ContentType => "application/pdf";
+    public string NomeArquivo => "Relação de Participantes do Rodizio.pdf";
+
+    public Task<byte[]> ExportarAsync(RelatorioEventoResponse relatorio)
     {
         var fusoHorarioBrasilia = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
         var agora = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, fusoHorarioBrasilia);
@@ -46,7 +50,6 @@ public static class RelatorioPdfGenerator
     {
         container.PaddingTop(10).Column(col =>
         {
-            // Tabela de convidados
             col.Item().Table(table =>
             {
                 table.ColumnsDefinition(columns =>
@@ -56,7 +59,6 @@ public static class RelatorioPdfGenerator
                     columns.RelativeColumn(2);
                 });
 
-                // Cabeçalho da tabela
                 table.Header(header =>
                 {
                     foreach (var titulo in new[] { "Convidado", "Acompanhantes", "Qtd. Total" })
@@ -66,7 +68,6 @@ public static class RelatorioPdfGenerator
                     }
                 });
 
-                // Linhas de dados
                 for (int i = 0; i < relatorio.Convidados.Count; i++)
                 {
                     var convidado = relatorio.Convidados[i];
@@ -82,7 +83,6 @@ public static class RelatorioPdfGenerator
                 }
             });
 
-            // Linha de total
             col.Item().PaddingTop(16).Row(row =>
             {
                 row.RelativeItem().Background(Colors.Blue.Lighten4).Padding(8)

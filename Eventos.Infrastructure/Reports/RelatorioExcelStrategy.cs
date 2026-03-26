@@ -1,18 +1,21 @@
 using ClosedXML.Excel;
 using Eventos.Application.DTOs.Response;
+using Eventos.Application.Interfaces;
 
-namespace EventosAPI.Reports;
+namespace Eventos.Infrastructure.Reports;
 
-public static class RelatorioExcelGenerator
+public class RelatorioExcelStrategy : IRelatorioStrategy
 {
-    public static async Task<byte[]> GerarAsync(RelatorioEventoResponse relatorio)
+    public string ContentType => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    public string NomeArquivo => "Relação de Participantes do Rodizio.xlsx";
+
+    public async Task<byte[]> ExportarAsync(RelatorioEventoResponse relatorio)
     {
         return await Task.Run(() =>
         {
             using var workbook = new XLWorkbook();
             var sheet = workbook.Worksheets.Add("Relatório");
 
-            // Cabeçalho principal
             var titulo = sheet.Range("A1:C1").Merge();
             titulo.Value = "Relatório de Convidados Confirmados";
             titulo.Style.Font.Bold = true;
@@ -21,7 +24,6 @@ public static class RelatorioExcelGenerator
             titulo.Style.Fill.BackgroundColor = XLColor.FromHtml("#2E75B6");
             titulo.Style.Font.FontColor = XLColor.White;
 
-            // Cabeçalhos das colunas
             sheet.Cell("A2").Value = "Convidado";
             sheet.Cell("B2").Value = "Acompanhantes";
             sheet.Cell("C2").Value = "Qtd. Total";
@@ -31,7 +33,6 @@ public static class RelatorioExcelGenerator
             cabecalho.Style.Fill.BackgroundColor = XLColor.FromHtml("#D6E4F0");
             cabecalho.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
-            // Dados
             int linha = 3;
             foreach (var convidado in relatorio.Convidados)
             {
@@ -48,7 +49,6 @@ public static class RelatorioExcelGenerator
                 linha++;
             }
 
-            // Linha de total
             sheet.Cell(linha, 1).Value = "Total de pessoas no evento:";
             sheet.Cell(linha, 1).Style.Font.Bold = true;
             sheet.Cell(linha, 3).Value = relatorio.TotalPessoas;

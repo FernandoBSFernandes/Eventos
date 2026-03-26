@@ -22,7 +22,7 @@ namespace Eventos.Application.DTOs.Response
         /// Mensagem descritiva sobre o resultado da operação
         /// </summary>
         /// <example>Convidado foi registrado com sucesso</example>
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public string Mensagem { get; set; }
 
         public BaseResponse(int codigoStatus, string mensagem)

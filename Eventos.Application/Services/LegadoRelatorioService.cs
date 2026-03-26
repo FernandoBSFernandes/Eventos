@@ -1,4 +1,6 @@
+﻿using Eventos.Application.DTOs.Response;
 using Eventos.Application.DTOs.Response;
+using Eventos.Application.Enums;
 using Eventos.Application.Interfaces;
 using Eventos.Domain.Repositories;
 using Microsoft.Extensions.Logging;
@@ -11,16 +13,18 @@ public class LegadoRelatorioService : ILegadoRelatorioService
 {
     private readonly IOrigemRepository _repo;
     private readonly ILogger<LegadoRelatorioService> _logger;
+    private readonly IRelatorioFactory _factory;
 
-    public LegadoRelatorioService(IOrigemRepository repo, ILogger<LegadoRelatorioService> logger)
+    public LegadoRelatorioService(IOrigemRepository repo, ILogger<LegadoRelatorioService> logger, IRelatorioFactory factory)
     {
         _repo = repo;
         _logger = logger;
+        _factory = factory;
     }
 
-    public async Task<(byte[] bytes, string contentType, string nomeArquivo)> ExportarPdfAsync(IRelatorioExporter exporter)
+    public async Task<(byte[] bytes, string contentType, string nomeArquivo)> ExportarPdfAsync()
     {
-        _logger.LogInformation("[LegadoRelatorio] Requisição de relatório da base de origem recebida.");
+        _logger.LogInformation("[LegadoRelatorio] RequisiÃ§Ã£o de relatÃ³rio da base de origem recebida.");
 
         var convidados = await _repo.ObterConvidadosConfirmadosAsync();
 
@@ -37,12 +41,13 @@ public class LegadoRelatorioService : ILegadoRelatorioService
             totalPessoas += 1 + c.Acompanhantes.Count;
         }
 
-        _logger.LogInformation("[LegadoRelatorio] Relatório gerado | Convidados confirmados: {TotalConvidados} | Total de pessoas: {TotalPessoas}",
+        _logger.LogInformation("[LegadoRelatorio] RelatÃ³rio gerado | Convidados confirmados: {TotalConvidados} | Total de pessoas: {TotalPessoas}",
             itens.Count, totalPessoas);
 
-        var relatorio = new RelatorioEventoResponse(200, "Relatório gerado com sucesso.", itens, totalPessoas);
-        var bytes = await exporter.ExportarAsync(relatorio);
+        var relatorio = new RelatorioEventoResponse(200, "RelatÃ³rio gerado com sucesso.", itens, totalPessoas);
+        var strategy = _factory.Criar(FormatoRelatorio.Pdf);
+        var bytes = await strategy.ExportarAsync(relatorio);
 
-        return (bytes, exporter.ContentType, exporter.NomeArquivo);
+        return (bytes, strategy.ContentType, strategy.NomeArquivo);
     }
 }

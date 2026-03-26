@@ -1,8 +1,10 @@
+﻿using Eventos.Application.Configuration;
 using Eventos.Application.Configuration;
 using Eventos.Application.Interfaces;
 using Eventos.Application.Services;
 using Eventos.Domain.Repositories;
 using Eventos.Infrastructure.Data;
+using Eventos.Infrastructure.Reports;
 using Eventos.Infrastructure.Repositories;
 using Eventos.Infrastructure.Services;
 using EventosAPI.Services;
@@ -67,7 +69,7 @@ namespace EventosAPI
                 {
                     Title = "Eventos API",
                     Version = "v1",
-                    Description = "API para gerenciamento de convidados, relatórios e administração do evento de casamento de Fernando e Suzana Fernandes."
+                    Description = "API para gerenciamento de convidados, relatÃƒÂ³rios e administraÃƒÂ§ÃƒÂ£o do evento de casamento de Fernando e Suzana Fernandes."
                 });
 
                 options.UseInlineDefinitionsForEnums();
@@ -119,6 +121,9 @@ namespace EventosAPI
             builder.Services.AddScoped<IOrigemRepository, OrigemRepository>();
             builder.Services.AddScoped<IMigracaoDadosService, MigracaoDadosService>();
             builder.Services.AddScoped<ILegadoRelatorioService, LegadoRelatorioService>();
+            builder.Services.AddScoped<RelatorioPdfStrategy>();
+            builder.Services.AddScoped<RelatorioExcelStrategy>();
+            builder.Services.AddScoped<IRelatorioFactory, RelatorioFactory>();
 
             var app = builder.Build();
 
@@ -150,7 +155,7 @@ namespace EventosAPI
                 }
                 catch (Exception ex)
                 {
-                    logger.LogError(ex, "[Startup] Falha ao aplicar migrations do EventosDbContext após todas as tentativas.");
+                    logger.LogError(ex, "[Startup] Falha ao aplicar migrations do EventosDbContext apÃƒÂ³s todas as tentativas.");
                 }
 
                 try
