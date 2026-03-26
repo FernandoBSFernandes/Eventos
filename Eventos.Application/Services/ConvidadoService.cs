@@ -11,6 +11,11 @@ namespace Eventos.Application.Services;
 
 public class ConvidadoService : IConvidadoService
 {
+    // Estático para que todas as instâncias com escopo (scoped) compartilhem o mesmo bloqueio —
+    // a seção crítica (leitura do total + inserção) precisa ser serializada globalmente,
+    // não apenas dentro da instância de serviço de uma única requisição.
+    private static readonly SemaphoreSlim _adicionarLock = new SemaphoreSlim(1, 1);
+
     private readonly IEventoRepository _repo;
     private readonly ILogger<ConvidadoService> _logger;
     private readonly int _limiteMaximoPessoas;
@@ -38,17 +43,7 @@ public class ConvidadoService : IConvidadoService
                 quantidadeNomes,
                 string.Join(", ", request.NomesAcompanhantes ?? []));
 
-            var totalAtual = await _repo.ObterTotalPessoasAsync();
             var novasPessoas = 1 + request.QuantidadeAcompanhantes;
-
-            if (totalAtual + novasPessoas > _limiteMaximoPessoas)
-            {
-                _logger.LogWarning(
-                    "[AdicionarConvidado] Limite de {LimiteMaximoPessoas} pessoas excedido | Total atual: {TotalAtual} | Novas pessoas: {NovasPessoas}",
-                    _limiteMaximoPessoas, totalAtual, novasPessoas);
-
-                return new BaseResponse(401, $"A quantidade máxima de pessoas a serem cadastrados extrapolou o limite de {_limiteMaximoPessoas} convidados.");
-            }
 
             var convidado = new Convidado
             {
@@ -63,7 +58,27 @@ public class ConvidadoService : IConvidadoService
                         .ToList() ?? new List<Acompanhante>()
             };
 
-            await _repo.AdicionarConvidadoAsync(convidado);
+            if (!await _adicionarLock.WaitAsync(TimeSpan.FromSeconds(30)))
+                throw new TimeoutException("Timeout aguardando o bloqueio de adição de convidado.");
+            try
+            {
+                var totalAtual = await _repo.ObterTotalPessoasAsync();
+
+                if (totalAtual + novasPessoas > _limiteMaximoPessoas)
+                {
+                    _logger.LogWarning(
+                        "[AdicionarConvidado] Limite de {LimiteMaximoPessoas} pessoas excedido | Total atual: {TotalAtual} | Novas pessoas: {NovasPessoas}",
+                        _limiteMaximoPessoas, totalAtual, novasPessoas);
+
+                    return new BaseResponse(401, $"A quantidade máxima de pessoas a serem cadastrados extrapolou o limite de {_limiteMaximoPessoas} convidados.");
+                }
+
+                await _repo.AdicionarConvidadoAsync(convidado);
+            }
+            finally
+            {
+                _adicionarLock.Release();
+            }
 
             return new BaseResponse(201, "Convidado foi registrado com sucesso");
         }
