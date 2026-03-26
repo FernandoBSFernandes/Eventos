@@ -348,9 +348,10 @@ if (!nomeFixo) { sleep(1); return; }
 export function teardown(data) {
     let removidos = 0;
 
-    // Sort longest-first so that shorter names (which can be substrings of longer
-    // ones) are only deleted after every longer-named guest is already gone.
-    // This avoids HTTP 400 "múltiplos convidados" from the API's ILIKE %name% search.
+    // Ordena pelo nome mais longo primeiro, para que nomes curtos (que podem ser
+    // substrings de nomes mais longos) só sejam excluídos depois que todos os
+    // convidados de nome maior já tiverem sido removidos.
+    // Evita o HTTP 400 "múltiplos convidados" causado pela busca ILIKE %nome% da API.
     const deleteOpts = { headers: HEADERS, responseCallback: http.expectedStatuses(200, 400, 404) };
 
     const nomesFixosOrdenados = [...data.nomesFixos].sort((a, b) => b.length - a.length);

@@ -11,9 +11,9 @@ namespace Eventos.Application.Services;
 
 public class ConvidadoService : IConvidadoService
 {
-    // Static so all scoped instances share the same lock — exactly what we need:
-    // the critical section (read total + insert) must be serialized globally,
-    // not just within a single request's service instance.
+    // Estático para que todas as instâncias com escopo (scoped) compartilhem o mesmo bloqueio —
+    // a seção crítica (leitura do total + inserção) precisa ser serializada globalmente,
+    // não apenas dentro da instância de serviço de uma única requisição.
     private static readonly SemaphoreSlim _adicionarLock = new SemaphoreSlim(1, 1);
 
     private readonly IEventoRepository _repo;
