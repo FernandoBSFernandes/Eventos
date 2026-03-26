@@ -42,7 +42,8 @@ public class ListarConvidadosTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.NotNull(resultado);
-        Assert.Equal(2, resultado.Count);
+        Assert.Equal(200, resultado.CodigoStatus);
+        Assert.Equal(2, resultado.Convidados.Count);
         await Repo.Received(1).ObterTodosConvidadosAsync();
     }
 
@@ -58,7 +59,9 @@ public class ListarConvidadosTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.NotNull(resultado);
-        Assert.Empty(resultado);
+        Assert.Equal(200, resultado.CodigoStatus);
+        Assert.Empty(resultado.Convidados);
+        Assert.Equal("Nenhum convidado cadastrado.", resultado.Mensagem);
         await Repo.Received(1).ObterTodosConvidadosAsync();
     }
 
@@ -88,7 +91,7 @@ public class ListarConvidadosTests : ConvidadoServiceTestBase
         var resultado = await Service.ListarConvidadosAsync();
 
         // Assert
-        var item = Assert.Single(resultado);
+        var item = Assert.Single(resultado.Convidados);
         Assert.Equal("Carlos Lima", item.Nome);
         Assert.True(item.PresencaConfirmada);
         Assert.Equal("Acompanhado", item.Participacao);
@@ -120,7 +123,7 @@ public class ListarConvidadosTests : ConvidadoServiceTestBase
         var resultado = await Service.ListarConvidadosAsync();
 
         // Assert
-        var item = Assert.Single(resultado);
+        var item = Assert.Single(resultado.Convidados);
         Assert.Equal("Pedro Alves", item.Nome);
         Assert.False(item.PresencaConfirmada);
         Assert.Equal("Sozinho", item.Participacao);
@@ -159,9 +162,10 @@ public class ListarConvidadosTests : ConvidadoServiceTestBase
         var resultado = await Service.ListarConvidadosAsync();
 
         // Assert
-        Assert.Equal(2, resultado.Count);
-        Assert.Contains(resultado, c => c.PresencaConfirmada == true);
-        Assert.Contains(resultado, c => c.PresencaConfirmada == false);
+        Assert.Equal(200, resultado.CodigoStatus);
+        Assert.Equal(2, resultado.Convidados.Count);
+        Assert.Contains(resultado.Convidados, c => c.PresencaConfirmada == true);
+        Assert.Contains(resultado.Convidados, c => c.PresencaConfirmada == false);
     }
 
     [Fact(DisplayName = "Deve mapear nomes de acompanhantes corretamente quando há múltiplos")]
@@ -192,7 +196,7 @@ public class ListarConvidadosTests : ConvidadoServiceTestBase
         var resultado = await Service.ListarConvidadosAsync();
 
         // Assert
-        var item = Assert.Single(resultado);
+        var item = Assert.Single(resultado.Convidados);
         Assert.Equal(3, item.NomesAcompanhantes.Count);
         Assert.Contains("Acomp Um", item.NomesAcompanhantes);
         Assert.Contains("Acomp Dois", item.NomesAcompanhantes);
@@ -203,7 +207,7 @@ public class ListarConvidadosTests : ConvidadoServiceTestBase
 
     #region Erro Interno
 
-    [Fact(DisplayName = "Deve lançar exceção quando repositório falha")]
+    [Fact(DisplayName = "Deve retornar erro interno quando repositório falha")]
     [Trait("Categoria", "Erro Interno")]
     public async Task DeveLancarExcecao_QuandoRepositorioFalha()
     {
@@ -211,8 +215,12 @@ public class ListarConvidadosTests : ConvidadoServiceTestBase
         Repo.ObterTodosConvidadosAsync()
             .Returns(Task.FromException<List<Convidado>>(new Exception("Erro na base de dados")));
 
-        // Act & Assert
-        await Assert.ThrowsAsync<Exception>(() => Service.ListarConvidadosAsync());
+        // Act
+        var resultado = await Service.ListarConvidadosAsync();
+
+        // Assert
+        Assert.Equal(500, resultado.CodigoStatus);
+        Assert.Equal("Ocorreu um erro interno. Tente novamente mais tarde.", resultado.Mensagem);
         await Repo.Received(1).ObterTodosConvidadosAsync();
     }
 

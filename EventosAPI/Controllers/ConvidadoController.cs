@@ -69,13 +69,13 @@ namespace EventosAPI.Controllers
         /// <response code="200">Lista retornada com sucesso</response>
         /// <response code="500">Erro interno ao processar a requisição</response>
         [HttpGet("listar")]
-        [ProducesResponseType(typeof(List<ConvidadoItem>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ListarConvidadosResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ListarConvidados()
         {
-            var convidados = await _convidadoService.ListarConvidadosAsync();
+            var response = await _convidadoService.ListarConvidadosAsync();
 
-            return Ok(convidados);
+            return StatusCode(response.CodigoStatus, response);
         }
 
         /// <summary>

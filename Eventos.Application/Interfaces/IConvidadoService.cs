@@ -7,7 +7,7 @@ public interface IConvidadoService
 {
     Task<BaseResponse> AdicionarConvidadoAsync(AdicionarConvidadoRequest request);
     Task<VerificarConvidadoResponse> VerificarConvidadoExisteAsync(string nome);
-    Task<List<ConvidadoItem>> ListarConvidadosAsync();
+    Task<ListarConvidadosResponse> ListarConvidadosAsync();
     Task<BaseResponse> RemoverConvidadoPorNomeAsync(string nome);
     Task<VagasRestantesResponse> ObterVagasRestantesAsync();
 }

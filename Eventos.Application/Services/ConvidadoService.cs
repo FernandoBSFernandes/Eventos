@@ -97,23 +97,37 @@ public class ConvidadoService : IConvidadoService
         }
     }
 
-    public async Task<List<ConvidadoItem>> ListarConvidadosAsync()
+    public async Task<ListarConvidadosResponse> ListarConvidadosAsync()
     {
-        _logger.LogInformation("[ListarConvidados] Requisição para listar todos os convidados recebida.");
+        try
+        {
+            _logger.LogInformation("[ListarConvidados] Requisição para listar todos os convidados recebida.");
 
-        var convidados = await _repo.ObterTodosConvidadosAsync();
+            var convidados = await _repo.ObterTodosConvidadosAsync();
 
-        var itens = convidados.Select(c => new ConvidadoItem(
-            c.Nome,
-            c.PresencaConfirmada,
-            c.Participacao,
-            c.QuantidadeAcompanhantes,
-            c.Acompanhantes.Select(a => a.Nome).ToList()
-        )).ToList();
+            if (convidados.Count == 0)
+            {
+                _logger.LogInformation("[ListarConvidados] Nenhum convidado cadastrado.");
+                return new ListarConvidadosResponse(200, "Nenhum convidado cadastrado.", []);
+            }
 
-        _logger.LogInformation("[ListarConvidados] Convidados listados com sucesso | Total: {Total}", itens.Count);
+            var itens = convidados.Select(c => new ConvidadoItem(
+                c.Nome,
+                c.PresencaConfirmada,
+                c.Participacao,
+                c.QuantidadeAcompanhantes,
+                c.Acompanhantes.Select(a => a.Nome).ToList()
+            )).ToList();
 
-        return itens;
+            _logger.LogInformation("[ListarConvidados] Convidados listados com sucesso | Total: {Total}", itens.Count);
+
+            return new ListarConvidadosResponse(200, string.Empty, itens);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[ListarConvidados] Erro inesperado ao listar convidados.");
+            return new ListarConvidadosResponse(500, "Ocorreu um erro interno. Tente novamente mais tarde.", []);
+        }
     }
 
     public async Task<BaseResponse> RemoverConvidadoPorNomeAsync(string nome)

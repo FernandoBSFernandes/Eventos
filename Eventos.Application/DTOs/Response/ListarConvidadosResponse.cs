@@ -44,3 +44,20 @@ public class ConvidadoItem
         NomesAcompanhantes = nomesAcompanhantes;
     }
 }
+
+/// <summary>
+/// Resposta da listagem de convidados
+/// </summary>
+public class ListarConvidadosResponse : BaseResponse
+{
+    /// <summary>
+    /// Lista de convidados cadastrados
+    /// </summary>
+    public List<ConvidadoItem> Convidados { get; set; }
+
+    public ListarConvidadosResponse(int codigoStatus, string mensagem, List<ConvidadoItem> convidados)
+        : base(codigoStatus, mensagem)
+    {
+        Convidados = convidados;
+    }
+}
