@@ -67,7 +67,7 @@ namespace EventosAPI
                 {
                     Title = "Eventos API",
                     Version = "v1",
-                    Description = "API para gerenciamento de convidados, relatórios e administração do evento."
+                    Description = "API para gerenciamento de convidados, relatórios e administração do evento de casamento de Fernando e Suzana Fernandes."
                 });
 
                 options.UseInlineDefinitionsForEnums();
@@ -122,6 +122,7 @@ namespace EventosAPI
 
             var app = builder.Build();
 
+#if !DEBUG
             using (var scope = app.Services.CreateScope())
             {
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
@@ -163,8 +164,8 @@ namespace EventosAPI
                     logger.LogError(ex, "[Startup] Falha ao aplicar migrations do OrigemDbContext.");
                 }
             }
+#endif
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment() || builder.Configuration.GetValue<bool>("Swagger:Enabled"))
             {
                 app.UseSwagger();
