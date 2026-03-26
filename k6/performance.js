@@ -348,21 +348,29 @@ if (!nomeFixo) { sleep(1); return; }
 export function teardown(data) {
     let removidos = 0;
 
-    for (const nome of data.nomesFixos) {
+    // Sort longest-first so that shorter names (which can be substrings of longer
+    // ones) are only deleted after every longer-named guest is already gone.
+    // This avoids HTTP 400 "múltiplos convidados" from the API's ILIKE %name% search.
+    const deleteOpts = { headers: HEADERS, responseCallback: http.expectedStatuses(200, 400, 404) };
+
+    const nomesFixosOrdenados = [...data.nomesFixos].sort((a, b) => b.length - a.length);
+    for (const nome of nomesFixosOrdenados) {
         const res = http.del(
             `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(nome)}`,
-            null, { headers: HEADERS }
+            null, deleteOpts
         );
         if (res.status === 200) removidos++;
     }
 
     const lista = http.get(`${BASE_URL}/api/convidado/listar`, { headers: HEADERS });
     if (lista.status === 200) {
-        for (const c of lista.json()) {
-            if (!c.nome || !c.nome.startsWith(PREFIXO_K6)) continue;
+        const k6Guests = lista.json()
+            .filter(c => c.nome && c.nome.startsWith(PREFIXO_K6))
+            .sort((a, b) => b.nome.length - a.nome.length);
+        for (const c of k6Guests) {
             const res = http.del(
                 `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(c.nome)}`,
-                null, { headers: HEADERS }
+                null, deleteOpts
             );
             if (res.status === 200) removidos++;
         }
