@@ -5,7 +5,6 @@ using Eventos.Domain.Repositories;
 using Eventos.Infrastructure.Data;
 using Eventos.Infrastructure.Reports;
 using Eventos.Infrastructure.Repositories;
-using Eventos.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
@@ -101,11 +100,6 @@ namespace EventosAPI
                 }
             });
 
-            builder.Services.AddDbContext<OrigemDbContext>((serviceProvider, options) =>
-            {
-                options.UseNpgsql(builder.Configuration.GetConnectionString("OrigemConnection"));
-            });
-
             // Register DDD projects services
             builder.Services.Configure<EventoConfiguration>(
                 builder.Configuration.GetSection(EventoConfiguration.SectionName));
@@ -113,8 +107,6 @@ namespace EventosAPI
             builder.Services.AddScoped<IAdministracaoService, AdministracaoService>();
             builder.Services.AddScoped<IRelatorioService, RelatorioService>();
             builder.Services.AddScoped<IEventoRepository, EventoRepository>();
-            builder.Services.AddScoped<IOrigemRepository, OrigemRepository>();
-            builder.Services.AddScoped<IMigracaoDadosService, MigracaoDadosService>();
             builder.Services.AddScoped<RelatorioPdfStrategy>();
             builder.Services.AddScoped<RelatorioExcelStrategy>();
             builder.Services.AddScoped<IRelatorioFactory, RelatorioFactory>();
@@ -152,16 +144,6 @@ namespace EventosAPI
                     logger.LogError(ex, "[Startup] Falha ao aplicar migrations do EventosDbContext após todas as tentativas.");
                 }
 
-                try
-                {
-                    var origem = scope.ServiceProvider.GetRequiredService<OrigemDbContext>();
-                    origem.Database.Migrate();
-                    logger.LogInformation("[Startup] Migrations do OrigemDbContext aplicadas com sucesso.");
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "[Startup] Falha ao aplicar migrations do OrigemDbContext.");
-                }
             }
 #endif
 

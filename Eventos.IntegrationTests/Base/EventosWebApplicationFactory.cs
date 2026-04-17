@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Testcontainers.PostgreSql;
@@ -59,20 +60,12 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
         {
             // Remove os DbContextOptions registrados pelo Program.cs para trocar o provider
             services.RemoveAll<DbContextOptions<EventosDbContext>>();
-            services.RemoveAll<DbContextOptions<OrigemDbContext>>();
+            services.RemoveAll<IDbContextOptionsConfiguration<EventosDbContext>>();
 
             services.AddDbContext<EventosDbContext>(options =>
             {
                 if (UseInMemory)
                     options.UseInMemoryDatabase("EventosTestsDb");
-                else
-                    options.UseNpgsql(_resolvedConnectionString);
-            });
-
-            services.AddDbContext<OrigemDbContext>(options =>
-            {
-                if (UseInMemory)
-                    options.UseInMemoryDatabase("OrigemTestsDb");
                 else
                     options.UseNpgsql(_resolvedConnectionString);
             });

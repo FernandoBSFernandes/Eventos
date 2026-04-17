@@ -23,7 +23,6 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Production
       ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=eventos_perf;Username=postgres;Password=postgres"
-      ConnectionStrings__OrigemConnection: "Host=postgres;Port=5432;Database=eventos_perf;Username=postgres;Password=postgres"
       Evento__LimiteMaximoPessoas: "105"
       Swagger__Enabled: "false"
     depends_on:

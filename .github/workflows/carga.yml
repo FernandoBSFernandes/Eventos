@@ -77,7 +77,6 @@ jobs:
           ASPNETCORE_URLS: http://localhost:5000
           ASPNETCORE_ENVIRONMENT: Production
           ConnectionStrings__DefaultConnection: "Host=localhost;Port=5432;Database=eventos_perf;Username=postgres;Password=postgres"
-          ConnectionStrings__OrigemConnection: "Host=localhost;Port=5432;Database=eventos_perf;Username=postgres;Password=postgres"
           Evento__LimiteMaximoPessoas: "105"
           Swagger__Enabled: "false"
 

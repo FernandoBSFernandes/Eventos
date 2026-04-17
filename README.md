@@ -6,7 +6,7 @@ API REST para gerenciamento de convidados de eventos, desenvolvida em **.NET 8**
 
 ## Sobre o projeto
 
-A API permite registrar convidados para um evento, informando se irão sozinhos ou acompanhados, a quantidade de acompanhantes e os respectivos nomes. Também é possível listar todos os convidados, verificar se um convidado já está cadastrado, remover registros duplicados, exportar relatórios de confirmados em PDF ou Excel, enviar os relatórios por e-mail e zerar os dados do evento.
+A API permite registrar convidados para um evento, informando se irão sozinhos ou acompanhados, a quantidade de acompanhantes e os respectivos nomes. Também é possível listar todos os convidados, verificar se um convidado já está cadastrado, remover registros duplicados, exportar relatórios de confirmados em PDF ou Excel, gerar a lista final de confirmados e zerar os dados do evento.
 
 ---
 
@@ -70,14 +70,15 @@ Verifica se um convidado já está cadastrado pelo nome (sem distinção de mai�
 ```json
 {
   "codigoStatus": 200,
-  "mensagem": "Consulta realizada com sucesso.",
-  "existe": true
+  "mensagem": "",
+  "existeComoConvidado": true,
+  "existeComoAcompanhante": false
 }
 ```
 
 | Código | Descrição |
 |---|---|
-| `200` | Consulta realizada — `existe` indica se o convidado está cadastrado |
+| `200` | Consulta realizada — retorna `existeComoConvidado` e `existeComoAcompanhante` |
 | `400` | Nome não informado |
 | `500` | Erro interno do servidor |
 
@@ -89,15 +90,19 @@ Lista todos os convidados cadastrados com seus respectivos acompanhantes.
 
 **Resposta `200`:**
 ```json
-[
-  {
-    "nome": "João Silva",
-    "presencaConfirmada": true,
-    "participacao": "Acompanhado",
-    "quantidadeAcompanhantes": 1,
-    "nomesAcompanhantes": ["Maria Silva"]
-  }
-]
+{
+  "codigoStatus": 200,
+  "mensagem": "",
+  "convidados": [
+    {
+      "nome": "João Silva",
+      "presencaConfirmada": true,
+      "participacao": "Acompanhado",
+      "quantidadeAcompanhantes": 1,
+      "nomesAcompanhantes": ["Maria Silva"]
+    }
+  ]
+}
 ```
 
 | Código | Descrição |
@@ -140,6 +145,37 @@ Exporta o relatório de convidados confirmados em formato **Excel** (`.xlsx`).
 | Código | Descrição |
 |---|---|
 | `200` | Arquivo gerado e retornado |
+| `500` | Erro interno do servidor |
+
+---
+
+#### `GET /api/relatorio/lista-final`
+
+Retorna a lista final de confirmados em ordem alfabética (convidados e acompanhantes), com numeração e coluna `pago` para preenchimento manual.
+
+**Resposta `200`:**
+```json
+{
+  "codigoStatus": 200,
+  "mensagem": "",
+  "confirmados": [
+    {
+      "numero": 1,
+      "nome": "Ana Souza",
+      "pago": null
+    },
+    {
+      "numero": 2,
+      "nome": "Carlos Lima",
+      "pago": null
+    }
+  ]
+}
+```
+
+| Código | Descrição |
+|---|---|
+| `200` | Lista retornada com sucesso |
 | `500` | Erro interno do servidor |
 
 ---
@@ -237,13 +273,6 @@ Configure a connection string no `appsettings.json` do projeto `EventosAPI`:
   "Evento": {
     "LimiteMaximoPessoas": 105
   },
-  "Email": {
-    "SmtpHost": "smtp.office365.com",
-    "SmtpPort": 587,
-    "Remetente": "seu@email.com",
-    "Senha": "<senha>",
-    "Destinatario": "destino@email.com"
-  },
   "Swagger": {
     "Enabled": true
   }
@@ -300,8 +329,7 @@ Os testes de integração estão no projeto `Eventos.IntegrationTests` e utiliza
 Eventos.IntegrationTests/
 └── Controllers/
     ├── ConvidadoControllerTests.cs
-    ├── AdministracaoControllerTests.cs
-    └── RelatorioEmailIntegrationTests.cs
+    └── AdministracaoControllerTests.cs
 ```
 
 ```bash

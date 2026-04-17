@@ -31,20 +31,32 @@ public class EventoRepository : IEventoRepository
 
     public async Task<bool> ConvidadoExisteAsync(string nome)
     {
+        var nomeBusca = nome.Trim().ToLower();
+
         return await _context.Convidado
             .AsNoTracking()
-            .AnyAsync(c => EF.Functions.ILike(c.Nome, $"%{nome}%"));
+            .AnyAsync(c => c.Nome.ToLower().Contains(nomeBusca));
     }
 
     public async Task<bool> AcompanhanteExisteAsync(string nome)
     {
+        var nomeBusca = nome.Trim().ToLower();
+
         return await _context.Set<Acompanhante>()
             .AsNoTracking()
-            .AnyAsync(a => EF.Functions.ILike(a.Nome, $"%{nome}%"));
+            .AnyAsync(a => a.Nome.ToLower().Contains(nomeBusca));
     }
 
     public async Task ZerarTabelasAsync()
     {
+        if (string.Equals(_context.Database.ProviderName, "Microsoft.EntityFrameworkCore.InMemory", StringComparison.Ordinal))
+        {
+            _context.Set<Acompanhante>().RemoveRange(_context.Set<Acompanhante>());
+            _context.Convidado.RemoveRange(_context.Convidado);
+            await _context.SaveChangesAsync();
+            return;
+        }
+
         await _context.Convidado.ExecuteDeleteAsync();
     }
 
@@ -106,9 +118,11 @@ public class EventoRepository : IEventoRepository
 
     public async Task<List<Convidado>> BuscarConvidadosPorNomeAsync(string nome)
     {
+        var nomeBusca = nome.Trim().ToLower();
+
         return await _context.Convidado
             .Include(c => c.Acompanhantes)
-            .Where(c => EF.Functions.ILike(c.Nome, $"%{nome}%"))
+            .Where(c => c.Nome.ToLower().Contains(nomeBusca))
             .ToListAsync();
     }
 

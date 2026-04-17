@@ -16,7 +16,6 @@ const m = {
     relatorioExcel:    new Trend('dur_relatorio_excel',    true),
     relatorioPdf:      new Trend('dur_relatorio_pdf',      true),
     removerDuplicatas: new Trend('dur_remover_duplicatas', true),
-    migrarDados:       new Trend('dur_migrar_dados',       true),
     taxaErro:          new Rate('taxa_erro'),
     totalReqs:         new Counter('total_requisicoes'),
 };
@@ -124,7 +123,6 @@ export const options = {
         'dur_relatorio_excel':    ['p(95)<3000', 'p(99)<5000'],
         'dur_relatorio_pdf':      ['p(95)<3000', 'p(99)<5000'],
         'dur_remover_duplicatas': ['p(95)<2000', 'p(99)<4000'],
-        'dur_migrar_dados':       ['p(95)<5000', 'p(99)<8000'],
 
         // --- Por cenÃ¡rio ---
         'http_req_duration{cenario:smoke}':         ['p(95)<500' ],
@@ -227,13 +225,6 @@ function removerConvidado(nome) {
 function removerDuplicatas() {
     const res = http.del(`${BASE_URL}/api/administracao/remover-duplicatas`, null, { headers: HEADERS });
     m.removerDuplicatas.add(res.timings.duration);
-    m.totalReqs.add(1);
-    return res;
-}
-
-function migrarDados() {
-    const res = http.post(`${BASE_URL}/api/administracao/migrar-dados`, null, { headers: HEADERS });
-    m.migrarDados.add(res.timings.duration);
     m.totalReqs.add(1);
     return res;
 }
@@ -342,18 +333,6 @@ if (!nomeFixo) { sleep(1); return; }
 
         sleep(0.5);
 
-        group('RelatÃ³rio â€” Legado PDF', () => {
-            const res = obterLegadoPdf();
-            const ok = check(res, {
-                'legado pdf: status 200':           (r) => r.status === 200,
-                'legado pdf: content-type correto': (r) =>
-                    (r.headers['Content-Type'] || '').includes('application/pdf'),
-                'legado pdf: body nÃ£o vazio':       (r) => r.body.length > 0,
-            });
-            m.taxaErro.add(!ok);
-        });
-
-        sleep(0.5);
     }
 
     // RemoÃ§Ã£o dinÃ¢mica â€” 1 a cada 3 iteraÃ§Ãµes, evita esvaziar a base
@@ -416,7 +395,7 @@ export function fluxoLeitura(data) {
 
 // -----------------------------------------------------------------------------
 // CenÃ¡rio: fluxoAdministracao
-// Valida os endpoints administrativos: remover duplicatas e migrar dados.
+// Valida os endpoints administrativos.
 // Roda com 1 VU apÃ³s todos os outros cenÃ¡rios para nÃ£o interferir nos dados.
 // Usado por: administracao
 // -----------------------------------------------------------------------------
@@ -426,19 +405,6 @@ export function fluxoAdministracao() {
         const ok = check(res, {
             'remover-duplicatas: status 200': (r) => r.status === 200,
             'remover-duplicatas: mensagem presente': (r) => {
-                try { return r.json('mensagem') !== undefined; } catch { return false; }
-            },
-        });
-        m.taxaErro.add(!ok);
-    });
-
-    sleep(1);
-
-    group('AdministraÃ§Ã£o â€” migrar dados', () => {
-        const res = migrarDados();
-        const ok = check(res, {
-            'migrar-dados: status 200 ou 500': (r) => r.status === 200 || r.status === 500,
-            'migrar-dados: mensagem presente': (r) => {
                 try { return r.json('mensagem') !== undefined; } catch { return false; }
             },
         });

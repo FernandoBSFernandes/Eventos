@@ -108,9 +108,9 @@ public class ConvidadoControllerTests : IntegrationTestBase
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var body = await response.Content.ReadFromJsonAsync<List<ConvidadoItem>>();
+        var body = await response.Content.ReadFromJsonAsync<ListarConvidadosResponse>();
         Assert.NotNull(body);
-        Assert.Empty(body);
+        Assert.Empty(body.Convidados);
     }
 
     [Fact(DisplayName = "Deve retornar convidado recém-adicionado na listagem")]
@@ -132,10 +132,10 @@ public class ConvidadoControllerTests : IntegrationTestBase
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var body = await response.Content.ReadFromJsonAsync<List<ConvidadoItem>>();
+        var body = await response.Content.ReadFromJsonAsync<ListarConvidadosResponse>();
         Assert.NotNull(body);
-        Assert.Single(body);
-        Assert.Equal("Fernanda Rocha", body[0].Nome);
+        Assert.Single(body.Convidados);
+        Assert.Equal("Fernanda Rocha", body.Convidados[0].Nome);
     }
 
     #endregion

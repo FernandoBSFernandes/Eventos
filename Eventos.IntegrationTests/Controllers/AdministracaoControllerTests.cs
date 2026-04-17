@@ -64,10 +64,11 @@ public class AdministracaoControllerTests : IntegrationTestBase
         await Client.DeleteAsync("/api/administracao/zerar-tabelas");
 
         var listarResponse = await Client.GetAsync("/api/convidado/listar");
-        var convidados = await listarResponse.Content.ReadFromJsonAsync<List<ConvidadoItem>>();
+        var convidados = await listarResponse.Content.ReadFromJsonAsync<ListarConvidadosResponse>();
 
         // Assert
-        Assert.Empty(convidados!);
+        Assert.NotNull(convidados);
+        Assert.Empty(convidados.Convidados);
     }
 
     #endregion
@@ -134,11 +135,12 @@ public class AdministracaoControllerTests : IntegrationTestBase
 
         var verificar = await Client.GetAsync("/api/convidado/verificar?nome=Repetido");
         var listar = await Client.GetAsync("/api/convidado/listar");
-        var convidados = await listar.Content.ReadFromJsonAsync<List<ConvidadoItem>>();
+        var convidados = await listar.Content.ReadFromJsonAsync<ListarConvidadosResponse>();
 
         // Assert
-        Assert.Single(convidados!);
-        Assert.Equal("Repetido Costa", convidados![0].Nome);
+        Assert.NotNull(convidados);
+        Assert.Single(convidados.Convidados);
+        Assert.Equal("Repetido Costa", convidados.Convidados[0].Nome);
     }
 
     #endregion

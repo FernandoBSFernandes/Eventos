@@ -15,4 +15,7 @@
     <ProjectReference Include="..\Eventos.Application\Eventos.Application.csproj" />
     <ProjectReference Include="..\Eventos.Domain\Eventos.Domain.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
 </Project>
