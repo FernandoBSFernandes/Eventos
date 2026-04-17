@@ -13,7 +13,7 @@ public class EventosDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
-        // Aplicar configura��es de entidades
+        // Aplicar configurações de entidades
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(EventosDbContext).Assembly);
     }
 }
