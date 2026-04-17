@@ -6,7 +6,6 @@ using Eventos.Infrastructure.Data;
 using Eventos.Infrastructure.Reports;
 using Eventos.Infrastructure.Repositories;
 using Eventos.Infrastructure.Services;
-using EventosAPI.Services;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
@@ -110,16 +109,12 @@ namespace EventosAPI
             // Register DDD projects services
             builder.Services.Configure<EventoConfiguration>(
                 builder.Configuration.GetSection(EventoConfiguration.SectionName));
-            builder.Services.Configure<EmailSettings>(
-                builder.Configuration.GetSection(EmailSettings.SectionName));
             builder.Services.AddScoped<IConvidadoService, ConvidadoService>();
             builder.Services.AddScoped<IAdministracaoService, AdministracaoService>();
             builder.Services.AddScoped<IRelatorioService, RelatorioService>();
-            builder.Services.AddScoped<IRelatorioEmailService, RelatorioEmailService>();
             builder.Services.AddScoped<IEventoRepository, EventoRepository>();
             builder.Services.AddScoped<IOrigemRepository, OrigemRepository>();
             builder.Services.AddScoped<IMigracaoDadosService, MigracaoDadosService>();
-            builder.Services.AddScoped<ILegadoRelatorioService, LegadoRelatorioService>();
             builder.Services.AddScoped<RelatorioPdfStrategy>();
             builder.Services.AddScoped<RelatorioExcelStrategy>();
             builder.Services.AddScoped<IRelatorioFactory, RelatorioFactory>();

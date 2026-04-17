@@ -52,6 +52,35 @@ public class RelatorioService : IRelatorioService
         }
     }
 
+    public async Task<ListaFinalConfirmadosResponse> ObterListaFinalConfirmadosAsync()
+    {
+        try
+        {
+            _logger.LogInformation("[ObterListaFinalConfirmados] Requisição da lista final recebida.");
+
+            var convidados = await _repo.ObterConvidadosConfirmadosAsync();
+
+            var confirmados = convidados
+                .SelectMany(c => new[] { c.Nome }.Concat(c.Acompanhantes.Select(a => a.Nome)))
+                .OrderBy(nome => nome)
+                .Select((nome, indice) => new ListaFinalConfirmadoItem(indice + 1, nome, null))
+                .ToList();
+
+            var mensagem = confirmados.Count == 0
+                ? "Nenhum confirmado encontrado."
+                : string.Empty;
+
+            _logger.LogInformation("[ObterListaFinalConfirmados] Lista final gerada | Total de pessoas: {TotalPessoas}", confirmados.Count);
+
+            return new ListaFinalConfirmadosResponse(200, mensagem, confirmados);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[ObterListaFinalConfirmados] Erro inesperado ao gerar lista final.");
+            return new ListaFinalConfirmadosResponse(500, "Ocorreu um erro interno. Tente novamente mais tarde.", []);
+        }
+    }
+
     public async Task<(byte[] bytes, string contentType, string nomeArquivo)> ExportarAsync(FormatoRelatorio formato)
     {
         var relatorio = await ObterRelatorioAsync();

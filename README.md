@@ -155,17 +155,6 @@ Exporta o relatório de convidados confirmados em formato **PDF**.
 
 ---
 
-#### `POST /api/relatorio/enviar-email`
-
-Envia o relatório de convidados confirmados por e-mail com os arquivos PDF e Excel em anexo.
-
-| Código | Descrição |
-|---|---|
-| `200` | E-mail enviado com sucesso |
-| `500` | Erro interno do servidor |
-
----
-
 ### Administração — `api/administracao`
 
 #### `DELETE /api/administracao/remover-duplicatas`

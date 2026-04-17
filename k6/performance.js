@@ -5,7 +5,7 @@ import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporte
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
 // -----------------------------------------------------------------------------
-// Métricas customizadas por endpoint
+// MÃ©tricas customizadas por endpoint
 // -----------------------------------------------------------------------------
 const m = {
     adicionar:         new Trend('dur_adicionar',          true),
@@ -15,7 +15,6 @@ const m = {
     remover:           new Trend('dur_remover',            true),
     relatorioExcel:    new Trend('dur_relatorio_excel',    true),
     relatorioPdf:      new Trend('dur_relatorio_pdf',      true),
-    legadoPdf:         new Trend('dur_legado_pdf',         true),
     removerDuplicatas: new Trend('dur_remover_duplicatas', true),
     migrarDados:       new Trend('dur_migrar_dados',       true),
     taxaErro:          new Rate('taxa_erro'),
@@ -23,14 +22,14 @@ const m = {
 };
 
 // -----------------------------------------------------------------------------
-// Cenários de carga
+// CenÃ¡rios de carga
 //
-//  [0s–30s]    smoke        — 1 VU, verifica se a API responde corretamente
-//  [40s–130s]  load         — sobe até 20 VUs, simula uso normal sustentado
-//  [150s–210s] stress       — sobe até 50 VUs, encontra o ponto de pressão
-//  [220s–250s] spike        — salta para 100 VUs instantaneamente
-//  [260s–560s] soak         — 10 VUs por 5 min, detecta vazamentos de memória
-//  [570s–600s] administracao — 1 VU, valida endpoints administrativos
+//  [0sâ€“30s]    smoke        â€” 1 VU, verifica se a API responde corretamente
+//  [40sâ€“130s]  load         â€” sobe atÃ© 20 VUs, simula uso normal sustentado
+//  [150sâ€“210s] stress       â€” sobe atÃ© 50 VUs, encontra o ponto de pressÃ£o
+//  [220sâ€“250s] spike        â€” salta para 100 VUs instantaneamente
+//  [260sâ€“560s] soak         â€” 10 VUs por 5 min, detecta vazamentos de memÃ³ria
+//  [570sâ€“600s] administracao â€” 1 VU, valida endpoints administrativos
 // -----------------------------------------------------------------------------
 export const options = {
     scenarios: {
@@ -106,7 +105,7 @@ export const options = {
 
     thresholds: {
         // --- Gerais ---
-        // 2% acomoda falhas de conexão TCP esperadas durante o spike de 100 VUs
+        // 2% acomoda falhas de conexÃ£o TCP esperadas durante o spike de 100 VUs
         'http_req_failed':                        ['rate<0.02'],
         'http_req_failed{cenario:smoke}':         ['rate<0.01'],
         'http_req_failed{cenario:load}':          ['rate<0.01'],
@@ -124,11 +123,10 @@ export const options = {
         'dur_remover':            ['p(95)<500',  'p(99)<1000'],
         'dur_relatorio_excel':    ['p(95)<3000', 'p(99)<5000'],
         'dur_relatorio_pdf':      ['p(95)<3000', 'p(99)<5000'],
-        'dur_legado_pdf':         ['p(95)<5000', 'p(99)<8000'],
         'dur_remover_duplicatas': ['p(95)<2000', 'p(99)<4000'],
         'dur_migrar_dados':       ['p(95)<5000', 'p(99)<8000'],
 
-        // --- Por cenário ---
+        // --- Por cenÃ¡rio ---
         'http_req_duration{cenario:smoke}':         ['p(95)<500' ],
         'http_req_duration{cenario:load}':          ['p(95)<1500'],
         'http_req_duration{cenario:stress}':        ['p(95)<2500'],
@@ -226,13 +224,6 @@ function removerConvidado(nome) {
     return res;
 }
 
-function obterLegadoPdf() {
-    const res = http.get(`${BASE_URL}/api/legado/relatorio/pdf`, { headers: HEADERS });
-    m.legadoPdf.add(res.timings.duration);
-    m.totalReqs.add(1);
-    return res;
-}
-
 function removerDuplicatas() {
     const res = http.del(`${BASE_URL}/api/administracao/remover-duplicatas`, null, { headers: HEADERS });
     m.removerDuplicatas.add(res.timings.duration);
@@ -248,7 +239,7 @@ function migrarDados() {
 }
 
 // -----------------------------------------------------------------------------
-// Setup: insere convidados fixos antes de qualquer cenário rodar
+// Setup: insere convidados fixos antes de qualquer cenÃ¡rio rodar
 // -----------------------------------------------------------------------------
 export function setup() {
     const inseridos = [];
@@ -260,7 +251,7 @@ export function setup() {
         if (res.status === 201) {
             inseridos.push(nomeCompleto);
         } else if (res.status === 401) {
-            console.warn(`[setup] Limite atingido após ${inseridos.length} inserções.`);
+            console.warn(`[setup] Limite atingido apÃ³s ${inseridos.length} inserÃ§Ãµes.`);
             break;
         }
     }
@@ -270,8 +261,8 @@ export function setup() {
 }
 
 // -----------------------------------------------------------------------------
-// Cenário: fluxoPadrao
-// Representa o comportamento completo de um usuário real.
+// CenÃ¡rio: fluxoPadrao
+// Representa o comportamento completo de um usuÃ¡rio real.
 // Usado por: smoke, load, stress, soak
 // -----------------------------------------------------------------------------
 export function fluxoPadrao(data) {
@@ -279,7 +270,7 @@ const nomeFixo     = nomeAleatorio(data.nomesFixos);
 const nomeDinamico = `${PREFIXO_K6}VU-${__VU}-${__ITER}`;
 if (!nomeFixo) { sleep(1); return; }
 
-    group('Escrita — adicionar convidado', () => {
+    group('Escrita â€” adicionar convidado', () => {
         const res = adicionarConvidado(nomeDinamico);
         const ok = check(res, {
             'adicionar: 201 ou 401': (r) => r.status === 201 || r.status === 401,
@@ -289,7 +280,7 @@ if (!nomeFixo) { sleep(1); return; }
 
     sleep(0.3);
 
-    group('Leitura — verificar convidado', () => {
+    group('Leitura â€” verificar convidado', () => {
         const res = verificarConvidado(nomeFixo);
         const ok = check(res, {
             'verificar: status 200':                          (r) => r.status === 200,
@@ -301,18 +292,18 @@ if (!nomeFixo) { sleep(1); return; }
 
     sleep(0.3);
 
-    group('Leitura — listar convidados', () => {
+    group('Leitura â€” listar convidados', () => {
         const res = listarConvidados();
         const ok = check(res, {
             'listar: status 200':    (r) => r.status === 200,
-            'listar: convidados � array': (r) => Array.isArray(r.json('convidados')),
+            'listar: convidados é array': (r) => Array.isArray(r.json('convidados')),
         });
         m.taxaErro.add(!ok);
     });
 
     sleep(0.3);
 
-    group('Leitura — vagas restantes', () => {
+    group('Leitura â€” vagas restantes', () => {
         const res = obterVagasRestantes();
         const ok = check(res, {
             'vagas: status 200':              (r) => r.status === 200,
@@ -323,41 +314,41 @@ if (!nomeFixo) { sleep(1); return; }
 
     sleep(0.5);
 
-    // Relatórios são pesados — executados 1 a cada 5 iterações
+    // RelatÃ³rios sÃ£o pesados â€” executados 1 a cada 5 iteraÃ§Ãµes
     if (__ITER % 5 === 0) {
-        group('Relatório — Excel', () => {
+        group('RelatÃ³rio â€” Excel', () => {
             const res = obterRelatorioExcel();
             const ok = check(res, {
                 'excel: status 200':           (r) => r.status === 200,
                 'excel: content-type correto': (r) =>
                     (r.headers['Content-Type'] || '').includes('spreadsheetml'),
-                'excel: body não vazio':       (r) => r.body.length > 0,
+                'excel: body nÃ£o vazio':       (r) => r.body.length > 0,
             });
             m.taxaErro.add(!ok);
         });
 
         sleep(0.5);
 
-        group('Relatório — PDF', () => {
+        group('RelatÃ³rio â€” PDF', () => {
             const res = obterRelatorioPdf();
             const ok = check(res, {
                 'pdf: status 200':           (r) => r.status === 200,
                 'pdf: content-type correto': (r) =>
                     (r.headers['Content-Type'] || '').includes('application/pdf'),
-                'pdf: body não vazio':       (r) => r.body.length > 0,
+                'pdf: body nÃ£o vazio':       (r) => r.body.length > 0,
             });
             m.taxaErro.add(!ok);
         });
 
         sleep(0.5);
 
-        group('Relatório — Legado PDF', () => {
+        group('RelatÃ³rio â€” Legado PDF', () => {
             const res = obterLegadoPdf();
             const ok = check(res, {
                 'legado pdf: status 200':           (r) => r.status === 200,
                 'legado pdf: content-type correto': (r) =>
                     (r.headers['Content-Type'] || '').includes('application/pdf'),
-                'legado pdf: body não vazio':       (r) => r.body.length > 0,
+                'legado pdf: body nÃ£o vazio':       (r) => r.body.length > 0,
             });
             m.taxaErro.add(!ok);
         });
@@ -365,10 +356,10 @@ if (!nomeFixo) { sleep(1); return; }
         sleep(0.5);
     }
 
-    // Remoção dinâmica — 1 a cada 3 iterações, evita esvaziar a base
+    // RemoÃ§Ã£o dinÃ¢mica â€” 1 a cada 3 iteraÃ§Ãµes, evita esvaziar a base
     if (__ITER % 3 === 0) {
         const nomeDinamicoAnterior = `${PREFIXO_K6}VU-${__VU}-${__ITER - 3}`;
-        group('Escrita — remover convidado', () => {
+        group('Escrita â€” remover convidado', () => {
             const res = removerConvidado(nomeDinamicoAnterior);
             const ok = check(res, {
                 'remover: 200, 404 ou 400': (r) => [200, 404, 400].includes(r.status),
@@ -382,16 +373,16 @@ if (!nomeFixo) { sleep(1); return; }
 }
 
 // -----------------------------------------------------------------------------
-// Cenário: fluxoLeitura
-// Somente endpoints de leitura — usado no spike para não comprometer
-// a integridade dos dados durante o pico súbito de usuários.
+// CenÃ¡rio: fluxoLeitura
+// Somente endpoints de leitura â€” usado no spike para nÃ£o comprometer
+// a integridade dos dados durante o pico sÃºbito de usuÃ¡rios.
 // Usado por: spike
 // -----------------------------------------------------------------------------
 export function fluxoLeitura(data) {
     const nomeFixo = nomeAleatorio(data.nomesFixos);
     if (!nomeFixo) { sleep(1); return; }
 
-    group('Spike — verificar', () => {
+    group('Spike â€” verificar', () => {
         const res = verificarConvidado(nomeFixo);
         const ok = check(res, {
             'spike verificar: status 200': (r) => r.status === 200,
@@ -401,7 +392,7 @@ export function fluxoLeitura(data) {
 
     sleep(0.2);
 
-    group('Spike — listar', () => {
+    group('Spike â€” listar', () => {
         const res = listarConvidados();
         const ok = check(res, {
             'spike listar: status 200': (r) => r.status === 200,
@@ -411,7 +402,7 @@ export function fluxoLeitura(data) {
 
     sleep(0.2);
 
-    group('Spike — vagas', () => {
+    group('Spike â€” vagas', () => {
         const res = obterVagasRestantes();
         const ok = check(res, {
             'spike vagas: status 200':          (r) => r.status === 200,
@@ -424,13 +415,13 @@ export function fluxoLeitura(data) {
 }
 
 // -----------------------------------------------------------------------------
-// Cenário: fluxoAdministracao
+// CenÃ¡rio: fluxoAdministracao
 // Valida os endpoints administrativos: remover duplicatas e migrar dados.
-// Roda com 1 VU após todos os outros cenários para não interferir nos dados.
+// Roda com 1 VU apÃ³s todos os outros cenÃ¡rios para nÃ£o interferir nos dados.
 // Usado por: administracao
 // -----------------------------------------------------------------------------
 export function fluxoAdministracao() {
-    group('Administração — remover duplicatas', () => {
+    group('AdministraÃ§Ã£o â€” remover duplicatas', () => {
         const res = removerDuplicatas();
         const ok = check(res, {
             'remover-duplicatas: status 200': (r) => r.status === 200,
@@ -443,7 +434,7 @@ export function fluxoAdministracao() {
 
     sleep(1);
 
-    group('Administração — migrar dados', () => {
+    group('AdministraÃ§Ã£o â€” migrar dados', () => {
         const res = migrarDados();
         const ok = check(res, {
             'migrar-dados: status 200 ou 500': (r) => r.status === 200 || r.status === 500,
