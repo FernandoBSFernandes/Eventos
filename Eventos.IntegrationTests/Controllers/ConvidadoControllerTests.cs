@@ -331,4 +331,22 @@ public class ConvidadoControllerTests : IntegrationTestBase
     }
 
     #endregion
+
+    #region GET /api/convidado/limite-maximo-pessoas
+
+    [Fact(DisplayName = "Deve retornar o limite máximo configurado no evento")]
+    [Trait("Categoria", "Sucesso")]
+    public async Task LimiteMaximoPessoas_DeveRetornarLimiteConfigurado()
+    {
+        // Act
+        var response = await Client.GetAsync("/api/convidado/limite-maximo-pessoas");
+
+        // Assert
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var body = await response.Content.ReadFromJsonAsync<LimiteMaximoPessoasResponse>();
+        Assert.NotNull(body);
+        Assert.Equal(105, body.LimiteMaximoPessoas);
+    }
+
+    #endregion
 }

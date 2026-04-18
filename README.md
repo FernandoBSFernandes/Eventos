@@ -136,6 +136,25 @@ Retorna o número de vagas disponíveis com base no limite configurado.
 
 ---
 
+#### `GET /api/convidado/limite-maximo-pessoas`
+
+Retorna o limite máximo configurado de pessoas confirmadas no evento.
+
+**Resposta `200`:**
+```json
+{
+  "codigoStatus": 200,
+  "mensagem": "",
+  "limiteMaximoPessoas": 105
+}
+```
+
+| Código | Descrição |
+|---|---|
+| `200` | Consulta realizada com sucesso |
+
+---
+
 ### Relatórios — `api/relatorio`
 
 #### `GET /api/relatorio/excel`

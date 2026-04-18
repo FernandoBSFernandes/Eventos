@@ -187,6 +187,15 @@ public class ConvidadoService : IConvidadoService
         }
     }
 
+    public Task<LimiteMaximoPessoasResponse> ObterLimiteMaximoPessoasAsync()
+    {
+        _logger.LogInformation(
+            "[ObterLimiteMaximoPessoas] Limite máximo configurado: {LimiteMaximoPessoas}",
+            _limiteMaximoPessoas);
+
+        return Task.FromResult(new LimiteMaximoPessoasResponse(200, _limiteMaximoPessoas));
+    }
+
     private static void ValidarConvidado(AdicionarConvidadoRequest request)
     {
         if (request == null)

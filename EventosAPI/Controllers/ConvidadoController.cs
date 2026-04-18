@@ -111,5 +111,19 @@ namespace EventosAPI.Controllers
 
             return StatusCode(response.CodigoStatus, response);
         }
+
+        /// <summary>
+        /// Retorna o limite máximo configurado de pessoas confirmadas no evento
+        /// </summary>
+        /// <returns>Limite máximo de pessoas permitido para confirmação</returns>
+        /// <response code="200">Consulta realizada com sucesso</response>
+        [HttpGet("limite-maximo-pessoas")]
+        [ProducesResponseType(typeof(LimiteMaximoPessoasResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ObterLimiteMaximoPessoas()
+        {
+            var response = await _convidadoService.ObterLimiteMaximoPessoasAsync();
+
+            return StatusCode(response.CodigoStatus, response);
+        }
     }
 }

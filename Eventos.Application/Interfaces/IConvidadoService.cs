@@ -10,4 +10,5 @@ public interface IConvidadoService
     Task<ListarConvidadosResponse> ListarConvidadosAsync();
     Task<BaseResponse> RemoverConvidadoPorNomeAsync(string nome);
     Task<VagasRestantesResponse> ObterVagasRestantesAsync();
+    Task<LimiteMaximoPessoasResponse> ObterLimiteMaximoPessoasAsync();
 }
