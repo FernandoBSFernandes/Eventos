@@ -129,6 +129,16 @@ Remove um convidado pelo nome.
 
 Retorna o número de vagas disponíveis com base no limite configurado.
 
+**Resposta `200`:**
+```json
+{
+  "codigoStatus": 200,
+  "mensagem": "",
+  "pessoasConfirmadas": 3,
+  "vagasRestantes": 102
+}
+```
+
 | Código | Descrição |
 |---|---|
 | `200` | Consulta realizada com sucesso |

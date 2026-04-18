@@ -172,18 +172,18 @@ public class ConvidadoService : IConvidadoService
         try
         {
             var pessoasConfirmadas = await _repo.ObterTotalPessoasAsync();
-            var vagasRestantes = _limiteMaximoPessoas - pessoasConfirmadas;
+            var vagasRestantes = Math.Max(0, _limiteMaximoPessoas - pessoasConfirmadas);
 
             _logger.LogInformation(
                 "[ObterVagasRestantes] Vagas restantes: {VagasRestantes} | Pessoas confirmadas: {PessoasConfirmadas}",
                 vagasRestantes, pessoasConfirmadas);
 
-            return new VagasRestantesResponse(200, vagasRestantes);
+            return new VagasRestantesResponse(200, pessoasConfirmadas, vagasRestantes);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "[ObterVagasRestantes] Erro inesperado ao obter vagas restantes.");
-            return new VagasRestantesResponse(500, 0);
+            return new VagasRestantesResponse(500, 0, 0);
         }
     }
 

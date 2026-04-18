@@ -20,9 +20,9 @@ public class ExportarRelatorioTests : RelatorioServiceTestBase
 
     #region Sucesso
 
-    [Fact(DisplayName = "Deve calcular total de pessoas sem duplicidade de nomes")]
+    [Fact(DisplayName = "Deve usar a mesma contagem de total da API de vagas")]
     [Trait("Categoria", "Sucesso")]
-    public async Task DeveCalcularTotalSemDuplicidade_QuandoExistiremNomesRepetidos()
+    public async Task DeveUsarMesmaContagemDaApiDeVagas_QuandoMontarRelatorio()
     {
         // Arrange
         var convidados = new List<Convidado>
@@ -33,34 +33,36 @@ public class ExportarRelatorioTests : RelatorioServiceTestBase
                 PresencaConfirmada = true,
                 Acompanhantes = new List<Acompanhante>
                 {
-                    new() { Nome = "Bruno" },
-                    new() { Nome = "  Bruno  " }
+                    new() { Nome = "Bruno" }
                 }
             },
             new()
             {
-                Nome = " ana ",
+                Nome = "Carlos",
                 PresencaConfirmada = true,
                 Acompanhantes = new List<Acompanhante>
                 {
-                    new() { Nome = "Carlos" }
+                    new() { Nome = "Diana" }
                 }
             }
         };
 
         Repo.ObterConvidadosConfirmadosAsync().Returns(convidados);
+        Repo.ObterTotalPessoasAsync().Returns(4);
 
         // Act
         var response = await Service.ObterRelatorioAsync();
 
         // Assert
         Assert.Equal(200, response.CodigoStatus);
-        Assert.Equal(3, response.TotalPessoas);
+        Assert.Equal(4, response.TotalPessoas);
+        Assert.Equal(4, response.PessoasConfirmadas);
+        await Repo.Received(1).ObterTotalPessoasAsync();
     }
 
-    [Fact(DisplayName = "Deve ignorar acompanhantes com nome vazio no relatório")]
+    [Fact(DisplayName = "Deve manter acompanhantes no item do relatório")]
     [Trait("Categoria", "Sucesso")]
-    public async Task DeveIgnorarAcompanhantesVazios_QuandoMontarItensDoRelatorio()
+    public async Task DeveManterAcompanhantesNoItemDoRelatorio()
     {
         // Arrange
         var convidados = new List<Convidado>
@@ -71,13 +73,13 @@ public class ExportarRelatorioTests : RelatorioServiceTestBase
                 PresencaConfirmada = true,
                 Acompanhantes = new List<Acompanhante>
                 {
-                    new() { Nome = "Maria" },
-                    new() { Nome = "   " }
+                    new() { Nome = "Maria" }
                 }
             }
         };
 
         Repo.ObterConvidadosConfirmadosAsync().Returns(convidados);
+        Repo.ObterTotalPessoasAsync().Returns(2);
 
         // Act
         var response = await Service.ObterRelatorioAsync();
@@ -87,6 +89,7 @@ public class ExportarRelatorioTests : RelatorioServiceTestBase
         Assert.Single(response.Convidados[0].Acompanhantes);
         Assert.Equal("Maria", response.Convidados[0].Acompanhantes[0]);
         Assert.Equal(2, response.TotalPessoas);
+        Assert.Equal(2, response.PessoasConfirmadas);
     }
 
     [Fact(DisplayName = "Deve retornar bytes, contentType e nomeArquivo corretamente")]
@@ -96,6 +99,7 @@ public class ExportarRelatorioTests : RelatorioServiceTestBase
         // Arrange
         var bytesEsperados = new byte[] { 1, 2, 3 };
         Repo.ObterConvidadosConfirmadosAsync().Returns(new List<Convidado>());
+        Repo.ObterTotalPessoasAsync().Returns(0);
         _strategy.ExportarAsync(Arg.Any<RelatorioEventoResponse>()).Returns(bytesEsperados);
 
         // Act
@@ -113,6 +117,7 @@ public class ExportarRelatorioTests : RelatorioServiceTestBase
     {
         // Arrange
         Repo.ObterConvidadosConfirmadosAsync().Returns(new List<Convidado>());
+        Repo.ObterTotalPessoasAsync().Returns(0);
         _strategy.ExportarAsync(Arg.Any<RelatorioEventoResponse>()).Returns(Array.Empty<byte>());
 
         // Act
@@ -120,6 +125,7 @@ public class ExportarRelatorioTests : RelatorioServiceTestBase
 
         // Assert
         await Repo.Received(1).ObterConvidadosConfirmadosAsync();
+        await Repo.Received(1).ObterTotalPessoasAsync();
         await _strategy.Received(1).ExportarAsync(Arg.Any<RelatorioEventoResponse>());
     }
 
@@ -140,6 +146,7 @@ public class ExportarRelatorioTests : RelatorioServiceTestBase
             }
         };
         Repo.ObterConvidadosConfirmadosAsync().Returns(convidados);
+        Repo.ObterTotalPessoasAsync().Returns(1);
         _strategy.ExportarAsync(Arg.Any<RelatorioEventoResponse>()).Returns(new byte[] { 42 });
 
         // Act
@@ -164,6 +171,7 @@ public class ExportarRelatorioTests : RelatorioServiceTestBase
         strategyExcel.ExportarAsync(Arg.Any<RelatorioEventoResponse>()).Returns(new byte[] { 1 });
         Factory.Criar(FormatoRelatorio.Excel).Returns(strategyExcel);
         Repo.ObterConvidadosConfirmadosAsync().Returns(new List<Convidado>());
+        Repo.ObterTotalPessoasAsync().Returns(0);
 
         // Act
         var (_, contentType, nomeArquivo) = await Service.ExportarAsync(FormatoRelatorio.Excel);
@@ -200,6 +208,7 @@ public class ExportarRelatorioTests : RelatorioServiceTestBase
     {
         // Arrange
         Repo.ObterConvidadosConfirmadosAsync().Returns(new List<Convidado>());
+        Repo.ObterTotalPessoasAsync().Returns(0);
         _strategy.ExportarAsync(Arg.Any<RelatorioEventoResponse>())
             .Returns(Task.FromException<byte[]>(new InvalidOperationException("Falha ao gerar arquivo")));
 

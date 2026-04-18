@@ -18,6 +18,7 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(200, response.CodigoStatus);
+        Assert.Equal(0, response.PessoasConfirmadas);
         Assert.Equal(105, response.VagasRestantes);
     }
 
@@ -33,6 +34,7 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(200, response.CodigoStatus);
+        Assert.Equal(63, response.PessoasConfirmadas);
         Assert.Equal(42, response.VagasRestantes);
     }
 
@@ -48,6 +50,7 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(200, response.CodigoStatus);
+        Assert.Equal(105, response.PessoasConfirmadas);
         Assert.Equal(0, response.VagasRestantes);
     }
 
@@ -63,6 +66,7 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(200, response.CodigoStatus);
+        Assert.Equal(110, response.PessoasConfirmadas);
         Assert.Equal(0, response.VagasRestantes);
     }
 
@@ -78,6 +82,7 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(200, response.CodigoStatus);
+        Assert.Equal(104, response.PessoasConfirmadas);
         Assert.Equal(1, response.VagasRestantes);
     }
 
@@ -98,6 +103,7 @@ public class ObterVagasRestantesTests : ConvidadoServiceTestBase
 
         // Assert
         Assert.Equal(500, response.CodigoStatus);
+        Assert.Equal(0, response.PessoasConfirmadas);
         Assert.Equal(0, response.VagasRestantes);
     }
 

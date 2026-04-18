@@ -11,10 +11,16 @@ public class RelatorioEventoResponse : BaseResponse
     public List<ConvidadoRelatorioItem> Convidados { get; set; }
 
     /// <summary>
-    /// Total de pessoas confirmadas, contando convidados e acompanhantes sem duplicatas de nome
+    /// Total de pessoas confirmadas, contando convidados e acompanhantes
     /// </summary>
     /// <example>8</example>
     public int TotalPessoas { get; set; }
+
+    /// <summary>
+    /// Total de pessoas confirmadas (mesmo valor de <see cref="TotalPessoas"/>), exposto para manter o mesmo contrato lógico do endpoint de vagas.
+    /// </summary>
+    /// <example>8</example>
+    public int PessoasConfirmadas => TotalPessoas;
 
     public RelatorioEventoResponse(int codigoStatus, string mensagem, List<ConvidadoRelatorioItem> convidados, int totalPessoas)
         : base(codigoStatus, mensagem)
