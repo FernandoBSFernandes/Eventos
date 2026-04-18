@@ -22,7 +22,7 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
 
     private bool UseInMemory => string.IsNullOrWhiteSpace(_resolvedConnectionString);
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         if (!string.IsNullOrWhiteSpace(_ciConnectionString))
         {
@@ -32,8 +32,7 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
 
         try
         {
-            _postgres = new PostgreSqlBuilder()
-                .WithImage("postgres:16-alpine")
+            _postgres = new PostgreSqlBuilder("postgres:16-alpine")
                 .Build();
 
             await _postgres.StartAsync();
@@ -46,7 +45,7 @@ public class EventosWebApplicationFactory : WebApplicationFactory<EventosAPI.Pro
         }
     }
 
-    public new async Task DisposeAsync()
+    public new async ValueTask DisposeAsync()
     {
         if (_postgres is not null)
             await _postgres.StopAsync();

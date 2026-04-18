@@ -21,7 +21,7 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         Client = factory.CreateClient();
     }
 
-    public virtual async Task InitializeAsync()
+    public virtual async ValueTask InitializeAsync()
     {
         // Migrations aplicadas aqui Ã¢Â€Â” após CreateClient() ter construído o host,
         // garantindo que _resolvedConnectionString já foi definido em InitializeAsync da factory
@@ -29,5 +29,5 @@ public abstract class IntegrationTestBase : IAsyncLifetime
         await Factory.ResetDatabaseAsync();
     }
 
-    public Task DisposeAsync() => Task.CompletedTask;
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

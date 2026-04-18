@@ -1,5 +1,3 @@
-File: .github\workflows\carga.yml
-````````
 name: Carga
 
 on:
