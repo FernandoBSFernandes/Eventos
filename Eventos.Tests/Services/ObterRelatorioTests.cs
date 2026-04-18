@@ -20,6 +20,75 @@ public class ExportarRelatorioTests : RelatorioServiceTestBase
 
     #region Sucesso
 
+    [Fact(DisplayName = "Deve calcular total de pessoas sem duplicidade de nomes")]
+    [Trait("Categoria", "Sucesso")]
+    public async Task DeveCalcularTotalSemDuplicidade_QuandoExistiremNomesRepetidos()
+    {
+        // Arrange
+        var convidados = new List<Convidado>
+        {
+            new()
+            {
+                Nome = "Ana",
+                PresencaConfirmada = true,
+                Acompanhantes = new List<Acompanhante>
+                {
+                    new() { Nome = "Bruno" },
+                    new() { Nome = "  Bruno  " }
+                }
+            },
+            new()
+            {
+                Nome = " ana ",
+                PresencaConfirmada = true,
+                Acompanhantes = new List<Acompanhante>
+                {
+                    new() { Nome = "Carlos" }
+                }
+            }
+        };
+
+        Repo.ObterConvidadosConfirmadosAsync().Returns(convidados);
+
+        // Act
+        var response = await Service.ObterRelatorioAsync();
+
+        // Assert
+        Assert.Equal(200, response.CodigoStatus);
+        Assert.Equal(3, response.TotalPessoas);
+    }
+
+    [Fact(DisplayName = "Deve ignorar acompanhantes com nome vazio no relatório")]
+    [Trait("Categoria", "Sucesso")]
+    public async Task DeveIgnorarAcompanhantesVazios_QuandoMontarItensDoRelatorio()
+    {
+        // Arrange
+        var convidados = new List<Convidado>
+        {
+            new()
+            {
+                Nome = "João",
+                PresencaConfirmada = true,
+                Acompanhantes = new List<Acompanhante>
+                {
+                    new() { Nome = "Maria" },
+                    new() { Nome = "   " }
+                }
+            }
+        };
+
+        Repo.ObterConvidadosConfirmadosAsync().Returns(convidados);
+
+        // Act
+        var response = await Service.ObterRelatorioAsync();
+
+        // Assert
+        Assert.Single(response.Convidados);
+        Assert.Single(response.Convidados[0].Acompanhantes);
+        Assert.Equal("Maria", response.Convidados[0].Acompanhantes[0]);
+        Assert.Equal(2, response.TotalPessoas);
+    }
+
     [Fact(DisplayName = "Deve retornar bytes, contentType e nomeArquivo corretamente")]
     [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornarBytesContentTypeENomeArquivo_QuandoExportacaoBemSucedida()

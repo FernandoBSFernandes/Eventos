@@ -172,7 +172,7 @@ public class ConvidadoService : IConvidadoService
         try
         {
             var pessoasConfirmadas = await _repo.ObterTotalPessoasAsync();
-            var vagasRestantes = Math.Max(0, _limiteMaximoPessoas - pessoasConfirmadas);
+            var vagasRestantes = _limiteMaximoPessoas - pessoasConfirmadas;
 
             _logger.LogInformation(
                 "[ObterVagasRestantes] Vagas restantes: {VagasRestantes} | Pessoas confirmadas: {PessoasConfirmadas}",

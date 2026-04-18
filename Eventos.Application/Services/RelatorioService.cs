@@ -28,17 +28,29 @@ public class RelatorioService : IRelatorioService
             var convidados = await _repo.ObterConvidadosConfirmadosAsync();
 
             var itens = new List<ConvidadoRelatorioItem>(convidados.Count);
-            var totalPessoas = 0;
+            var nomesUnicos = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var c in convidados)
             {
+                var acompanhantes = c.Acompanhantes
+                    .Select(a => a.Nome?.Trim())
+                    .Where(nome => !string.IsNullOrWhiteSpace(nome))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+
                 itens.Add(new ConvidadoRelatorioItem(
                     c.Nome,
-                    c.Acompanhantes.Select(a => a.Nome).ToList()
+                    acompanhantes
                 ));
 
-                totalPessoas += 1 + c.Acompanhantes.Count;
+                if (!string.IsNullOrWhiteSpace(c.Nome))
+                    nomesUnicos.Add(c.Nome.Trim());
+
+                foreach (var nomeAcompanhante in acompanhantes)
+                    nomesUnicos.Add(nomeAcompanhante);
             }
+
+            var totalPessoas = nomesUnicos.Count;
 
             _logger.LogInformation("[ObterRelatorio] Relatório gerado | Convidados confirmados: {TotalConvidados} | Total de pessoas: {TotalPessoas}",
                 itens.Count, totalPessoas);
