@@ -64,6 +64,40 @@ public class ObterListaFinalConfirmadosTests : RelatorioServiceTestBase
         Assert.All(response.Confirmados, x => Assert.Null(x.Pago));
     }
 
+    [Fact(DisplayName = "Deve preencher mesa quando nome existir no mapeamento")]
+    [Trait("Categoria", "Sucesso")]
+    public async Task DevePreencherMesa_QuandoNomeExistirNoMapeamento()
+    {
+        // Arrange
+        var convidados = new List<Convidado>
+        {
+            new()
+            {
+                Nome = "Lucas Fernandes",
+                PresencaConfirmada = true,
+                Acompanhantes = new List<Acompanhante>
+                {
+                    new() { Nome = "Cecilia Araujo" }
+                }
+            }
+        };
+
+        Repo.ObterConvidadosConfirmadosAsync().Returns(convidados);
+
+        // Act
+        var response = await Service.ObterListaFinalConfirmadosAsync();
+
+        // Assert
+        Assert.Equal(200, response.CodigoStatus);
+        Assert.Equal(2, response.Confirmados.Count);
+
+        var lucas = response.Confirmados.Single(x => x.Nome == "Lucas Fernandes");
+        var cecilia = response.Confirmados.Single(x => x.Nome == "Cecilia Araujo");
+
+        Assert.Equal("Mesa 1", lucas.Mesa);
+        Assert.Equal("Mesa 19", cecilia.Mesa);
+    }
+
     [Fact(DisplayName = "Deve retornar lista vazia quando não houver confirmados")]
     [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornarListaVazia_QuandoNaoHaConfirmados()

@@ -17,7 +17,6 @@ const m = {
     remover:           new Trend('dur_remover',            true),
     relatorioExcel:    new Trend('dur_relatorio_excel',    true),
     relatorioPdf:      new Trend('dur_relatorio_pdf',      true),
-    removerDuplicatas: new Trend('dur_remover_duplicatas', true),
     taxaErro:          new Rate('taxa_erro'),
     totalReqs:         new Counter('total_requisicoes'),
 };
@@ -30,7 +29,6 @@ const m = {
 //  [150sâ€“210s] stress       â€” sobe atÃ© 50 VUs, encontra o ponto de pressÃ£o
 //  [220sâ€“250s] spike        â€” salta para 100 VUs instantaneamente
 //  [260sâ€“560s] soak         â€” 10 VUs por 5 min, detecta vazamentos de memÃ³ria
-//  [570sâ€“600s] administracao â€” 1 VU, valida endpoints administrativos
 // -----------------------------------------------------------------------------
 export const options = {
     scenarios: {
@@ -94,14 +92,6 @@ export const options = {
             exec:      'fluxoPadrao',
         },
 
-        administracao: {
-            executor:  'constant-vus',
-            vus:       1,
-            duration:  MODO_RAPIDO ? '8s' : '30s',
-            startTime: MODO_RAPIDO ? '60s' : '570s',
-            tags:      { cenario: 'administracao' },
-            exec:      'fluxoAdministracao',
-        },
     },
 
     thresholds: {
@@ -124,7 +114,6 @@ export const options = {
         'dur_remover':            ['p(95)<500',  'p(99)<1000'],
         'dur_relatorio_excel':    ['p(95)<3000', 'p(99)<5000'],
         'dur_relatorio_pdf':      ['p(95)<3000', 'p(99)<5000'],
-        'dur_remover_duplicatas': ['p(95)<2000', 'p(99)<4000'],
 
         // --- Por cenÃ¡rio ---
         'http_req_duration{cenario:smoke}':         [MODO_RAPIDO ? 'p(95)<1500' : 'p(95)<500'],
@@ -132,7 +121,6 @@ export const options = {
         'http_req_duration{cenario:stress}':        ['p(95)<2500'],
         'http_req_duration{cenario:spike}':         ['p(95)<3000'],
         'http_req_duration{cenario:soak}':          ['p(95)<2000'],
-        'http_req_duration{cenario:administracao}': ['p(95)<5000'],
     },
 };
 
@@ -220,13 +208,6 @@ function removerConvidado(nome) {
         null, { headers: HEADERS, responseCallback: http.expectedStatuses(200, 400, 404) }
     );
     m.remover.add(res.timings.duration);
-    m.totalReqs.add(1);
-    return res;
-}
-
-function removerDuplicatas() {
-    const res = http.del(`${BASE_URL}/api/administracao/remover-duplicatas`, null, { headers: HEADERS });
-    m.removerDuplicatas.add(res.timings.duration);
     m.totalReqs.add(1);
     return res;
 }
@@ -393,27 +374,6 @@ export function fluxoLeitura(data) {
     });
 
     sleep(0.5);
-}
-
-// -----------------------------------------------------------------------------
-// CenÃ¡rio: fluxoAdministracao
-// Valida os endpoints administrativos.
-// Roda com 1 VU apÃ³s todos os outros cenÃ¡rios para nÃ£o interferir nos dados.
-// Usado por: administracao
-// -----------------------------------------------------------------------------
-export function fluxoAdministracao() {
-    group('AdministraÃ§Ã£o â€” remover duplicatas', () => {
-        const res = removerDuplicatas();
-        const ok = check(res, {
-            'remover-duplicatas: status 200': (r) => r.status === 200,
-            'remover-duplicatas: mensagem presente': (r) => {
-                try { return r.json('mensagem') !== undefined; } catch { return false; }
-            },
-        });
-        m.taxaErro.add(!ok);
-    });
-
-    sleep(2);
 }
 
 // -----------------------------------------------------------------------------

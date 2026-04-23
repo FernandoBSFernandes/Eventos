@@ -104,7 +104,6 @@ namespace EventosAPI
             builder.Services.Configure<EventoConfiguration>(
                 builder.Configuration.GetSection(EventoConfiguration.SectionName));
             builder.Services.AddScoped<IConvidadoService, ConvidadoService>();
-            builder.Services.AddScoped<IAdministracaoService, AdministracaoService>();
             builder.Services.AddScoped<IRelatorioService, RelatorioService>();
             builder.Services.AddScoped<IEventoRepository, EventoRepository>();
             builder.Services.AddScoped<RelatorioPdfStrategy>();
