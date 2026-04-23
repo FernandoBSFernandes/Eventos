@@ -309,8 +309,6 @@ Eventos.Tests/
     ├── ListarConvidadosTests.cs
     ├── RemoverConvidadoPorNomeTests.cs
     ├── ObterVagasRestantesTests.cs
-    ├── RemoverDuplicatasTests.cs
-    ├── ZerarTabelasTests.cs
     └── ObterRelatorioTests.cs
 ```
 
@@ -325,8 +323,7 @@ Os testes de integração estão no projeto `Eventos.IntegrationTests` e utiliza
 ```
 Eventos.IntegrationTests/
 └── Controllers/
-    ├── ConvidadoControllerTests.cs
-    └── AdministracaoControllerTests.cs
+    └── ConvidadoControllerTests.cs
 ```
 
 ```bash
