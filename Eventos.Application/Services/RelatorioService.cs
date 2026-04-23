@@ -12,20 +12,17 @@ public class RelatorioService : IRelatorioService
     private readonly ILogger<RelatorioService> _logger;
     private readonly IRelatorioFactory _factory;
     private readonly IListaFinalConfirmadosPdfStrategy _listaFinalConfirmadosPdfStrategy;
-    private readonly IListaFinalConfirmadosComMesaPdfStrategy _listaFinalConfirmadosComMesaPdfStrategy;
 
     public RelatorioService(
         IEventoRepository repo,
         ILogger<RelatorioService> logger,
         IRelatorioFactory factory,
-        IListaFinalConfirmadosPdfStrategy listaFinalConfirmadosPdfStrategy,
-        IListaFinalConfirmadosComMesaPdfStrategy listaFinalConfirmadosComMesaPdfStrategy)
+        IListaFinalConfirmadosPdfStrategy listaFinalConfirmadosPdfStrategy)
     {
         _repo = repo;
         _logger = logger;
         _factory = factory;
         _listaFinalConfirmadosPdfStrategy = listaFinalConfirmadosPdfStrategy;
-        _listaFinalConfirmadosComMesaPdfStrategy = listaFinalConfirmadosComMesaPdfStrategy;
     }
 
     public async Task<RelatorioEventoResponse> ObterRelatorioAsync()
@@ -102,12 +99,5 @@ public class RelatorioService : IRelatorioService
         var response = await ObterListaFinalConfirmadosAsync();
         var bytes = await _listaFinalConfirmadosPdfStrategy.ExportarAsync(response);
         return (bytes, _listaFinalConfirmadosPdfStrategy.ContentType, _listaFinalConfirmadosPdfStrategy.NomeArquivo);
-    }
-
-    public async Task<(byte[] bytes, string contentType, string nomeArquivo)> ExportarListaFinalConfirmadosComMesaPdfAsync()
-    {
-        var response = await ObterListaFinalConfirmadosAsync();
-        var bytes = await _listaFinalConfirmadosComMesaPdfStrategy.ExportarAsync(response);
-        return (bytes, _listaFinalConfirmadosComMesaPdfStrategy.ContentType, _listaFinalConfirmadosComMesaPdfStrategy.NomeArquivo);
     }
 }

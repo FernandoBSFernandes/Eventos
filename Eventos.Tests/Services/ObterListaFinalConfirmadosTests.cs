@@ -26,26 +26,6 @@ public class ObterListaFinalConfirmadosTests : RelatorioServiceTestBase
         await ListaFinalConfirmadosPdfStrategy.Received(1).ExportarAsync(Arg.Any<ListaFinalConfirmadosResponse>());
     }
 
-    [Fact(DisplayName = "Deve exportar lista final com mesa usando strategy específica")]
-    [Trait("Categoria", "Sucesso")]
-    public async Task DeveExportarListaFinalComMesaUsandoStrategyEspecifica()
-    {
-        // Arrange
-        var bytesEsperados = new byte[] { 40, 50, 60 };
-        Repo.ObterConvidadosConfirmadosAsync().Returns(new List<Convidado>());
-        ListaFinalConfirmadosComMesaPdfStrategy.ExportarAsync(Arg.Any<ListaFinalConfirmadosResponse>())
-            .Returns(bytesEsperados);
-
-        // Act
-        var (bytes, contentType, nomeArquivo) = await Service.ExportarListaFinalConfirmadosComMesaPdfAsync();
-
-        // Assert
-        Assert.Equal(bytesEsperados, bytes);
-        Assert.Equal("application/pdf", contentType);
-        Assert.Equal("Lista Final de Confirmados com Mesa.pdf", nomeArquivo);
-        await ListaFinalConfirmadosComMesaPdfStrategy.Received(1).ExportarAsync(Arg.Any<ListaFinalConfirmadosResponse>());
-    }
-
     [Fact(DisplayName = "Deve retornar nomes confirmados em ordem alfabética com campo pago vazio")]
     [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornarListaOrdenadaComPagoNulo_QuandoHaConfirmados()

@@ -70,21 +70,5 @@ namespace EventosAPI.Controllers
             return File(bytes, contentType, nomeArquivo);
         }
 
-        /// <summary>
-        /// Exporta a lista final de confirmados em PDF com coluna de mesa para preenchimento
-        /// </summary>
-        /// <returns>Arquivo PDF com lista de confirmados, coluna de mesa e coluna de pago (checkbox)</returns>
-        /// <response code="200">Arquivo gerado com sucesso</response>
-        /// <response code="500">Erro interno ao processar a requisição</response>
-        [HttpGet("lista-final-com-mesa")]
-        [Produces("application/pdf")]
-        [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ObterListaFinalConfirmadosComMesa()
-        {
-            var (bytes, contentType, nomeArquivo) = await _relatorioService.ExportarListaFinalConfirmadosComMesaPdfAsync();
-            return File(bytes, contentType, nomeArquivo);
-        }
-
     }
 }
