@@ -12,17 +12,20 @@ public class RelatorioService : IRelatorioService
     private readonly ILogger<RelatorioService> _logger;
     private readonly IRelatorioFactory _factory;
     private readonly IListaFinalConfirmadosPdfStrategy _listaFinalConfirmadosPdfStrategy;
+    private readonly IListaFinalConfirmadosComMesaPdfStrategy _listaFinalConfirmadosComMesaPdfStrategy;
 
     public RelatorioService(
         IEventoRepository repo,
         ILogger<RelatorioService> logger,
         IRelatorioFactory factory,
-        IListaFinalConfirmadosPdfStrategy listaFinalConfirmadosPdfStrategy)
+        IListaFinalConfirmadosPdfStrategy listaFinalConfirmadosPdfStrategy,
+        IListaFinalConfirmadosComMesaPdfStrategy listaFinalConfirmadosComMesaPdfStrategy)
     {
         _repo = repo;
         _logger = logger;
         _factory = factory;
         _listaFinalConfirmadosPdfStrategy = listaFinalConfirmadosPdfStrategy;
+        _listaFinalConfirmadosComMesaPdfStrategy = listaFinalConfirmadosComMesaPdfStrategy;
     }
 
     public async Task<RelatorioEventoResponse> ObterRelatorioAsync()
@@ -68,7 +71,7 @@ public class RelatorioService : IRelatorioService
             var confirmados = convidados
                 .SelectMany(c => new[] { c.Nome }.Concat(c.Acompanhantes.Select(a => a.Nome)))
                 .OrderBy(nome => nome)
-                .Select((nome, indice) => new ListaFinalConfirmadoItem(indice + 1, nome, null))
+                .Select((nome, indice) => new ListaFinalConfirmadoItem(indice + 1, nome, null, null))
                 .ToList();
 
             var mensagem = confirmados.Count == 0
@@ -99,5 +102,12 @@ public class RelatorioService : IRelatorioService
         var response = await ObterListaFinalConfirmadosAsync();
         var bytes = await _listaFinalConfirmadosPdfStrategy.ExportarAsync(response);
         return (bytes, _listaFinalConfirmadosPdfStrategy.ContentType, _listaFinalConfirmadosPdfStrategy.NomeArquivo);
+    }
+
+    public async Task<(byte[] bytes, string contentType, string nomeArquivo)> ExportarListaFinalConfirmadosComMesaPdfAsync()
+    {
+        var response = await ObterListaFinalConfirmadosAsync();
+        var bytes = await _listaFinalConfirmadosComMesaPdfStrategy.ExportarAsync(response);
+        return (bytes, _listaFinalConfirmadosComMesaPdfStrategy.ContentType, _listaFinalConfirmadosComMesaPdfStrategy.NomeArquivo);
     }
 }

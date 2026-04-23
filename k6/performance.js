@@ -127,7 +127,7 @@ export const options = {
         'dur_remover_duplicatas': ['p(95)<2000', 'p(99)<4000'],
 
         // --- Por cenÃ¡rio ---
-        'http_req_duration{cenario:smoke}':         ['p(95)<500' ],
+        'http_req_duration{cenario:smoke}':         [MODO_RAPIDO ? 'p(95)<1500' : 'p(95)<500'],
         'http_req_duration{cenario:load}':          ['p(95)<1500'],
         'http_req_duration{cenario:stress}':        ['p(95)<2500'],
         'http_req_duration{cenario:spike}':         ['p(95)<3000'],

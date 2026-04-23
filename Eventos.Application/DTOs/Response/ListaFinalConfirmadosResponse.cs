@@ -35,15 +35,22 @@ public class ListaFinalConfirmadoItem
     public string Nome { get; set; }
 
     /// <summary>
+    /// Mesa em que a pessoa será alocada.
+    /// </summary>
+    /// <example>1</example>
+    public string? Mesa { get; set; }
+
+    /// <summary>
     /// Campo para controle visual de pagamento (checkbox manual).
     /// </summary>
     /// <example>null</example>
     public bool? Pago { get; set; }
 
-    public ListaFinalConfirmadoItem(int numero, string nome, bool? pago)
+    public ListaFinalConfirmadoItem(int numero, string nome, string? mesa, bool? pago)
     {
         Numero = numero;
         Nome = nome;
+        Mesa = mesa;
         Pago = pago;
     }
 }
