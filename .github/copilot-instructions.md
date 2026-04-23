@@ -10,3 +10,4 @@
 - Deixar o código bem organizado em pastas e namespaces, seguindo boas práticas de organização de código.
 - O usuário deseja que os arquivos criados tenham encodamento UTF-8, sem BOM, e que o código seja escrito com a cultura pt-BR.
 - O usuário quer apagar a pasta .vs, a pasta bin e obj e arquivos .user nas limpezas/ações do repositório e ignorar essas pastas e arquivos no .gitignore.
+- Não criar script local para executar a esteira completa quando a pipeline do GitHub já cobre build, testes e validações.

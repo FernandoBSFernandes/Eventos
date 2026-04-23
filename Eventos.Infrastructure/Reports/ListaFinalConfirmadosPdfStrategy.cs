@@ -69,7 +69,17 @@ public class ListaFinalConfirmadosPdfStrategy : IListaFinalConfirmadosPdfStrateg
 
                                 table.Cell().Background(cor).Padding(5).Text(confirmado.Numero.ToString()).AlignCenter();
                                 table.Cell().Background(cor).Padding(5).Text(confirmado.Nome);
-                                table.Cell().Background(cor).Padding(5).Text("☐").AlignCenter();
+                                table.Cell().Background(cor).Padding(5).AlignCenter().Element(celula =>
+                                    celula
+                                        .Width(14)
+                                        .Height(14)
+                                        .Border(1.2f)
+                                        .BorderColor(Colors.Black)
+                                        .AlignCenter()
+                                        .AlignMiddle()
+                                        .Text(confirmado.Pago == true ? "X" : string.Empty)
+                                        .FontSize(9)
+                                        .Bold());
                             }
                         });
                     });

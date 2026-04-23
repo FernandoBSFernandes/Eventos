@@ -4,6 +4,8 @@ import { Trend, Rate, Counter } from 'k6/metrics';
 import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
 
+const MODO_RAPIDO = (__ENV.FAST_MODE || '').toLowerCase() === 'true';
+
 // -----------------------------------------------------------------------------
 // MÃ©tricas customizadas por endpoint
 // -----------------------------------------------------------------------------
@@ -35,7 +37,7 @@ export const options = {
         smoke: {
             executor:  'constant-vus',
             vus:       1,
-            duration:  '30s',
+            duration:  MODO_RAPIDO ? '8s' : '30s',
             startTime: '0s',
             tags:      { cenario: 'smoke' },
             exec:      'fluxoPadrao',
@@ -49,7 +51,7 @@ export const options = {
                 { duration: '50s', target: 20 },
                 { duration: '20s', target: 0  },
             ],
-            startTime:        '40s',
+            startTime:        MODO_RAPIDO ? '10s' : '40s',
             gracefulRampDown: '5s',
             tags:             { cenario: 'load' },
             exec:             'fluxoPadrao',
@@ -63,7 +65,7 @@ export const options = {
                 { duration: '30s', target: 50 },
                 { duration: '15s', target: 0  },
             ],
-            startTime:        '150s',
+            startTime:        MODO_RAPIDO ? '22s' : '150s',
             gracefulRampDown: '5s',
             tags:             { cenario: 'stress' },
             exec:             'fluxoPadrao',
@@ -77,7 +79,7 @@ export const options = {
                 { duration: '20s', target: 100 },
                 { duration: '5s',  target: 0   },
             ],
-            startTime:        '220s',
+            startTime:        MODO_RAPIDO ? '34s' : '220s',
             gracefulRampDown: '5s',
             tags:             { cenario: 'spike' },
             exec:             'fluxoLeitura',
@@ -86,8 +88,8 @@ export const options = {
         soak: {
             executor:  'constant-vus',
             vus:       10,
-            duration:  '5m',
-            startTime: '260s',
+            duration:  MODO_RAPIDO ? '12s' : '5m',
+            startTime: MODO_RAPIDO ? '46s' : '260s',
             tags:      { cenario: 'soak' },
             exec:      'fluxoPadrao',
         },
@@ -95,8 +97,8 @@ export const options = {
         administracao: {
             executor:  'constant-vus',
             vus:       1,
-            duration:  '30s',
-            startTime: '570s',
+            duration:  MODO_RAPIDO ? '8s' : '30s',
+            startTime: MODO_RAPIDO ? '60s' : '570s',
             tags:      { cenario: 'administracao' },
             exec:      'fluxoAdministracao',
         },

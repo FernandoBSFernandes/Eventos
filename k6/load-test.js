@@ -1,5 +1,3 @@
-﻿File: k6\load-test.js
-````````javascript
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
@@ -143,7 +141,10 @@ export function teardown() {
     if (!c.nome.startsWith('Convidado K6')) continue;
     const res = http.del(
       `${BASE_URL}/api/convidado/remover?nome=${encodeURIComponent(c.nome)}`,
-      null, { headers }
+      null, {
+        headers,
+        responseCallback: http.expectedStatuses(200, 400, 404),
+      }
     );
     if (res.status === 200) removidos++;
   }
