@@ -11,6 +11,7 @@ public abstract class RelatorioServiceTestBase
     protected readonly IEventoRepository Repo;
     protected readonly IRelatorioStrategy RelatorioPdfStrategy;
     protected readonly IListaFinalConfirmadosPdfStrategy ListaFinalConfirmadosPdfStrategy;
+    protected readonly IRelacaoPessoaMesaPdfStrategy RelacaoPessoaMesaPdfStrategy;
     protected readonly RelatorioService Service;
 
     protected RelatorioServiceTestBase()
@@ -28,10 +29,17 @@ public abstract class RelatorioServiceTestBase
         ListaFinalConfirmadosPdfStrategy.ExportarAsync(Arg.Any<ListaFinalConfirmadosResponse>())
             .Returns(Array.Empty<byte>());
 
+        RelacaoPessoaMesaPdfStrategy = Substitute.For<IRelacaoPessoaMesaPdfStrategy>();
+        RelacaoPessoaMesaPdfStrategy.ContentType.Returns("application/pdf");
+        RelacaoPessoaMesaPdfStrategy.NomeArquivo.Returns("Relação Pessoa x Mesa.pdf");
+        RelacaoPessoaMesaPdfStrategy.ExportarAsync(Arg.Any<ListaFinalConfirmadosResponse>())
+            .Returns(Array.Empty<byte>());
+
         Service = new RelatorioService(
             Repo,
             NullLogger<RelatorioService>.Instance,
             RelatorioPdfStrategy,
-            ListaFinalConfirmadosPdfStrategy);
+            ListaFinalConfirmadosPdfStrategy,
+            RelacaoPessoaMesaPdfStrategy);
     }
 }

@@ -26,6 +26,26 @@ public class ObterListaFinalConfirmadosTests : RelatorioServiceTestBase
         await ListaFinalConfirmadosPdfStrategy.Received(1).ExportarAsync(Arg.Any<ListaFinalConfirmadosResponse>());
     }
 
+    [Fact(DisplayName = "Deve exportar relação pessoa x mesa usando strategy dedicada")]
+    [Trait("Categoria", "Sucesso")]
+    public async Task DeveExportarRelacaoPessoaMesaUsandoStrategyDedicada()
+    {
+        // Arrange
+        var bytesEsperados = new byte[] { 99, 77, 55 };
+        Repo.ObterConvidadosConfirmadosAsync().Returns(new List<Convidado>());
+        RelacaoPessoaMesaPdfStrategy.ExportarAsync(Arg.Any<ListaFinalConfirmadosResponse>())
+            .Returns(bytesEsperados);
+
+        // Act
+        var (bytes, contentType, nomeArquivo) = await Service.ExportarRelacaoPessoaMesaPdfAsync();
+
+        // Assert
+        Assert.Equal(bytesEsperados, bytes);
+        Assert.Equal("application/pdf", contentType);
+        Assert.Equal("Relação Pessoa x Mesa.pdf", nomeArquivo);
+        await RelacaoPessoaMesaPdfStrategy.Received(1).ExportarAsync(Arg.Any<ListaFinalConfirmadosResponse>());
+    }
+
     [Fact(DisplayName = "Deve retornar nomes confirmados em ordem alfabética com campo pago vazio")]
     [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornarListaOrdenadaComPagoNulo_QuandoHaConfirmados()
@@ -96,6 +116,69 @@ public class ObterListaFinalConfirmadosTests : RelatorioServiceTestBase
 
         Assert.Equal("Mesa 1", lucas.Mesa);
         Assert.Equal("Mesa 19", cecilia.Mesa);
+    }
+
+    [Fact(DisplayName = "Deve preencher mesa usando correspondência parcial de nome")]
+    [Trait("Categoria", "Sucesso")]
+    public async Task DevePreencherMesa_QuandoNomeForParcialDoMapeamento()
+    {
+        // Arrange
+        var convidados = new List<Convidado>
+        {
+            new()
+            {
+                Nome = "Katia Verônica de Souza",
+                PresencaConfirmada = true,
+                Acompanhantes = new List<Acompanhante>
+                {
+                    new() { Nome = "Gabriel Ferreira Lima" },
+                    new() { Nome = "Clesley Silva Júnior" }
+                }
+            }
+        };
+
+        Repo.ObterConvidadosConfirmadosAsync().Returns(convidados);
+
+        // Act
+        var response = await Service.ObterListaFinalConfirmadosAsync();
+
+        // Assert
+        Assert.Equal(200, response.CodigoStatus);
+        Assert.Equal(3, response.Confirmados.Count);
+
+        var katia = response.Confirmados.Single(x => x.Nome == "Katia Verônica de Souza");
+        var gabriel = response.Confirmados.Single(x => x.Nome == "Gabriel Ferreira Lima");
+        var clesley = response.Confirmados.Single(x => x.Nome == "Clesley Silva Júnior");
+
+        Assert.Equal("Mesa 13", katia.Mesa);
+        Assert.Equal("Mesa 13", gabriel.Mesa);
+        Assert.Equal("Mesa 15", clesley.Mesa);
+    }
+
+    [Fact(DisplayName = "Deve preencher mesa quando nome da base tiver termos intermediários")]
+    [Trait("Categoria", "Sucesso")]
+    public async Task DevePreencherMesa_QuandoNomeDaBaseTiverTermosIntermediarios()
+    {
+        // Arrange
+        var convidados = new List<Convidado>
+        {
+            new()
+            {
+                Nome = "Rogerio Souza Navarro Da Fonseca",
+                PresencaConfirmada = true,
+                Acompanhantes = new List<Acompanhante>()
+            }
+        };
+
+        Repo.ObterConvidadosConfirmadosAsync().Returns(convidados);
+
+        // Act
+        var response = await Service.ObterListaFinalConfirmadosAsync();
+
+        // Assert
+        Assert.Equal(200, response.CodigoStatus);
+        Assert.Single(response.Confirmados);
+        Assert.Equal("Mesa 17", response.Confirmados[0].Mesa);
     }
 
     [Fact(DisplayName = "Deve retornar lista vazia quando não houver confirmados")]

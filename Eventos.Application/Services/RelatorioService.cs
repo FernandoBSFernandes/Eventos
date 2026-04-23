@@ -11,87 +11,92 @@ public class RelatorioService : IRelatorioService
 {
     private static readonly Dictionary<string, string> MapaMesaPorNome = new()
     {
-        [NormalizarNome("Lucas Fernandes")] = "Mesa 1",
-        [NormalizarNome("Giselda Barros")] = "Mesa 1",
-        [NormalizarNome("Flávia Fernandes")] = "Mesa 1",
-        [NormalizarNome("Gustavo Oliveira")] = "Mesa 1",
-        [NormalizarNome("Jane Fernandes")] = "Mesa 1",
-        [NormalizarNome("William Danilo")] = "Mesa 1",
+        ["Lucas Fernandes"] = "Mesa 1",
+        ["Giselda Barros"] = "Mesa 1",
+        ["Flávia Fernandes"] = "Mesa 1",
+        ["Gustavo Oliveira"] = "Mesa 1",
+        ["Jane Fernandes"] = "Mesa 1",
+        ["William Danilo"] = "Mesa 1",
 
-        [NormalizarNome("Laércio Fernandes")] = "Mesa 3",
-        [NormalizarNome("Andrea Domingues")] = "Mesa 3",
-        [NormalizarNome("Lucas Domingues")] = "Mesa 3",
-        [NormalizarNome("Gabriela Ribeiro")] = "Mesa 3",
-        [NormalizarNome("Luzia Bezerra")] = "Mesa 3",
-        [NormalizarNome("Amanda Carolina")] = "Mesa 3",
+        ["Laércio Fernandes"] = "Mesa 3",
+        ["Andrea Domingues"] = "Mesa 3",
+        ["Lucas Domingues"] = "Mesa 3",
+        ["Gabriela Ribeiro"] = "Mesa 3",
+        ["Luzia Bezerra"] = "Mesa 3",
+        ["Amanda Carolina"] = "Mesa 3",
 
-        [NormalizarNome("Jane Guimarães")] = "Mesa 5",
-        [NormalizarNome("Renato Medeiros")] = "Mesa 5",
-        [NormalizarNome("Dulce Maria")] = "Mesa 5",
-        [NormalizarNome("Daniel Fernandes")] = "Mesa 5",
-        [NormalizarNome("Rosilea Maria")] = "Mesa 5",
-        [NormalizarNome("João Pedro")] = "Mesa 5",
+        ["Jane Guimarães"] = "Mesa 5",
+        ["Renato Medeiros"] = "Mesa 5",
+        ["Dulce Maria"] = "Mesa 5",
+        ["Daniel Fernandes"] = "Mesa 5",
+        ["Rosilea Maria"] = "Mesa 5",
+        ["João Pedro"] = "Mesa 5",
 
-        [NormalizarNome("Shirley Matias")] = "Mesa 7",
-        [NormalizarNome("Nelson Alves")] = "Mesa 7",
-        [NormalizarNome("Nelson Matias")] = "Mesa 7",
-        [NormalizarNome("Hosana Brevilato")] = "Mesa 7",
-        [NormalizarNome("Rayane Barbosa")] = "Mesa 7",
-        [NormalizarNome("Maria Rosa")] = "Mesa 7",
+        ["Shirley Matias"] = "Mesa 7",
+        ["Nelson Alves"] = "Mesa 7",
+        ["Nelson Matias"] = "Mesa 7",
+        ["Hosana Brevilato"] = "Mesa 7",
+        ["Rayane Barbosa"] = "Mesa 7",
+        ["Maria Rosa"] = "Mesa 7",
 
-        [NormalizarNome("Claudia Rosa")] = "Mesa 9",
-        [NormalizarNome("Pe Josinaldo Otaciano")] = "Mesa 9",
-        [NormalizarNome("Wilson Santana")] = "Mesa 9",
-        [NormalizarNome("Arthur Santana")] = "Mesa 9",
-        [NormalizarNome("Julio Minto")] = "Mesa 9",
-        [NormalizarNome("Eloana Minto")] = "Mesa 9",
+        ["Claudia Rosa"] = "Mesa 9",
+        ["Pe Josinaldo Otaciano"] = "Mesa 9",
+        ["Wilson Santana"] = "Mesa 9",
+        ["Arthur Santana"] = "Mesa 9",
+        ["Julio Minto"] = "Mesa 9",
+        ["Eloana Minto"] = "Mesa 9",
 
-        [NormalizarNome("Rodolfo Alves")] = "Mesa 11",
-        [NormalizarNome("Luciane de Souza")] = "Mesa 11",
-        [NormalizarNome("Emanuelle de Souza")] = "Mesa 11",
-        [NormalizarNome("Bernardo de Souza")] = "Mesa 11",
-        [NormalizarNome("Theo de Souza")] = "Mesa 11",
-        [NormalizarNome("Robert Silva")] = "Mesa 11",
+        ["Rodolfo Alves"] = "Mesa 11",
+        ["Luciane de Souza"] = "Mesa 11",
+        ["Emanuelle de Souza"] = "Mesa 11",
+        ["Bernardo de Souza"] = "Mesa 11",
+        ["Theo de Souza"] = "Mesa 11",
+        ["Robert Silva"] = "Mesa 11",
 
-        [NormalizarNome("Afonso Bicchieri")] = "Mesa 13",
-        [NormalizarNome("Laís Xavier")] = "Mesa 13",
-        [NormalizarNome("Clesia Eleonora")] = "Mesa 13",
-        [NormalizarNome("Lucas Xavier")] = "Mesa 13",
-        [NormalizarNome("Clesley Silva")] = "Mesa 13",
-        [NormalizarNome("Karen Lucia")] = "Mesa 13",
+        ["Afonso Bicchieri"] = "Mesa 13",
+        ["Laís Xavier"] = "Mesa 13",
+        ["Clesia Eleonora"] = "Mesa 13",
+        ["Lucas Xavier"] = "Mesa 13",
+        ["Katia Verônica"] = "Mesa 13",
+        ["Gabriel Ferreira"] = "Mesa 13",
 
-        [NormalizarNome("Hannah Fonseca")] = "Mesa 15",
-        [NormalizarNome("Manuella Ferreira")] = "Mesa 15",
-        [NormalizarNome("Flávia Caetano")] = "Mesa 15",
-        [NormalizarNome("Vitor França")] = "Mesa 15",
+        ["Hannah Fonseca"] = "Mesa 15",
+        ["Manuella Ferreira"] = "Mesa 15",
+        ["Flávia Caetano"] = "Mesa 15",
+        ["Vitor França"] = "Mesa 15",
+        ["Clesley Silva"] = "Mesa 15",
+        ["Karen Lucia"] = "Mesa 15",
 
-        [NormalizarNome("Natália Dias")] = "Mesa 17",
-        [NormalizarNome("Vinicius Condina")] = "Mesa 17",
-        [NormalizarNome("Rogerio Navarro")] = "Mesa 17",
-        [NormalizarNome("Isis Malater")] = "Mesa 17",
+        ["Natália Dias"] = "Mesa 17",
+        ["Vinicius Condina"] = "Mesa 17",
+        ["Rogerio Navarro"] = "Mesa 17",
+        ["Isis Malater"] = "Mesa 17",
 
-        [NormalizarNome("Jessica Franco")] = "Mesa 19",
-        [NormalizarNome("Kleber Alves")] = "Mesa 19",
-        [NormalizarNome("Lorenna Franco")] = "Mesa 19",
-        [NormalizarNome("Cecília Araujo")] = "Mesa 19",
-        [NormalizarNome("Lucas Moreira")] = "Mesa 19"
+        ["Jessica Franco"] = "Mesa 19",
+        ["Kleber Alves"] = "Mesa 19",
+        ["Lorenna Franco"] = "Mesa 19",
+        ["Cecília Araujo"] = "Mesa 19",
+        ["Lucas Moreira"] = "Mesa 19"
     };
 
     private readonly IEventoRepository _repo;
     private readonly ILogger<RelatorioService> _logger;
     private readonly IRelatorioStrategy _relatorioPdfStrategy;
     private readonly IListaFinalConfirmadosPdfStrategy _listaFinalConfirmadosPdfStrategy;
+    private readonly IRelacaoPessoaMesaPdfStrategy _relacaoPessoaMesaPdfStrategy;
 
     public RelatorioService(
         IEventoRepository repo,
         ILogger<RelatorioService> logger,
         IRelatorioStrategy relatorioPdfStrategy,
-        IListaFinalConfirmadosPdfStrategy listaFinalConfirmadosPdfStrategy)
+        IListaFinalConfirmadosPdfStrategy listaFinalConfirmadosPdfStrategy,
+        IRelacaoPessoaMesaPdfStrategy relacaoPessoaMesaPdfStrategy)
     {
         _repo = repo;
         _logger = logger;
         _relatorioPdfStrategy = relatorioPdfStrategy;
         _listaFinalConfirmadosPdfStrategy = listaFinalConfirmadosPdfStrategy;
+        _relacaoPessoaMesaPdfStrategy = relacaoPessoaMesaPdfStrategy;
     }
 
     public async Task<RelatorioEventoResponse> ObterRelatorioAsync()
@@ -169,10 +174,47 @@ public class RelatorioService : IRelatorioService
         return (bytes, _listaFinalConfirmadosPdfStrategy.ContentType, _listaFinalConfirmadosPdfStrategy.NomeArquivo);
     }
 
+    public async Task<(byte[] bytes, string contentType, string nomeArquivo)> ExportarRelacaoPessoaMesaPdfAsync()
+    {
+        var response = await ObterListaFinalConfirmadosAsync();
+        var bytes = await _relacaoPessoaMesaPdfStrategy.ExportarAsync(response);
+        return (bytes, _relacaoPessoaMesaPdfStrategy.ContentType, _relacaoPessoaMesaPdfStrategy.NomeArquivo);
+    }
+
     private static string? ObterMesaPorNome(string nome)
     {
-        var chave = NormalizarNome(nome);
-        return MapaMesaPorNome.GetValueOrDefault(chave);
+        var nomeBancoNormalizado = NormalizarNome(nome);
+
+        foreach (var item in MapaMesaPorNome)
+        {
+            if (nomeBancoNormalizado.Equals(NormalizarNome(item.Key), StringComparison.Ordinal))
+                return item.Value;
+        }
+
+        foreach (var item in MapaMesaPorNome)
+        {
+            if (nomeBancoNormalizado.Contains(NormalizarNome(item.Key), StringComparison.Ordinal))
+                return item.Value;
+        }
+
+        foreach (var item in MapaMesaPorNome)
+        {
+            if (CorrespondePorTermos(nomeBancoNormalizado, item.Key))
+                return item.Value;
+        }
+
+        return null;
+    }
+
+    private static bool CorrespondePorTermos(string nomeBancoNormalizado, string nomeMapeado)
+    {
+        var termosMapeados = NormalizarNome(nomeMapeado)
+            .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+        if (termosMapeados.Length == 0)
+            return false;
+
+        return termosMapeados.All(termo => nomeBancoNormalizado.Contains(termo, StringComparison.Ordinal));
     }
 
     private static string NormalizarNome(string nome)

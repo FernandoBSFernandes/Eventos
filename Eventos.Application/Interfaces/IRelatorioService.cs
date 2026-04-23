@@ -8,4 +8,5 @@ public interface IRelatorioService
     Task<ListaFinalConfirmadosResponse> ObterListaFinalConfirmadosAsync();
     Task<(byte[] bytes, string contentType, string nomeArquivo)> ExportarPdfAsync();
     Task<(byte[] bytes, string contentType, string nomeArquivo)> ExportarListaFinalConfirmadosPdfAsync();
+    Task<(byte[] bytes, string contentType, string nomeArquivo)> ExportarRelacaoPessoaMesaPdfAsync();
 }

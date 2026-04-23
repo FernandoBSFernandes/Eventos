@@ -65,7 +65,7 @@ namespace EventosAPI.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObterRelacaoPessoaMesa()
         {
-            var (bytes, contentType, nomeArquivo) = await _relatorioService.ExportarListaFinalConfirmadosPdfAsync();
+            var (bytes, contentType, nomeArquivo) = await _relatorioService.ExportarRelacaoPessoaMesaPdfAsync();
             return File(bytes, contentType, nomeArquivo);
         }
 
