@@ -27,7 +27,7 @@ public class ListaFinalConfirmadosPdfStrategy : IListaFinalConfirmadosPdfStrateg
                 {
                     header.Column(col =>
                     {
-                        col.Item().Text("Lista Final de Confirmados")
+                        col.Item().Text("Lista Final de Confirmados - Casamento Fernando e Suzana - 25/04/2025")
                             .FontSize(18).Bold().FontColor(Colors.Blue.Darken2).AlignCenter();
 
                         col.Item().PaddingTop(4).LineHorizontal(1).LineColor(Colors.Blue.Lighten2);
