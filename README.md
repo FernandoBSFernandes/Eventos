@@ -220,38 +220,6 @@ Exporta o relatório de convidados confirmados em formato **PDF**.
 
 ---
 
-### Administração — `api/administracao`
-
-#### `DELETE /api/administracao/remover-duplicatas`
-
-Remove registros duplicados de convidados e acompanhantes. O critério de duplicidade é o nome idêntico após normalização (sem distinção de maiúsculas/minúsculas). O **primeiro** registro de cada grupo é preservado.
-
-**Resposta `200`:**
-```json
-{
-  "codigoStatus": 200,
-  "mensagem": "Duplicatas removidas com sucesso. Convidados removidos: 2. Acompanhantes removidos: 4."
-}
-```
-
-| Código | Descrição |
-|---|---|
-| `200` | Duplicatas removidas com sucesso |
-| `500` | Erro interno do servidor |
-
----
-
-#### `DELETE /api/administracao/zerar-tabelas`
-
-Zera todos os registros de convidados e acompanhantes do banco de dados.
-
-| Código | Descrição |
-|---|---|
-| `200` | Dados removidos com sucesso |
-| `500` | Erro interno do servidor |
-
----
-
 ## Regras de negócio
 
 - O nome do convidado deve ter entre **3 e 50 caracteres**

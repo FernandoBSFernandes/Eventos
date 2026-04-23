@@ -47,19 +47,6 @@ public class EventoRepository : IEventoRepository
             .AnyAsync(a => a.Nome.ToLower().Contains(nomeBusca));
     }
 
-    public async Task ZerarTabelasAsync()
-    {
-        if (string.Equals(_context.Database.ProviderName, "Microsoft.EntityFrameworkCore.InMemory", StringComparison.Ordinal))
-        {
-            _context.Set<Acompanhante>().RemoveRange(_context.Set<Acompanhante>());
-            _context.Convidado.RemoveRange(_context.Convidado);
-            await _context.SaveChangesAsync();
-            return;
-        }
-
-        await _context.Convidado.ExecuteDeleteAsync();
-    }
-
     public async Task<List<Convidado>> ObterConvidadosConfirmadosAsync()
     {
         return await _context.Convidado
@@ -68,43 +55,6 @@ public class EventoRepository : IEventoRepository
             .Where(c => c.PresencaConfirmada)
             .OrderBy(c => c.Nome)
             .ToListAsync();
-    }
-
-    public async Task<(int convidadosRemovidos, int acompanhantesRemovidos)> RemoverDuplicatasAsync()
-    {
-        var todosConvidados = await _context.Convidado
-            .Include(c => c.Acompanhantes)
-            .ToListAsync();
-
-        var duplicatasConvidados = todosConvidados
-            .GroupBy(c => c.Nome.Trim().ToLowerInvariant())
-            .Where(g => g.Count() > 1)
-            .SelectMany(g => g.Skip(1))
-            .ToList();
-
-        var acompanhantesRemovidos = 0;
-        var convidadosManutidos = todosConvidados.Except(duplicatasConvidados);
-
-        var duplicatasAcomp = convidadosManutidos
-            .SelectMany(c => c.Acompanhantes
-                .GroupBy(a => a.Nome.Trim().ToLowerInvariant())
-                .Where(g => g.Count() > 1)
-                .SelectMany(g => g.Skip(1)))
-            .ToList();
-
-        if (duplicatasAcomp.Count > 0)
-        {
-            _context.Set<Acompanhante>().RemoveRange(duplicatasAcomp);
-            acompanhantesRemovidos = duplicatasAcomp.Count;
-        }
-
-        if (duplicatasConvidados.Count > 0)
-            _context.Convidado.RemoveRange(duplicatasConvidados);
-
-        if (acompanhantesRemovidos > 0 || duplicatasConvidados.Count > 0)
-            await _context.SaveChangesAsync();
-
-        return (duplicatasConvidados.Count, acompanhantesRemovidos);
     }
 
     public async Task<int> ObterTotalPessoasAsync()

@@ -66,7 +66,7 @@ namespace EventosAPI
                 {
                     Title = "Eventos API",
                     Version = "v1",
-                    Description = "API para gerenciamento de convidados, relatórios e administração do evento de casamento de Fernando e Suzana Fernandes."
+                    Description = "API para gerenciamento de convidados e relatórios do evento de casamento de Fernando e Suzana Fernandes."
                 });
 
                 options.UseInlineDefinitionsForEnums();
