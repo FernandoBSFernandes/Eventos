@@ -14,24 +14,26 @@ export const options = {
       startVUs: 0,
       stages: [
         { duration: '15s', target: 10 },
-        { duration: '30s', target: 10 },
+        { duration: '40s', target: 10 },
         { duration: '15s', target: 0 },
       ],
-      gracefulRampDown: '5s',
+      gracefulRampDown: '20s',
+      gracefulStop: '20s',
       tags: { cenario: 'aquecimento' },
     },
 
     // Pico: simula um momento de alta demanda
     pico: {
       executor: 'ramping-vus',
-      startTime: '65s',
+      startTime: '95s',
       startVUs: 0,
       stages: [
         { duration: '10s', target: 50 },
-        { duration: '20s', target: 50 },
+        { duration: '30s', target: 50 },
         { duration: '10s', target: 0 },
       ],
-      gracefulRampDown: '5s',
+      gracefulRampDown: '20s',
+      gracefulStop: '20s',
       tags: { cenario: 'pico' },
     },
   },

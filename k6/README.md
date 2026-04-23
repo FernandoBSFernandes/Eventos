@@ -28,6 +28,24 @@ k6 run k6/performance.js
 k6 run -e BASE_URL=https://sua-api.onrender.com k6/performance.js
 ```
 
+### Modo rápido (FAST_MODE)
+
+Para validações locais mais curtas, o script `performance.js` suporta `FAST_MODE=true`.
+
+```bash
+k6 run -e FAST_MODE=true k6/performance.js
+```
+
+> No modo rápido os cenários têm duração reduzida e thresholds ajustados para evitar falso negativo por cold start.
+
+### Teste de carga (load-test)
+
+```bash
+k6 run k6/load-test.js
+```
+
+> O `load-test.js` usa janelas maiores de `gracefulRampDown` e `gracefulStop` para reduzir iterações interrompidas no encerramento.
+
 ---
 
 ## O que o teste faz
@@ -36,13 +54,18 @@ k6 run -e BASE_URL=https://sua-api.onrender.com k6/performance.js
 - Insere até 10 convidados fictícios com o prefixo `[K6]` no nome
 - Esses nomes nunca colidem com convidados reais
 
-### Durante o teste (60s no total)
+### Durante o teste
 | Etapa | Endpoint | Verificação |
 |---|---|---|
 | 1 | `POST /api/convidado/adicionar` | Status 201 ou 401 (limite) |
 | 2 | `GET /api/convidado/verificar` | Status 200, campo `existe` presente |
 | 3 | `GET /api/convidado/listar` | Status 200, retorna array |
 | 4 | `GET /api/relatorio/excel` | Status 200, content-type correto |
+
+**Duração aproximada:**
+- `performance.js` padrão: ~10 min
+- `performance.js` com `FAST_MODE=true`: ~1m40s
+- `load-test.js`: ~2m40s
 
 ### Teardown (após o teste)
 - Remove automaticamente **todos** os convidados com prefixo `[K6]`
