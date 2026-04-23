@@ -11,12 +11,18 @@ public class RelatorioService : IRelatorioService
     private readonly IEventoRepository _repo;
     private readonly ILogger<RelatorioService> _logger;
     private readonly IRelatorioFactory _factory;
+    private readonly IListaFinalConfirmadosPdfStrategy _listaFinalConfirmadosPdfStrategy;
 
-    public RelatorioService(IEventoRepository repo, ILogger<RelatorioService> logger, IRelatorioFactory factory)
+    public RelatorioService(
+        IEventoRepository repo,
+        ILogger<RelatorioService> logger,
+        IRelatorioFactory factory,
+        IListaFinalConfirmadosPdfStrategy listaFinalConfirmadosPdfStrategy)
     {
         _repo = repo;
         _logger = logger;
         _factory = factory;
+        _listaFinalConfirmadosPdfStrategy = listaFinalConfirmadosPdfStrategy;
     }
 
     public async Task<RelatorioEventoResponse> ObterRelatorioAsync()
@@ -86,5 +92,12 @@ public class RelatorioService : IRelatorioService
         var strategy = _factory.Criar(formato);
         var bytes = await strategy.ExportarAsync(relatorio);
         return (bytes, strategy.ContentType, strategy.NomeArquivo);
+    }
+
+    public async Task<(byte[] bytes, string contentType, string nomeArquivo)> ExportarListaFinalConfirmadosPdfAsync()
+    {
+        var response = await ObterListaFinalConfirmadosAsync();
+        var bytes = await _listaFinalConfirmadosPdfStrategy.ExportarAsync(response);
+        return (bytes, _listaFinalConfirmadosPdfStrategy.ContentType, _listaFinalConfirmadosPdfStrategy.NomeArquivo);
     }
 }

@@ -55,19 +55,19 @@ namespace EventosAPI.Controllers
         }
 
         /// <summary>
-        /// Retorna a lista final de confirmados em ordem alfabética com coluna de pagamento para preenchimento manual
+        /// Exporta a lista final de confirmados em PDF com checkbox de pagamento para preenchimento manual
         /// </summary>
-        /// <returns>Lista de confirmados com campo de pago (checkbox)</returns>
-        /// <response code="200">Lista retornada com sucesso</response>
+        /// <returns>Arquivo PDF com lista de confirmados e coluna de pago (checkbox)</returns>
+        /// <response code="200">Arquivo gerado com sucesso</response>
         /// <response code="500">Erro interno ao processar a requisição</response>
         [HttpGet("lista-final")]
-        [Produces("application/json")]
-        [ProducesResponseType(typeof(ListaFinalConfirmadosResponse), StatusCodes.Status200OK)]
+        [Produces("application/pdf")]
+        [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObterListaFinalConfirmados()
         {
-            var response = await _relatorioService.ObterListaFinalConfirmadosAsync();
-            return StatusCode(response.CodigoStatus, response);
+            var (bytes, contentType, nomeArquivo) = await _relatorioService.ExportarListaFinalConfirmadosPdfAsync();
+            return File(bytes, contentType, nomeArquivo);
         }
 
     }

@@ -6,6 +6,26 @@ namespace Eventos.Tests.Services;
 [Trait("Serviço", "ObterListaFinalConfirmados")]
 public class ObterListaFinalConfirmadosTests : RelatorioServiceTestBase
 {
+    [Fact(DisplayName = "Deve exportar lista final usando strategy de PDF")]
+    [Trait("Categoria", "Sucesso")]
+    public async Task DeveExportarListaFinalUsandoStrategyPdf()
+    {
+        // Arrange
+        var bytesEsperados = new byte[] { 10, 20, 30 };
+        Repo.ObterConvidadosConfirmadosAsync().Returns(new List<Convidado>());
+        ListaFinalConfirmadosPdfStrategy.ExportarAsync(Arg.Any<ListaFinalConfirmadosResponse>())
+            .Returns(bytesEsperados);
+
+        // Act
+        var (bytes, contentType, nomeArquivo) = await Service.ExportarListaFinalConfirmadosPdfAsync();
+
+        // Assert
+        Assert.Equal(bytesEsperados, bytes);
+        Assert.Equal("application/pdf", contentType);
+        Assert.Equal("Lista Final de Confirmados.pdf", nomeArquivo);
+        await ListaFinalConfirmadosPdfStrategy.Received(1).ExportarAsync(Arg.Any<ListaFinalConfirmadosResponse>());
+    }
+
     [Fact(DisplayName = "Deve retornar nomes confirmados em ordem alfabética com campo pago vazio")]
     [Trait("Categoria", "Sucesso")]
     public async Task DeveRetornarListaOrdenadaComPagoNulo_QuandoHaConfirmados()
