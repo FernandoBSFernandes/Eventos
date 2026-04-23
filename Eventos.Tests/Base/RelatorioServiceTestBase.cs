@@ -9,14 +9,19 @@ namespace Eventos.Tests.Base;
 public abstract class RelatorioServiceTestBase
 {
     protected readonly IEventoRepository Repo;
-    protected readonly IRelatorioFactory Factory;
+    protected readonly IRelatorioStrategy RelatorioPdfStrategy;
     protected readonly IListaFinalConfirmadosPdfStrategy ListaFinalConfirmadosPdfStrategy;
     protected readonly RelatorioService Service;
 
     protected RelatorioServiceTestBase()
     {
         Repo = Substitute.For<IEventoRepository>();
-        Factory = Substitute.For<IRelatorioFactory>();
+        RelatorioPdfStrategy = Substitute.For<IRelatorioStrategy>();
+        RelatorioPdfStrategy.ContentType.Returns("application/pdf");
+        RelatorioPdfStrategy.NomeArquivo.Returns("relatorio.pdf");
+        RelatorioPdfStrategy.ExportarAsync(Arg.Any<RelatorioEventoResponse>())
+            .Returns(Array.Empty<byte>());
+
         ListaFinalConfirmadosPdfStrategy = Substitute.For<IListaFinalConfirmadosPdfStrategy>();
         ListaFinalConfirmadosPdfStrategy.ContentType.Returns("application/pdf");
         ListaFinalConfirmadosPdfStrategy.NomeArquivo.Returns("Lista Final de Confirmados.pdf");
@@ -26,7 +31,7 @@ public abstract class RelatorioServiceTestBase
         Service = new RelatorioService(
             Repo,
             NullLogger<RelatorioService>.Instance,
-            Factory,
+            RelatorioPdfStrategy,
             ListaFinalConfirmadosPdfStrategy);
     }
 }

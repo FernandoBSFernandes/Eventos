@@ -1,5 +1,4 @@
 using Eventos.Application.DTOs.Response;
-using Eventos.Application.Enums;
 using Eventos.Application.Interfaces;
 using Eventos.Domain.Repositories;
 using Microsoft.Extensions.Logging;
@@ -80,18 +79,18 @@ public class RelatorioService : IRelatorioService
 
     private readonly IEventoRepository _repo;
     private readonly ILogger<RelatorioService> _logger;
-    private readonly IRelatorioFactory _factory;
+    private readonly IRelatorioStrategy _relatorioPdfStrategy;
     private readonly IListaFinalConfirmadosPdfStrategy _listaFinalConfirmadosPdfStrategy;
 
     public RelatorioService(
         IEventoRepository repo,
         ILogger<RelatorioService> logger,
-        IRelatorioFactory factory,
+        IRelatorioStrategy relatorioPdfStrategy,
         IListaFinalConfirmadosPdfStrategy listaFinalConfirmadosPdfStrategy)
     {
         _repo = repo;
         _logger = logger;
-        _factory = factory;
+        _relatorioPdfStrategy = relatorioPdfStrategy;
         _listaFinalConfirmadosPdfStrategy = listaFinalConfirmadosPdfStrategy;
     }
 
@@ -156,12 +155,11 @@ public class RelatorioService : IRelatorioService
         }
     }
 
-    public async Task<(byte[] bytes, string contentType, string nomeArquivo)> ExportarAsync(FormatoRelatorio formato)
+    public async Task<(byte[] bytes, string contentType, string nomeArquivo)> ExportarPdfAsync()
     {
         var relatorio = await ObterRelatorioAsync();
-        var strategy = _factory.Criar(formato);
-        var bytes = await strategy.ExportarAsync(relatorio);
-        return (bytes, strategy.ContentType, strategy.NomeArquivo);
+        var bytes = await _relatorioPdfStrategy.ExportarAsync(relatorio);
+        return (bytes, _relatorioPdfStrategy.ContentType, _relatorioPdfStrategy.NomeArquivo);
     }
 
     public async Task<(byte[] bytes, string contentType, string nomeArquivo)> ExportarListaFinalConfirmadosPdfAsync()

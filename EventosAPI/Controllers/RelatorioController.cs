@@ -1,4 +1,3 @@
-using Eventos.Application.Enums;
 using Eventos.Application.Interfaces;
 using Eventos.Application.DTOs.Response;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +6,7 @@ namespace EventosAPI.Controllers
 {
     /// <summary>
     /// Geração de relatórios do evento.
-    /// Permite exportar a lista de convidados confirmados em PDF ou Excel.
+    /// Permite exportar a lista de convidados confirmados em PDF.
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
@@ -23,22 +22,6 @@ namespace EventosAPI.Controllers
         }
 
         /// <summary>
-        /// Exporta o relatório de convidados confirmados em formato Excel (.xlsx)
-        /// </summary>
-        /// <returns>Arquivo Excel com a relação de participantes e seus acompanhantes</returns>
-        /// <response code="200">Arquivo gerado com sucesso</response>
-        /// <response code="500">Erro interno ao processar a requisição</response>
-        [HttpGet("excel")]
-        [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
-        [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ObterRelatorioExcel()
-        {
-            var (bytes, contentType, nomeArquivo) = await _relatorioService.ExportarAsync(FormatoRelatorio.Excel);
-            return File(bytes, contentType, nomeArquivo);
-        }
-
-        /// <summary>
         /// Exporta o relatório de convidados confirmados em formato PDF
         /// </summary>
         /// <returns>Arquivo PDF com a relação de participantes e seus acompanhantes</returns>
@@ -50,7 +33,7 @@ namespace EventosAPI.Controllers
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObterRelatorioPdf()
         {
-            var (bytes, contentType, nomeArquivo) = await _relatorioService.ExportarAsync(FormatoRelatorio.Pdf);
+            var (bytes, contentType, nomeArquivo) = await _relatorioService.ExportarPdfAsync();
             return File(bytes, contentType, nomeArquivo);
         }
 
@@ -65,6 +48,22 @@ namespace EventosAPI.Controllers
         [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> ObterListaFinalConfirmados()
+        {
+            var (bytes, contentType, nomeArquivo) = await _relatorioService.ExportarListaFinalConfirmadosPdfAsync();
+            return File(bytes, contentType, nomeArquivo);
+        }
+
+        /// <summary>
+        /// Exporta a relação de pessoas confirmadas com suas respectivas mesas em PDF
+        /// </summary>
+        /// <returns>Arquivo PDF com a relação pessoa x mesa</returns>
+        /// <response code="200">Arquivo gerado com sucesso</response>
+        /// <response code="500">Erro interno ao processar a requisição</response>
+        [HttpGet("pessoa-mesa")]
+        [Produces("application/pdf")]
+        [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseResponse), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ObterRelacaoPessoaMesa()
         {
             var (bytes, contentType, nomeArquivo) = await _relatorioService.ExportarListaFinalConfirmadosPdfAsync();
             return File(bytes, contentType, nomeArquivo);

@@ -167,17 +167,6 @@ Retorna o limite máximo configurado de pessoas confirmadas no evento.
 
 ### Relatórios — `api/relatorio`
 
-#### `GET /api/relatorio/excel`
-
-Exporta o relatório de convidados confirmados em formato **Excel** (`.xlsx`).
-
-| Código | Descrição |
-|---|---|
-| `200` | Arquivo gerado e retornado |
-| `500` | Erro interno do servidor |
-
----
-
 #### `GET /api/relatorio/lista-final`
 
 Retorna a lista final de confirmados em ordem alfabética (convidados e acompanhantes), com numeração e coluna `pago` para preenchimento manual.
@@ -239,7 +228,6 @@ Exporta o relatório de convidados confirmados em formato **PDF**.
 | ASP.NET Core | Web API |
 | Entity Framework Core | ORM |
 | PostgreSQL (Npgsql) | Banco de dados |
-| ClosedXML | Geração de Excel |
 | QuestPDF | Geração de PDF |
 | xUnit | Testes de unidade |
 | NSubstitute | Mocking nos testes |

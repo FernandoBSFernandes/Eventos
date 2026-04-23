@@ -106,10 +106,8 @@ namespace EventosAPI
             builder.Services.AddScoped<IConvidadoService, ConvidadoService>();
             builder.Services.AddScoped<IRelatorioService, RelatorioService>();
             builder.Services.AddScoped<IEventoRepository, EventoRepository>();
-            builder.Services.AddScoped<RelatorioPdfStrategy>();
-            builder.Services.AddScoped<RelatorioExcelStrategy>();
+            builder.Services.AddScoped<IRelatorioStrategy, RelatorioPdfStrategy>();
             builder.Services.AddScoped<IListaFinalConfirmadosPdfStrategy, ListaFinalConfirmadosPdfStrategy>();
-            builder.Services.AddScoped<IRelatorioFactory, RelatorioFactory>();
 
             var app = builder.Build();
 

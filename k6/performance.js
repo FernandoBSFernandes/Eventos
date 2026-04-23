@@ -15,7 +15,6 @@ const m = {
     listar:            new Trend('dur_listar',             true),
     vagas:             new Trend('dur_vagas_restantes',    true),
     remover:           new Trend('dur_remover',            true),
-    relatorioExcel:    new Trend('dur_relatorio_excel',    true),
     relatorioPdf:      new Trend('dur_relatorio_pdf',      true),
     taxaErro:          new Rate('taxa_erro'),
     totalReqs:         new Counter('total_requisicoes'),
@@ -115,7 +114,6 @@ export const options = {
         'dur_listar':             ['p(95)<600',  'p(99)<1200'],
         'dur_vagas_restantes':    ['p(95)<300',  'p(99)<600' ],
         'dur_remover':            ['p(95)<500',  'p(99)<1000'],
-        'dur_relatorio_excel':    ['p(95)<3000', 'p(99)<5000'],
         'dur_relatorio_pdf':      ['p(95)<3000', 'p(99)<5000'],
 
         // --- Por cenÃ¡rio ---
@@ -187,13 +185,6 @@ function listarConvidados() {
 function obterVagasRestantes() {
     const res = http.get(`${BASE_URL}/api/convidado/vagas-restantes`, { headers: HEADERS });
     m.vagas.add(res.timings.duration);
-    m.totalReqs.add(1);
-    return res;
-}
-
-function obterRelatorioExcel() {
-    const res = http.get(`${BASE_URL}/api/relatorio/excel`, { headers: HEADERS });
-    m.relatorioExcel.add(res.timings.duration);
     m.totalReqs.add(1);
     return res;
 }
@@ -293,19 +284,6 @@ if (!nomeFixo) { sleep(1); return; }
 
     // RelatÃ³rios sÃ£o pesados â€” executados 1 a cada 5 iteraÃ§Ãµes
     if (__ITER % 5 === 0) {
-        group('RelatÃ³rio â€” Excel', () => {
-            const res = obterRelatorioExcel();
-            const ok = check(res, {
-                'excel: status 200':           (r) => r.status === 200,
-                'excel: content-type correto': (r) =>
-                    (r.headers['Content-Type'] || '').includes('spreadsheetml'),
-                'excel: body nÃ£o vazio':       (r) => r.body.length > 0,
-            });
-            m.taxaErro.add(!ok);
-        });
-
-        sleep(0.5);
-
         group('RelatÃ³rio â€” PDF', () => {
             const res = obterRelatorioPdf();
             const ok = check(res, {
